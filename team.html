@@ -112,7 +112,7 @@
             padding: 0 5vw;
             display: flex;
             flex-direction: column;
-            gap: 40px; /* Space between team cards */
+            gap: 40px; 
         }
 
         .page-title {
@@ -122,17 +122,63 @@
             letter-spacing: 0.1em;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-shadow: 0 0 15px rgba(191, 148, 255, 0.4);
         }
 
-        /* --- 5. INDIVIDUAL TEAM CARDS (GLASS) --- */
+        /* --- 5. SECURE INTAKE PORTAL (MOVED TO TOP) --- */
+        .comm-link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .comm-link-container .content-block {
+            max-width: 650px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            font-weight: 200;
+        }
+
+        .comm-link-container strong {
+            color: var(--vcs-gold);
+            font-weight: 600;
+        }
+
+        .comm-btn {
+            color: var(--true-black);
+            background: var(--vcs-gold);
+            text-decoration: none;
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 18px 40px;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .comm-btn:hover {
+            background: #FFFFFF;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        /* --- 6. INDIVIDUAL TEAM CARDS --- */
         .team-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-left: 4px solid var(--vcs-gold); /* Golden edge to ground the card */
+            border-left: 4px solid var(--vcs-gold); 
             border-radius: 8px;
             padding: 40px;
             display: flex;
@@ -144,7 +190,7 @@
 
         .team-card:hover {
             transform: translateY(-5px);
-            border-left-color: var(--vcs-purple); /* Edge turns purple on hover */
+            border-left-color: var(--vcs-purple); 
         }
 
         .member-header {
@@ -178,25 +224,39 @@
             font-weight: 200;
         }
 
+        /* Brought back contact preference styles */
         .member-contact {
             margin-top: 15px;
-            display: inline-block;
+            align-self: flex-start;
             background: rgba(0, 0, 0, 0.4);
-            padding: 10px 15px;
+            padding: 12px 18px;
             border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.85rem;
             color: var(--text-main);
             letter-spacing: 0.05em;
+            font-family: 'Inter', monospace;
         }
 
         .member-contact span {
             color: var(--vcs-purple);
             font-weight: 600;
-            margin-right: 5px;
+            margin-right: 8px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
         }
 
-        /* --- 6. PROGRESSIONAL FADE ANIMATION --- */
+        .member-contact a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .member-contact a:hover {
+            color: var(--vcs-gold);
+        }
+
+        /* --- 7. PROGRESSIONAL FADE ANIMATION --- */
         .fade-element {
             opacity: 0;
             transform: translateY(30px);
@@ -208,11 +268,13 @@
             transform: translateY(0);
         }
 
-        /* --- 7. MOBILE RESPONSIVENESS --- */
+        /* --- 8. MOBILE RESPONSIVENESS --- */
         @media (max-width: 768px) {
             .team-card { padding: 30px 20px; border-left-width: 3px; }
             .page-container { margin-top: 12vh; gap: 25px; }
             .member-name { font-size: 1.4rem; }
+            .comm-btn { width: 100%; text-align: center; }
+            .member-contact { width: 100%; text-align: left; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -232,29 +294,39 @@
         
         <h1 class="page-title fade-element">The Vanguard Roster</h1>
 
+        <div class="comm-link-container fade-element">
+            <p class="content-block">
+                For individual creator commissions, please use the <strong>Contact Preferences</strong> provided in the profiles below. 
+                For VCS collective initiatives, business partnerships, or large-scale projects:
+            </p>
+            <a href="#" target="_blank" class="comm-btn">Initiate VCS Strategic Link</a>
+        </div>
+
         <article class="team-card fade-element">
             <header class="member-header">
-                <h2 class="member-name">[Real Life Name]</h2>
-                <p class="member-title">Co-Founder / [Specific Role, e.g. Operations]</p>
+                <h2 class="member-name">Quincy Jones</h2>
+                <p class="member-title">Co-Founder / [Role]</p>
             </header>
             <p class="member-bio">
                 [Small Bio: Describe your background, your role in forming the Vanguard, and what drives your specific vision for empowering the community and directing the collective's initiatives.]
             </p>
             <div class="member-contact">
-                <span>Messaging Preference:</span> [e.g., Discord, Slack, or Email @ address.com]
+                <span>Contact Preference:</span> 
+                <a href="mailto:commandrq@gmail.com">commandrq@gmail.com</a>
             </div>
         </article>
 
         <article class="team-card fade-element">
             <header class="member-header">
                 <h2 class="member-name">[Real Life Name]</h2>
-                <p class="member-title">Co-Founder / [Specific Role, e.g. Strategy]</p>
+                <p class="member-title">Co-Founder / [Role]</p>
             </header>
             <p class="member-bio">
                 [Small Bio: Describe Sir Lancelot's background, his opposing but complementary perspective that helped shape the absolute mandate of the collective, and his current focus.]
             </p>
             <div class="member-contact">
-                <span>Messaging Preference:</span> [e.g., Signal, Microsoft Teams, or Direct Email]
+                <span>Contact Preference:</span> 
+                <a href="mailto:example@email.com">[Contact Info]</a>
             </div>
         </article>
 
@@ -264,10 +336,11 @@
                 <p class="member-title">[Specific Role, e.g. Lead Content Creator]</p>
             </header>
             <p class="member-bio">
-                [Small Bio: Introduce the newest member of the team. Highlight their creative background, what specific talents they bring to the Vanguard media projects, and their alignment with the mission.]
+                [Small Bio: Introduce the newest member of the team. Highlight their creative background, what specific talents they bring to the Vanguard media projects, and their alignment with the mission.] Check out more of their work at <a href="https://www.theirwebsite.com" target="_blank" style="color: var(--vcs-gold); text-decoration: underline;">their portfolio</a>.
             </p>
             <div class="member-contact">
-                <span>Messaging Preference:</span> [e.g., Discord, Twitter/X DM, or Email]
+                <span>Contact Preference:</span> 
+                <a href="https://twitter.com/theirhandle" target="_blank">[Social/Email Link]</a>
             </div>
         </article>
 
