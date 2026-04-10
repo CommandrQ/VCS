@@ -1,327 +1,193 @@
+/* 1. BRAND KIT & FONTS */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400&display=swap');
 
 :root {
-    --vcs-black: #050505;
+    --true-black: #000000;
     --vcs-gold: #D4AF37;
-    --knight-purple: #BF94FF;
-    --glass-shine: rgba(255, 255, 255, 0.05);
+    --vcs-purple: #BF94FF;
+    --text-main: #F5F5F7;
+    --text-dim: rgba(245, 245, 247, 0.4);
+    --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.1);
     --snap: 0.4s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 1. THE OBSIDIAN VOID */
-body {
-    background-color: var(--vcs-black);
+/* 2. GLOBAL RESET & NO-SCROLL */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--true-black);
+    color: var(--text-main);
     height: 100vh;
     width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* No scrolling */
+    overflow: hidden; /* Disables scrolling */
+    display: grid;
+    place-items: center; /* Dead-centering engine */
     -webkit-font-smoothing: antialiased;
 }
 
-/* 2. THE GLASS WINDOW */
+/* 3. GATEWAY (INDEX) STYLING */
 .glass-pane {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 80px;
     padding: 60px 100px;
-    background: var(--glass-shine);
-    backdrop-filter: blur(20px); /* THE FROSTED LOOK */
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px); /* Frosted Glass Look */
+    -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--glass-border);
-    border-radius: 2px; /* Slight round to catch light */
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     z-index: 10;
 }
 
-/* 3. THE CHOICES */
-.choice {
+.node {
     text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: var(--snap);
-    flex-shrink: 0;
 }
 
 .icon-wrapper {
     width: 60px;
     height: 60px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
-.icon {
+.icon-svg {
     width: 100%;
     height: 100%;
-    fill: rgba(255, 255, 255, 0.3);
+    fill: var(--text-dim);
     transition: var(--snap);
 }
 
-.brand-text {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.3em;
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
-    text-align: center;
-    transition: var(--snap);
-}
-
-.role-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.5em;
-    color: rgba(255, 255, 255, 0.3);
-    text-align: center;
-    margin-top: 10px;
-    transition: var(--snap);
-}
-
-/* 4. ANIMATED HOVER STATES */
-
-/* THE SHIELD GLOW (GOLD) */
-.shield-node:hover .brand-text {
-    color: var(--vcs-gold);
-    text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-}
-
-.shield-node:hover .icon {
-    fill: var(--vcs-gold);
-    filter: drop-shadow(0 0 15px var(--vcs-gold));
-    transform: translateY(-5px);
-}
-
-/* THE SWORD GLOW (PURPLE) */
-.sword-node:hover .brand-text {
-    color: var(--knight-purple);
-    text-shadow: 0 0 15px rgba(191, 148, 255, 0.6);
-}
-
-.sword-node:hover .icon {
-    fill: var(--knight-purple);
-    filter: drop-shadow(0 0 15px var(--knight-purple));
-    transform: translateY(-5px);
-}
-
-/* THE DIVIDER */
 .divider {
     width: 1px;
     height: 100px;
     background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
 }
 
-/* 5. FOCUS LOGIC (DIM THE OTHER SIDE) */
-.glass-pane:has(.choice:hover) .choice:not(:hover) {
-    opacity: 0.15;
-    filter: blur(2px);
-}
-/* TABLE BACKGROUND (Deep Obsidian) */
-.table-bg {
-    background-color: #050505;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* THE DOORWAY ENTRANCE ANIMATION */
-.doorway-stage {
-    animation: zoomIn 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: 100vh;
-}
-
-@keyframes zoomIn {
-    0% { opacity: 0; transform: scale(1.5); filter: blur(20px); }
-    100% { opacity: 1; transform: scale(1); filter: blur(0px); }
-}
-
-/* THE FLOATING ROUND TABLE */
-.round-table {
-    position: relative;
-    width: 500px;
-    height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* THE INDIVIDUAL SEATS */
-.seat {
-    position: absolute;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.4s ease;
-    animation: float 4s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 0.5s);
-}
-
-/* CIRCULAR POSITIONING */
-.archive  { top: 0; }
-.citizens { right: 0; }
-.horizon  { bottom: 0; }
-.vanguard { left: 0; }
-
-.seat-label {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.3em;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-/* HOVER EFFECT (GOLD GLOW FOR VCS SIDE) */
-.seat:hover .seat-label {
-    color: #D4AF37;
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-    transform: scale(1.1);
-}
-
-/* THE CORE PULSE */
-.table-core {
-    width: 2px;
-    height: 2px;
-    background: #D4AF37;
-    box-shadow: 0 0 40px 10px rgba(212, 175, 55, 0.2);
-    border-radius: 50%;
-}
-
-.core-pulse {
-    width: 200px;
-    height: 200px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulseCircle 4s linear infinite;
-}
-
-/* ANIMATIONS */
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-}
-
-@keyframes pulseCircle {
-    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-    50% { opacity: 0.3; }
-    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-}
-/* CENTERING ENGINE */
+/* 4. ROUND TABLE (TABLE.HTML) STYLING */
 .doorway-stage {
     display: grid;
-    place-items: center; /* Centers everything on X and Y axis */
+    place-items: center;
     height: 100vh;
     width: 100vw;
     position: relative;
-    overflow: hidden;
-    animation: zoomIn 1s cubic-bezier(0.2, 0, 0, 1);
+    animation: zoomIn 1s var(--snap);
 }
 
-/* THE SUBTLE TABLE SURFACE */
 .table-surface {
     position: absolute;
-    width: min(80vw, 600px); /* Responsive: 80% of screen or max 600px */
-    height: min(80vw, 600px);
+    width: min(85vw, 600px);
+    height: min(85vw, 600px);
     z-index: 1;
     pointer-events: none;
 }
 
-.table-outline {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.1));
-}
-
-/* THE CONTENT WRAPPER */
 .round-table-container {
     position: relative;
     z-index: 10;
     width: min(90vw, 550px);
     height: min(90vw, 550px);
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* RESPONSIVE SEAT POSITIONS */
-.seat {
-    position: absolute;
-    text-decoration: none;
+.table-logo {
+    width: 60px;
+    height: 60px;
+}
+
+.helmet-svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--vcs-gold);
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+}
+
+/* 5. TYPOGRAPHY & POSITIONING */
+.brand-text, .seat-label {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-align: center;
     transition: var(--snap);
 }
 
-/* CLOCK-FACE POSITIONING */
-.archive  { top: 5%; }
+.brand-text { font-size: 1.1rem; color: var(--text-main); }
+.seat-label { font-size: clamp(0.85rem, 2.5vw, 1.1rem); color: var(--text-dim); }
+
+.role-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--text-dim);
+    margin-top: 10px;
+}
+
+/* CATEGORY POSITIONS */
+.seat { position: absolute; text-decoration: none; transition: var(--snap); }
+.archive  { top: 0; }
 .citizens { right: 0; }
-.horizon  { bottom: 5%; }
+.horizon  { bottom: 0; }
 .vanguard { left: 0; }
 
-.seat-label {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(0.8rem, 2.5vw, 1.1rem); /* Auto-fits text size */
-    letter-spacing: 0.3em;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    transition: 0.4s;
-    white-space: nowrap;
+/* 6. INTERACTIVE GLOWS & HOVERS */
+
+/* Shield Hover (Gold) */
+.shield-node:hover .brand-text, 
+.seat:hover .seat-label { 
+    color: var(--vcs-gold); 
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); 
 }
 
-/* HOVER ANIMATION */
-.seat:hover .seat-label {
-    color: #D4AF37;
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
-    letter-spacing: 0.4em; /* Subtle "expanding" effect */
+.shield-node:hover .icon-svg { 
+    fill: var(--vcs-gold); 
+    filter: drop-shadow(0 0 15px var(--vcs-gold)); 
 }
 
-/* THE CENTER POINT */
-.table-center {
-    width: 4px;
-    height: 4px;
-    background: #D4AF37;
-    border-radius: 50%;
-    box-shadow: 0 0 20px #D4AF37;
+/* Sword Hover (Purple) */
+.sword-node:hover .brand-text { 
+    color: var(--vcs-purple); 
+    text-shadow: 0 0 15px rgba(191, 148, 255, 0.6); 
 }
 
-.pulse-ring {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    border-radius: 50%;
-    animation: centerPulse 3s ease-out infinite;
+.sword-node:hover .icon-svg { 
+    fill: var(--vcs-purple); 
+    filter: drop-shadow(0 0 15px var(--vcs-purple)); 
 }
 
-/* ANIMATIONS */
+/* Focus Fade (Dim others) */
+.glass-pane:has(.node:hover) .node:not(:hover),
+.round-table-container:has(.seat:hover) .seat:not(:hover) {
+    opacity: 0.15;
+    filter: blur(4px);
+}
+
+/* 7. ANIMATIONS */
 @keyframes zoomIn {
-    from { opacity: 0; transform: scale(1.2); filter: blur(10px); }
+    from { opacity: 0; transform: scale(1.2); filter: blur(15px); }
     to { opacity: 1; transform: scale(1); filter: blur(0px); }
 }
 
-@keyframes centerPulse {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { opacity: 0.2; }
-    100% { transform: scale(1.5); opacity: 0; }
-}
-
-/* MOBILE ADJUSTMENTS */
-@media (max-width: 600px) {
-    .round-table-container {
-        width: 85vw;
-        height: 85vw;
+/* 8. MOBILE RESPONSIVENESS */
+@media (max-width: 768px) {
+    .glass-pane {
+        flex-direction: column;
+        gap: 40px;
+        padding: 40px;
     }
     
-    .archive { top: 10%; }
-    .horizon { bottom: 10%; }
+    .divider { width: 60px; height: 1px; }
+
+    .round-table-container {
+        width: 80vw;
+        height: 80vw;
+    }
 }
