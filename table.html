@@ -60,12 +60,17 @@
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        (function() {
             const loadText = document.getElementById('load-percent');
             const progressBar = document.getElementById('progress-bar');
             const loader = document.getElementById('loader-screen');
             const mainStage = document.getElementById('main-stage');
             
+            if (!loadText || !loader || !mainStage) {
+                console.error("Loader Error: Missing HTML IDs");
+                return; 
+            }
+
             let progress = 0;
 
             function simulateLoad() {
@@ -83,3 +88,16 @@
                     setTimeout(() => {
                         loader.style.opacity = '0'; 
                         setTimeout(() => {
+                            loader.style.display = 'none';
+                            mainStage.classList.remove('hidden-stage');
+                            mainStage.classList.add('zoom-in-active'); 
+                        }, 500);
+                    }, 400); 
+                }
+            }
+            
+            setTimeout(simulateLoad, 200);
+        })();
+    </script>
+</body>
+</html>
