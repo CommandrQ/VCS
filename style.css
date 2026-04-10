@@ -1,120 +1,122 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400&display=swap');
 
 :root {
-    --true-black: #000000;
+    --vcs-black: #050505;
     --vcs-gold: #D4AF37;
     --knight-purple: #BF94FF;
-    --white: #F5F5F7;
-    --dim-text: rgba(245, 245, 247, 0.3);
+    --glass-shine: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
     --snap: 0.4s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* RESET & LOCK SCREEN */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* 1. THE OBSIDIAN VOID */
 body {
-    background-color: var(--true-black);
+    background-color: var(--vcs-black);
+    margin: 0;
     height: 100vh;
     width: 100vw;
-    overflow: hidden; /* No scrolling */
-    display: grid;
-    place-items: center; /* PERFECT CENTERING */
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.6s ease;
-}
-
-/* THE MASTER WRAPPER */
-.master-container {
-    width: 100%;
-    padding: 0 5vw; /* Edge buffer */
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
+    overflow: hidden; /* No scrolling */
+    -webkit-font-smoothing: antialiased;
 }
 
-/* CONTENT ALIGNMENT */
-.choice-wrapper {
+/* 2. THE GLASS WINDOW */
+.glass-pane {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 8vw; /* Fluid gap that fits screen size */
-    max-width: 1400px;
+    justify-content: center;
+    gap: 80px;
+    padding: 60px 100px;
+    background: var(--glass-shine);
+    backdrop-filter: blur(20px); /* THE FROSTED LOOK */
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 2px; /* Slight round to catch light */
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    z-index: 10;
 }
 
-.node {
+/* 3. THE CHOICES */
+.choice {
     text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: var(--snap);
-    flex-shrink: 0; /* Prevents text from squishing */
+    flex-shrink: 0;
 }
 
-/* ICON STYLING */
-.icon-box {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 25px;
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 30px;
 }
 
-.icon-svg {
+.icon {
     width: 100%;
     height: 100%;
-    fill: var(--dim-text);
+    fill: rgba(255, 255, 255, 0.3);
     transition: var(--snap);
 }
 
-/* TYPOGRAPHY */
-.cinzel-title {
+.brand-text {
     font-family: 'Cinzel', serif;
-    font-size: clamp(0.9rem, 1.5vw, 1.3rem); /* Auto-sizes based on screen */
+    font-size: 1.1rem;
     letter-spacing: 0.3em;
-    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
-    color: var(--white);
+    text-align: center;
     transition: var(--snap);
-    white-space: nowrap;
 }
 
-.inter-sub {
+.role-text {
     font-family: 'Inter', sans-serif;
     font-size: 0.6rem;
     letter-spacing: 0.5em;
+    color: rgba(255, 255, 255, 0.3);
     text-align: center;
     margin-top: 10px;
-    color: var(--dim-text);
     transition: var(--snap);
 }
 
+/* 4. ANIMATED HOVER STATES */
+
+/* THE SHIELD GLOW (GOLD) */
+.shield-node:hover .brand-text {
+    color: var(--vcs-gold);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+.shield-node:hover .icon {
+    fill: var(--vcs-gold);
+    filter: drop-shadow(0 0 15px var(--vcs-gold));
+    transform: translateY(-5px);
+}
+
+/* THE SWORD GLOW (PURPLE) */
+.sword-node:hover .brand-text {
+    color: var(--knight-purple);
+    text-shadow: 0 0 15px rgba(191, 148, 255, 0.6);
+}
+
+.sword-node:hover .icon {
+    fill: var(--knight-purple);
+    filter: drop-shadow(0 0 15px var(--knight-purple));
+    transform: translateY(-5px);
+}
+
 /* THE DIVIDER */
-.center-divider {
+.divider {
     width: 1px;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, var(--dim-text), transparent);
-    opacity: 0.2;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
 }
 
-/* HOVER LOGIC - TRUE BLACK STAYS, GRADIENT ADDS GLOW */
-body:has(.vcs:hover) {
-    background: radial-gradient(circle at 40% 50%, #151208 0%, var(--true-black) 60%);
-}
-
-body:has(.knights:hover) {
-    background: radial-gradient(circle at 60% 50%, #0c0815 0%, var(--true-black) 60%);
-}
-
-/* INTERACTION */
-.vcs:hover .icon-svg { fill: var(--vcs-gold); filter: drop-shadow(0 0 15px var(--vcs-gold)); }
-.knights:hover .icon-svg { fill: var(--knight-purple); filter: drop-shadow(0 0 15px var(--knight-purple)); }
-
-.vcs:hover .cinzel-title { color: var(--vcs-gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
-.knights:hover .cinzel-title { color: var(--knight-purple); text-shadow: 0 0 10px rgba(191, 148, 255, 0.3); }
-
-/* FOCUS FADE */
-.choice-wrapper:has(.node:hover) .node:not(:hover) {
-    opacity: 0.1;
-    filter: blur(5px);
+/* 5. FOCUS LOGIC (DIM THE OTHER SIDE) */
+.glass-pane:has(.choice:hover) .choice:not(:hover) {
+    opacity: 0.15;
+    filter: blur(2px);
 }
