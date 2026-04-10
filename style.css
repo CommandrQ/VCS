@@ -1,4 +1,6 @@
-/* 1. BRAND KIT & FONTS */
+/* =========================================
+   1. BRAND KIT & VARIABLES
+========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400&display=swap');
 
 :root {
@@ -12,7 +14,9 @@
     --snap: 0.4s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 2. GLOBAL RESET & NO-SCROLL */
+/* =========================================
+   2. GLOBAL RESET & BASE
+========================================= */
 * {
     margin: 0;
     padding: 0;
@@ -30,7 +34,42 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* 3. GATEWAY (INDEX) STYLING */
+/* =========================================
+   3. TYPOGRAPHY & PERFECT CENTERING
+========================================= */
+.text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.brand-text, .seat-label {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-align: center;
+    transition: var(--snap);
+    margin-right: -0.3em; /* Offsets the letter-spacing for true center */
+}
+
+.brand-text { font-size: 1.1rem; color: var(--text-main); }
+.seat-label { font-size: clamp(0.85rem, 2.5vw, 1.1rem); color: var(--text-dim); }
+
+.role-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--text-dim);
+    margin-top: 10px;
+    text-align: center;
+    margin-right: -0.5em; /* Offsets the letter-spacing for true center */
+}
+
+/* =========================================
+   4. GATEWAY (INDEX.HTML) STYLING
+========================================= */
 .glass-pane {
     display: flex;
     align-items: center;
@@ -71,22 +110,15 @@ body {
     background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
 }
 
-/* 4. ROUND TABLE (TABLE.HTML) STYLING */
+/* =========================================
+   5. ROUND TABLE (TABLE.HTML) STYLING
+========================================= */
 .doorway-stage {
     display: grid;
     place-items: center;
     height: 100vh;
     width: 100vw;
     position: relative;
-    animation: zoomIn 1s var(--snap);
-}
-
-.table-surface {
-    position: absolute;
-    width: min(85vw, 600px);
-    height: min(85vw, 600px);
-    z-index: 1;
-    pointer-events: none;
 }
 
 .round-table-container {
@@ -111,47 +143,15 @@ body {
     filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
 }
 
-/* 5. TYPOGRAPHY & POSITIONING */
-
-.text-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-}
-
-.brand-text, .seat-label {
-    font-family: 'Cinzel', serif;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    text-align: center;
-    transition: var(--snap);
-    margin-right: -0.3em; /* Offsets the letter-spacing for true center */
-}
-
-.brand-text { font-size: 1.1rem; color: var(--text-main); }
-.seat-label { font-size: clamp(0.85rem, 2.5vw, 1.1rem); color: var(--text-dim); }
-
-.role-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.5em;
-    color: var(--text-dim);
-    margin-top: 10px;
-    text-align: center;
-    margin-right: -0.5em; /* Offsets the letter-spacing for true center */
-}
-
-/* CATEGORY POSITIONS */
 .seat { position: absolute; text-decoration: none; transition: var(--snap); }
 .archive  { top: 0; }
 .citizens { right: 0; }
 .horizon  { bottom: 0; }
 .vanguard { left: 0; }
 
-/* 6. INTERACTIVE GLOWS & HOVERS */
-
+/* =========================================
+   6. INTERACTIVE GLOWS & HOVERS
+========================================= */
 /* Shield Hover (Gold) */
 .shield-node:hover .brand-text, 
 .seat:hover .seat-label { 
@@ -182,13 +182,139 @@ body {
     filter: blur(4px);
 }
 
-/* 7. ANIMATIONS */
+/* =========================================
+   7. BOOT SEQUENCE (LOADING SCREEN)
+========================================= */
+#loader-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--true-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 300px;
+}
+
+.system-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+#load-percent {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    color: var(--text-main);
+    font-weight: 200;
+    letter-spacing: 0.1em;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--text-main);
+    transition: width 0.1s linear;
+}
+
+/* =========================================
+   8. ANIMATIONS & TRANSITIONS
+========================================= */
+.hidden-stage {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.2);
+    filter: blur(15px);
+}
+
+.zoom-in-active {
+    animation: zoomIn 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
 @keyframes zoomIn {
     from { opacity: 0; transform: scale(1.2); filter: blur(15px); }
     to { opacity: 1; transform: scale(1); filter: blur(0px); }
 }
 
-/* 8. MOBILE RESPONSIVENESS */
+/* =========================================
+   9. INFINITE 3-COLOR PULSE ENGINE
+========================================= */
+.pulse-layer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vw;
+    border-radius: 50%;
+    opacity: 0; 
+    z-index: 1;
+    pointer-events: none;
+    animation-duration: 9s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+.pulse-blue {
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.25) 0%, transparent 60%);
+    animation-name: pulseBlueCycle;
+}
+
+.pulse-red {
+    background: radial-gradient(circle, rgba(229, 0, 0, 0.2) 0%, transparent 60%);
+    animation-name: pulseRedCycle;
+}
+
+.pulse-gold {
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 60%);
+    animation-name: pulseGoldCycle;
+}
+
+@keyframes pulseBlueCycle {
+    0% { opacity: 0; }
+    16.6% { opacity: 1; }
+    33.3% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes pulseRedCycle {
+    0% { opacity: 0; }
+    33.3% { opacity: 0; }
+    50% { opacity: 1; }
+    66.6% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes pulseGoldCycle {
+    0% { opacity: 0; }
+    66.6% { opacity: 0; }
+    83.3% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* =========================================
+   10. MOBILE RESPONSIVENESS
+========================================= */
 @media (max-width: 768px) {
     .glass-pane {
         flex-direction: column;
