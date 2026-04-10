@@ -6,15 +6,23 @@
     <title>VCS | The Round Table</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="lock-screen table-bg">
+<body class="lock-screen table-bg" style="background-color: #000; margin: 0;">
 
-    <main class="doorway-stage">
-        
-        <div class="table-surface">
-            <svg viewBox="0 0 100 100" class="table-outline">
-                <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(212, 175, 55, 0.1)" stroke-width="0.3" />
-            </svg>
+    <div id="loader-screen">
+        <div class="loader-content">
+            <span class="system-text">INITIALIZING VANGUARD PROTOCOL</span>
+            <span id="load-percent">0%</span>
+            <div class="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
         </div>
+    </div>
+
+    <main id="main-stage" class="doorway-stage hidden-stage">
+        
+        <div class="pulse-layer pulse-blue"></div>
+        <div class="pulse-layer pulse-red"></div>
+        <div class="pulse-layer pulse-gold"></div>
 
         <div class="round-table-container">
             
@@ -43,5 +51,44 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadText = document.getElementById('load-percent');
+            const progressBar = document.getElementById('progress-bar');
+            const loader = document.getElementById('loader-screen');
+            const mainStage = document.getElementById('main-stage');
+            
+            let progress = 0;
+
+            function simulateLoad() {
+                // Realistic computer loading (jumps in random increments)
+                let increment = Math.floor(Math.random() * 15) + 1;
+                progress += increment;
+
+                if (progress > 100) progress = 100;
+                
+                loadText.innerText = progress + '%';
+                progressBar.style.width = progress + '%';
+
+                if (progress < 100) {
+                    // Random pause between ticks for realism (50ms to 200ms)
+                    setTimeout(simulateLoad, Math.random() * 150 + 50);
+                } else {
+                    // Slight pause at 100% before opening the door
+                    setTimeout(() => {
+                        loader.style.opacity = '0'; // Fade out loader
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                            mainStage.classList.remove('hidden-stage');
+                            mainStage.classList.add('zoom-in-active'); // Trigger zoom
+                        }, 500);
+                    }, 400); 
+                }
+            }
+            
+            // Start the sequence
+            setTimeout(simulateLoad, 200);
+        });
+    </script>
 </body>
 </html>
