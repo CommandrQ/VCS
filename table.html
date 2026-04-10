@@ -75,7 +75,7 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: var(--true-black);
             opacity: 0; pointer-events: none;
-            z-index: 10000; /* Sits above absolutely everything */
+            z-index: 10000; 
             transition: opacity 0.8s ease-in-out;
         }
 
@@ -173,7 +173,7 @@
         }
 
         .seat-label {
-            font-family: 'Cinzel', serif; font-size: clamp(0.85rem, 2vw, 1.2rem);
+            font-family: 'Cinzel', serif; font-size: clamp(0.80rem, 2vw, 1.1rem);
             color: var(--text-main); letter-spacing: 0.3em;
             text-transform: uppercase; white-space: nowrap; margin-right: -0.3em; 
         }
@@ -204,7 +204,7 @@
             .pos-right  { right: 2%; }
             
             .text-group { padding: 10px 15px; }
-            .seat-label { font-size: clamp(0.6rem, 3.5vw, 0.85rem); letter-spacing: 0.2em; }
+            .seat-label { font-size: clamp(0.55rem, 3.5vw, 0.85rem); letter-spacing: 0.2em; }
         }
     </style>
 </head>
@@ -235,27 +235,27 @@
 
         <div class="orbital-container">
             
-            <a href="archive.html" class="seat pos-top">
+            <a href="story.html" class="seat pos-top">
                 <div class="floater delay-1">
-                    <div class="text-group"><span class="seat-label">The Archive</span></div>
+                    <div class="text-group"><span class="seat-label">Our Story</span></div>
                 </div>
             </a>
 
-            <a href="citizens.html" class="seat pos-right">
+            <a href="work.html" class="seat pos-right">
                 <div class="floater delay-2">
-                    <div class="text-group"><span class="seat-label">The Citizens</span></div>
+                    <div class="text-group"><span class="seat-label">What We Do</span></div>
                 </div>
             </a>
 
-            <a href="horizon.html" class="seat pos-bottom">
+            <a href="team.html" class="seat pos-bottom">
                 <div class="floater delay-3">
-                    <div class="text-group"><span class="seat-label">The Horizon</span></div>
+                    <div class="text-group"><span class="seat-label">Our Team</span></div>
                 </div>
             </a>
 
-            <a href="vanguard.html" class="seat pos-left">
+            <a href="knights.html" class="seat pos-left">
                 <div class="floater delay-4">
-                    <div class="text-group"><span class="seat-label">The Vanguard</span></div>
+                    <div class="text-group"><span class="seat-label">Vanguard Knights</span></div>
                 </div>
             </a>
 
@@ -324,15 +324,12 @@
             // --- THE EXIT PROTOCOL (Fade to Black) ---
             seats.forEach(seat => {
                 seat.addEventListener('click', function(e) {
-                    // Stop the browser from instantly changing pages
                     e.preventDefault(); 
                     
                     const targetUrl = this.getAttribute('href');
                     
-                    // Trigger the black fade overlay
                     fadeOverlay.classList.add('fade-out-active');
                     
-                    // Wait 800ms for the animation to finish, then manually navigate
                     setTimeout(() => {
                         window.location.href = targetUrl;
                     }, 800);
