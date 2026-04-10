@@ -12,8 +12,10 @@
 
 body {
     margin: 0;
-    overflow: hidden; /* Vital for 3D performance */
+    overflow: hidden;
     background-color: var(--vcs-shadow);
+    /* SUBTLE NOISE OVERLAY FOR GLASS DISTORTION */
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCI+PGZpbHRlciBpZD0ibm9pc2UiPjxmdFR1cmJ1bGVuY2UgdHlwZT0idHVyYnVsZW5jZSIgYmFzZUZyZXF1ZW5jeT0iMSIgbnVtT2N0YXZlcz0iMiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZSkiIG9wYWNpdHk9IjAuMDE1Ii8+PC9zdmc+');
     color: var(--vcs-white);
     -webkit-font-smoothing: antialiased;
 }
@@ -21,7 +23,7 @@ body {
 #forge-container {
     width: 100vw;
     height: 100vh;
-    z-index: 1; /* Three.js is always at the bottom */
+    z-index: 1;
 }
 
 #ui-overlay {
@@ -32,9 +34,8 @@ body {
     width: 90vw;
     display: flex;
     justify-content: space-between;
-    pointer-events: none; /* Allows user to click "through" the labels to the 3D icons */
+    pointer-events: none;
     z-index: 10;
-    mix-blend-mode: exclusion; /* Very clever minimalist look */
 }
 
 .path-label {
@@ -43,6 +44,7 @@ body {
     text-align: center;
     opacity: 0.3;
     transition: var(--snap);
+    /* PREVENT EXCLUSION BLEND, LET LIGHT SCATTER DO THE WORK */
 }
 
 .cinzel {
