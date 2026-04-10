@@ -1,0 +1,145 @@
+/* BRAND KIT FOUNDATION */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400&display=swap');
+
+:root {
+    --bg-dark: #050505;
+    --vcs-gold: #D4AF37;
+    --knight-purple: #BF94FF;
+    --text-main: #F5F5F7;
+    --text-muted: rgba(245, 245, 247, 0.4);
+    --snap: 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.gateway {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* THE CHOICE NODES */
+.choice {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--snap);
+    cursor: pointer;
+    width: 40%;
+}
+
+.icon-box {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 30px;
+    transition: var(--snap);
+}
+
+.icon {
+    width: 100%;
+    height: 100%;
+    fill: var(--text-muted);
+    transition: var(--snap);
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--text-main);
+    transition: var(--snap);
+}
+
+.subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    text-align: center;
+    margin-top: 10px;
+    color: var(--text-muted);
+    transition: var(--snap);
+}
+
+/* THE DIVIDER */
+.divider {
+    width: 1px;
+    height: 60px;
+    background-color: var(--text-muted);
+    opacity: 0.2;
+}
+
+/* INTERACTION LOGIC (CSS ONLY) */
+
+/* 1. Shield Hover (VCS) */
+.choice.vcs:hover .icon {
+    fill: var(--vcs-gold);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+    transform: scale(1.1);
+}
+
+.choice.vcs:hover .title {
+    color: var(--vcs-gold);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+/* 2. Sword Hover (Knights) */
+.choice.knights:hover .icon {
+    fill: var(--knight-purple);
+    filter: drop-shadow(0 0 20px rgba(191, 148, 255, 0.4));
+    transform: scale(1.1);
+}
+
+.choice.knights:hover .title {
+    color: var(--knight-purple);
+    text-shadow: 0 0 15px rgba(191, 148, 255, 0.3);
+}
+
+/* 3. The Atmosphere (Background Pulse) */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #111111 0%, #050505 100%);
+    z-index: -1;
+    transition: opacity 0.8s ease;
+}
+
+/* This is the clever bit: using the choice state to change the body background */
+body:has(.vcs:hover) {
+    background: radial-gradient(circle at 30% 50%, #1a1608 0%, #050505 70%);
+}
+
+body:has(.knights:hover) {
+    background: radial-gradient(circle at 70% 50%, #0e081a 0%, #050505 70%);
+}
+
+/* Focus fade: Dim the side NOT being hovered */
+.gateway:has(.choice:hover) .choice:not(:hover) {
+    opacity: 0.15;
+    filter: blur(2px);
+}
