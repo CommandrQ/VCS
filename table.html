@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Round Table</title>
+    <title>VCS | The Round Table</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -84,7 +84,7 @@
             pointer-events: all !important;
         }
 
-        /* --- 3. MAIN STAGE & CINEMATIC ENTRANCE --- */
+        /* --- 3. MAIN STAGE ENTRANCE --- */
         .hidden-stage { display: none; }
         
         .cinematic-entrance {
@@ -93,7 +93,6 @@
             animation: emergeFromBlack 1.5s ease-out forwards;
         }
 
-        /* Faster fade in when bypassing the loader */
         .instant-entrance {
             display: grid; place-items: center;
             height: 100vh; width: 100vw; position: relative;
@@ -105,13 +104,34 @@
             100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         }
 
-        /* --- 4. HOLOGRAPHIC RINGS --- */
+        /* --- 4. HOLOGRAPHIC RINGS & CENTER HUD --- */
         .holo-table {
             position: absolute;
             width: 40vw; height: 40vw; max-width: 450px; max-height: 450px;
             margin-top: -4vh; 
             display: flex; align-items: center; justify-content: center;
             pointer-events: none; z-index: 1;
+        }
+
+        /* The dynamic text readout in the center */
+        #center-hud {
+            position: absolute;
+            width: 65%; /* Keeps it inside the inner ring */
+            text-align: center;
+            font-family: 'Inter', monospace;
+            font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            line-height: 1.6;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* When hovering over a category, the HUD lights up */
+        .hud-active {
+            color: var(--vcs-gold) !important;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            font-weight: 600;
         }
 
         .ring { position: absolute; border-radius: 50%; border: 1px solid transparent; }
@@ -142,20 +162,25 @@
         @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
         @keyframes pulseCore { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.5); opacity: 0.7; } }
 
-        /* --- 5. COMPASS LAYOUT --- */
+        /* --- 5. DYNAMIC ORBITAL LAYOUT --- */
         .orbital-container {
             position: relative;
-            width: 85vw; height: 85vw; max-width: 700px; max-height: 700px;
+            width: 100%; height: 100%; 
+            max-width: 800px; max-height: 800px;
             margin-top: -4vh; 
             z-index: 10;
+            /* This variable controls how far the buttons sit from the center */
+            --radius: clamp(140px, 28vw, 300px); 
         }
 
-        .seat { position: absolute; text-decoration: none; }
-
-        .pos-top    { top: 5%; left: 50%; transform: translateX(-50%); }
-        .pos-bottom { bottom: 5%; left: 50%; transform: translateX(-50%); }
-        .pos-left   { top: 50%; left: 0; transform: translateY(-50%); }
-        .pos-right  { top: 50%; right: 0; transform: translateY(-50%); }
+        .seat { 
+            position: absolute; 
+            top: 50%; left: 50%;
+            text-decoration: none; 
+            /* The CSS uses a variable set by the JavaScript to calculate the perfect circle */
+            --angle: 0deg; 
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--radius) * -1)) rotate(calc(var(--angle) * -1));
+        }
 
         /* --- 6. THE SAFE FLOATING ANIMATION --- */
         .floater {
@@ -163,10 +188,9 @@
             transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
         }
 
-        .delay-1 { animation-delay: 0s; }
-        .delay-2 { animation-delay: -1.5s; animation-duration: 6.5s; }
-        .delay-3 { animation-delay: -3s; animation-duration: 7s; }
-        .delay-4 { animation-delay: -4.5s; animation-duration: 5.5s; }
+        /* Randomizes the floating so they don't move exactly together */
+        .seat:nth-child(even) .floater { animation-delay: -2s; animation-duration: 7s; }
+        .seat:nth-child(odd) .floater { animation-delay: -4s; animation-duration: 5.5s; }
 
         @keyframes bob {
             0%, 100% { transform: translateY(0px); }
@@ -202,21 +226,19 @@
             letter-spacing: 0.4em;
         }
 
-        .cinematic-entrance:has(.seat:hover) .holo-table,
-        .instant-entrance:has(.seat:hover) .holo-table { 
-            opacity: 0.2; transition: opacity 0.4s ease; 
+        /* Dim the rings when hovering */
+        .cinematic-entrance:has(.seat:hover) .ring,
+        .instant-entrance:has(.seat:hover) .ring { 
+            opacity: 0.1; transition: opacity 0.4s ease; 
         }
 
         /* --- 9. MOBILE RESPONSIVENESS --- */
         @media (max-width: 768px) {
-            .orbital-container { width: 95vw; height: 95vw; margin-top: -5vh; }
+            .orbital-container { width: 100vw; height: 100vw; margin-top: -5vh; --radius: 35vw; }
             .holo-table { width: 55vw; height: 55vw; margin-top: -5vh; }
-            
-            .pos-left   { left: 2%; }
-            .pos-right  { right: 2%; }
-            
             .text-group { padding: 10px 15px; }
             .seat-label { font-size: clamp(0.55rem, 3.5vw, 0.85rem); letter-spacing: 0.2em; }
+            #center-hud { width: 80%; }
         }
     </style>
 </head>
@@ -243,35 +265,36 @@
             <div class="ring ring-middle"></div>
             <div class="ring ring-inner"></div>
             <div class="core-light"></div>
+            <div id="center-hud">VCS // EMPOWERING BRANDS THROUGH NARRATIVE & DESIGN</div>
         </div>
 
-        <div class="orbital-container">
+        <div class="orbital-container" id="orbit-track">
             
-            <a href="our-story.html" class="seat pos-top">
-                <div class="floater delay-1">
+            <a href="our-story.html" class="seat" data-hud="ARCHIVE DECRYPTION: The Founding Mandate & Vision.">
+                <div class="floater">
                     <div class="text-group"><span class="seat-label">Our Story</span></div>
                 </div>
             </a>
 
-            <a href="work.html" class="seat pos-right">
-                <div class="floater delay-2">
+            <a href="work.html" class="seat" data-hud="PROTOCOL ENGAGED: Media Production, Education & Brand Strategy.">
+                <div class="floater">
                     <div class="text-group"><span class="seat-label">What We Do</span></div>
                 </div>
             </a>
 
-            <a href="team.html" class="seat pos-bottom">
-                <div class="floater delay-3">
+            <a href="team.html" class="seat" data-hud="PERSONNEL FILES: Co-Founders, Creators & Direct Comm-Links.">
+                <div class="floater">
                     <div class="text-group"><span class="seat-label">Our Team</span></div>
                 </div>
             </a>
 
-            <a href="knights.html" class="seat pos-left">
-                <div class="floater delay-4">
+            <a href="coming-soon.html" class="seat" data-hud="RESTRICTED: Active Pipeline & Shadow Operations.">
+                <div class="floater">
                     <div class="text-group"><span class="seat-label">Vanguard Knights</span></div>
                 </div>
             </a>
-
-        </div>
+            
+            </div>
     </main>
 
     <script>
@@ -285,17 +308,42 @@
             const sysLog = document.getElementById('sys-log');
             const fadeOverlay = document.getElementById('fade-overlay');
             const seats = document.querySelectorAll('.seat');
+            const centerHud = document.getElementById('center-hud');
             
             if (!loadText || !loader || !mainStage) return;
 
-            // --- SESSION STORAGE CHECK ---
-            // If the user has already loaded the page in this session, skip the animation
+            // --- 1. DYNAMIC ORBIT CALCULATOR ---
+            // Automatically spaces any number of links in a perfect circle
+            const totalSeats = seats.length;
+            seats.forEach((seat, index) => {
+                const angle = (360 / totalSeats) * index;
+                // Subtracting 90 ensures the first item is always perfectly at the Top (12 o'clock)
+                seat.style.setProperty('--angle', `${angle}deg`);
+            });
+
+            // --- 2. DYNAMIC CENTER HUD ---
+            const defaultHudText = "VCS // EMPOWERING BRANDS THROUGH NARRATIVE & DESIGN";
+            
+            seats.forEach(seat => {
+                seat.addEventListener('mouseenter', () => {
+                    const newText = seat.getAttribute('data-hud');
+                    if(newText) {
+                        centerHud.innerText = newText;
+                        centerHud.classList.add('hud-active');
+                    }
+                });
+                seat.addEventListener('mouseleave', () => {
+                    centerHud.innerText = defaultHudText;
+                    centerHud.classList.remove('hud-active');
+                });
+            });
+
+            // --- 3. SESSION STORAGE BOOT SEQUENCE ---
             if (sessionStorage.getItem('vanguardBooted') === 'true') {
                 loader.style.display = 'none';
                 mainStage.classList.remove('hidden-stage');
                 mainStage.classList.add('instant-entrance'); 
             } else {
-                // --- RUN THE BOOT SEQUENCE ---
                 let progress = 0;
                 const logMessages = [
                     "ESTABLISHING SECURE CONNECTION...",
@@ -322,9 +370,7 @@
                     if (progress < 100) {
                         setTimeout(simulateLoad, Math.random() * 200 + 50);
                     } else {
-                        // Mark the session so it doesn't run again
                         sessionStorage.setItem('vanguardBooted', 'true');
-                        
                         setTimeout(() => {
                             loaderContent.style.transition = 'opacity 0.15s ease';
                             scanlines.style.transition = 'opacity 0.15s ease';
@@ -339,26 +385,20 @@
                         }, 50); 
                     }
                 }
-                
                 setTimeout(simulateLoad, 300);
             }
 
-            // --- THE EXIT PROTOCOL (Fade to Black) ---
+            // --- 4. EXIT PROTOCOL (Fade to Black) ---
             seats.forEach(seat => {
                 seat.addEventListener('click', function(e) {
                     e.preventDefault(); 
-                    
                     const targetUrl = this.getAttribute('href');
-                    
                     fadeOverlay.classList.add('fade-out-active');
-                    
-                    // Wait 600ms for the animation to finish, then manually navigate
                     setTimeout(() => {
                         window.location.href = targetUrl;
                     }, 600);
                 });
             });
-
         });
     </script>
 </body>
