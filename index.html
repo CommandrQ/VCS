@@ -3,26 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | The Gateway</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Vanguard | Select Your Path</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="gateway-body">
+<body>
 
-    <div id="forge-container"></div>
-
-    <div class="gateway-container">
-        <a href="table.html" class="node glass-text" id="vcs-path">
-            <span class="cinzel">Citizen Services</span>
-            <span class="inter">THE SHIELD</span>
+    <main class="gateway">
+        <a href="vcs-home.html" class="choice vcs" id="vcs-side">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24" class="icon">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                </svg>
+            </div>
+            <div class="label-group">
+                <h2 class="title">Vanguard Citizen Services</h2>
+                <p class="subtitle">THE SHIELD</p>
+            </div>
         </a>
 
-        <a href="https://your-future-site.com" class="node glass-text" id="knight-path">
-            <span class="cinzel">Vanguard Knights</span>
-            <span class="inter">THE SWORD</span>
-        </a>
-    </div>
+        <div class="divider"></div>
 
-    <script src="script.js" defer></script>
+        <a href="knights-home.html" class="choice knights" id="knight-side">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24" class="icon">
+                    <path d="M13.3 3L3 13.3l4.7 4.7L18 7.7V11h2V3h-6.7zM3 21h4v-2H3v2z"/>
+                </svg>
+            </div>
+            <div class="label-group">
+                <h2 class="title">Vanguard Knights</h2>
+                <p class="subtitle">THE SWORD</p>
+            </div>
+        </a>
+    </main>
+
 </body>
 </html>
