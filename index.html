@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | The Forge</title>
+    <title>Vanguard | The Gateway</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="gateway.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="gateway-body">
 
     <div id="forge-container"></div>
 
-    <div id="ui-overlay">
-        <div id="label-vcs" class="path-label">
+    <div class="gateway-container">
+        <a href="table.html" class="node glass-text" id="vcs-path">
             <span class="cinzel">Citizen Services</span>
             <span class="inter">THE SHIELD</span>
-        </div>
-        <div id="label-knights" class="path-label">
+        </a>
+
+        <a href="https://your-future-site.com" class="node glass-text" id="knight-path">
             <span class="cinzel">Vanguard Knights</span>
             <span class="inter">THE SWORD</span>
-        </div>
+        </a>
     </div>
 
-    <script src="gateway-engine.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
