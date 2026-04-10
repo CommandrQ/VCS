@@ -25,7 +25,7 @@
             background-color: var(--true-black);
             color: var(--text-main);
             height: 100vh; width: 100vw;
-            overflow: hidden;
+            overflow: hidden; /* Locks scrolling on desktop for the immersive view */
             display: grid; place-items: center;
         }
 
@@ -232,51 +232,55 @@
                 display: flex; 
                 flex-direction: column; 
                 justify-content: flex-start;
-                padding-top: 8vh;
+                padding-top: 10vh;
+                /* Crucial: Allows scrolling on mobile so boxes don't get cut off! */
+                overflow-x: hidden; 
+                overflow-y: auto; 
             }
 
             .holo-table { 
                 position: relative;
-                width: 55vw; height: 55vw; 
-                margin: 0 auto 5vh auto; 
+                width: 50vw; height: 50vw; 
+                margin: 0 auto 8vh auto; /* Pushes the boxes below further down */
+                flex-shrink: 0;
             }
 
             #center-hud { 
-                width: 120%; /* Lets the text expand slightly past the inner ring */
-                font-size: 0.65rem; 
+                width: 140%; 
+                font-size: 0.70rem; 
+                /* Pushes the text entirely under the glowing rings */
+                top: 115%; 
             }
 
             .orbital-container { 
                 position: relative;
                 width: 100%; height: auto; 
-                margin-top: 0;
+                margin-top: 4vh; /* Safe padding between the HUD text and the first box */
+                padding-bottom: 10vh; /* Prevents the last box from getting stuck at the very bottom edge */
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 15px; /* Spacing between the stacked buttons */
+                gap: 20px; /* Perfect spacing between each box */
             }
 
             .seat {
                 position: relative;
                 top: auto; left: auto;
-                /* This line instantly disables the circular math on mobile! */
                 transform: none !important; 
                 width: 85%;
                 max-width: 350px;
             }
 
-            /* Disables the bobbing animation so the vertical list is easy to tap */
             .floater { animation: none; transition: transform 0.2s; } 
-            .seat:active .floater { transform: scale(0.98); } /* Subtle click effect */
+            .seat:active .floater { transform: scale(0.98); } 
 
             .text-group { 
                 width: 100%; 
-                padding: 16px; 
+                padding: 18px; 
             }
             
             .seat-label { font-size: 0.85rem; letter-spacing: 0.2em; }
             
-            /* Keep the rings visible when scrolling the menu */
             .cinematic-entrance:has(.seat:hover) .ring,
             .instant-entrance:has(.seat:hover) .ring { 
                 opacity: 0.4; 
