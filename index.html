@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Grand Citadel | The Gates</title>
+    <title>Vanguard Citadel | Digital Access</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -29,132 +29,147 @@
             background-color: var(--deep-shadow);
             font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: var(--starlight-white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* Tech Grid Background */
-        .grid-bg {
+        /* User Background Image with a dark overlay */
+        .bg-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(191, 148, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(191, 148, 255, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 1;
+            background-image: url('images/introbkgd.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            filter: brightness(0.4) contrast(1.2);
+            transition: transform 1.5s cubic-bezier(0.8, 0, 0.2, 1);
         }
 
-        /* Pulsing 3-Color Aura */
-        .aura {
+        /* Tron-style Digital Scanlines & Grid */
+        .digital-overlay {
             position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: 2;
-            opacity: 0.4;
-            animation: auraLoop 9s infinite ease-in-out;
-        }
-
-        @keyframes auraLoop {
-            0% { background: radial-gradient(circle, rgba(0, 0, 255, 0.8), transparent 70%); transform: scale(1); }
-            33% { background: radial-gradient(circle, rgba(255, 0, 0, 0.8), transparent 70%); transform: scale(1.1); }
-            66% { background: radial-gradient(circle, rgba(212, 175, 55, 0.8), transparent 70%); transform: scale(1); }
-            100% { background: radial-gradient(circle, rgba(0, 0, 255, 0.8), transparent 70%); transform: scale(1); }
-        }
-
-        /* Main Container */
-        .container {
-            position: relative;
-            z-index: 10;
-            text-align: center;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            perspective: 1000px;
-        }
-
-        /* RPG Box Style Button */
-        .rpg-btn {
-            background: rgba(13, 13, 13, 0.8);
-            border: 2px solid var(--relic-gold);
-            color: var(--relic-gold);
-            padding: 20px 40px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            cursor: pointer;
-            position: relative;
-            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-            animation: pulseBtn 2s infinite;
-        }
-
-        /* Fall Away Animation */
-        .fall-away {
-            animation: fallAway 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards !important;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(191, 148, 255, 0.03), rgba(191, 148, 255, 0) 1px),
+                linear-gradient(rgba(191, 148, 255, 0.03), rgba(191, 148, 255, 0) 1px);
+            background-size: 100% 4px, 40px 40px, 40px 40px;
+            z-index: 1;
             pointer-events: none;
         }
 
-        @keyframes fallAway {
-            0% { transform: translateY(0) rotateX(0); opacity: 1; }
-            100% { transform: translateY(200px) rotateX(-30deg); opacity: 0; }
+        /* Terminal Boot Sequence */
+        #boot-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            z-index: 10;
+            font-family: monospace;
+            color: var(--success-green);
+            text-shadow: 0 0 5px var(--success-green);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 1;
+            transition: opacity 0.5s ease;
         }
 
-        @keyframes pulseBtn {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* Question Sequence */
-        .question-box {
+        .log-line {
             display: none;
+        }
+
+        /* Main Welcome UI (Hidden initially) */
+        #main-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             opacity: 0;
+            transform: scale(0.95);
+            transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: none; /* Ignored until active */
         }
 
-        .question-text {
+        #main-ui.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .citadel-title {
             font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: var(--starlight-white);
-            text-shadow: 0 0 10px rgba(191, 148, 255, 0.5);
-        }
-
-        /* Quick Fade Animation */
-        .quick-fade {
-            display: block !important;
-            animation: quickFadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes quickFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .proceed-btn {
-            background: transparent;
-            border: 1px solid var(--aura-purple);
-            color: var(--aura-purple);
-            padding: 10px 30px;
-            font-family: 'SF Pro', sans-serif;
+            font-size: 4rem;
+            color: var(--relic-gold);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.2);
+            letter-spacing: 5px;
+            text-align: center;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+        }
+
+        .citadel-subtitle {
+            font-size: 1.2rem;
+            color: var(--aura-purple);
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            text-shadow: 0 0 10px var(--aura-purple);
+        }
+
+        /* Digital Button */
+        .cyber-btn {
+            background: transparent;
+            border: 2px solid var(--aura-purple);
+            color: var(--starlight-white);
+            padding: 15px 50px;
+            font-family: 'SF Pro', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(191, 148, 255, 0.2) inset, 0 0 15px rgba(191, 148, 255, 0.2);
         }
 
-        .proceed-btn:hover {
-            background: var(--aura-purple);
-            color: var(--void-obsidian);
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(191, 148, 255, 0.4), transparent);
+            transition: all 0.5s ease;
         }
 
-        /* Flash Transition */
-        #flash-overlay {
+        .cyber-btn:hover {
+            background: rgba(191, 148, 255, 0.1);
+            border-color: var(--success-green);
+            color: var(--success-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4) inset, 0 0 20px rgba(0, 255, 65, 0.4);
+        }
+
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Transition Effect */
+        #warp-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -164,73 +179,79 @@
             z-index: 100;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.5s ease-in;
+            transition: opacity 0.8s ease-in;
+            mix-blend-mode: overlay;
         }
 
-        .hidden { display: none !important; }
-
+        .warp-active .bg-layer {
+            transform: scale(3); /* Zooms into the background */
+            filter: brightness(2) blur(10px);
+        }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
-    <div class="aura"></div>
-    <div id="flash-overlay"></div>
+    <div class="bg-layer" id="bg"></div>
+    <div class="digital-overlay"></div>
+    <div id="warp-overlay"></div>
 
-    <div class="container">
-        <button id="gate-btn" class="rpg-btn">KNOCK ON THE GATES</button>
+    <div id="boot-screen">
+        <div class="log-line">INITIALIZING VANGUARD_OS v3.1... [ <span style="color:var(--relic-gold)">WAIT</span> ]</div>
+        <div class="log-line">ESTABLISHING SECURE CONNECTION... [ <span style="color:var(--success-green)">OK</span> ]</div>
+        <div class="log-line">BYPASSING EXTERNAL FIREWALLS... [ <span style="color:var(--success-green)">OK</span> ]</div>
+        <div class="log-line">DECRYPTING CITADEL PROTOCOLS... [ <span style="color:var(--success-green)">OK</span> ]</div>
+        <div class="log-line" style="color:var(--starlight-white); margin-top: 20px;">WELCOME, CITIZEN KNIGHT.</div>
+    </div>
 
-        <div id="q1" class="question-box">
-            <h2 class="question-text">When was the last time you were Educated?</h2>
-            <button class="proceed-btn" onclick="showNext('q1', 'q2')">Proceed</button>
-        </div>
-
-        <div id="q2" class="question-box">
-            <h2 class="question-text">Empowered?</h2>
-            <button class="proceed-btn" onclick="showNext('q2', 'q3')">Proceed</button>
-        </div>
-
-        <div id="q3" class="question-box">
-            <h2 class="question-text">Elevated?</h2>
-            <button class="proceed-btn" onclick="triggerFinalTransition()">Proceed</button>
-        </div>
+    <div id="main-ui">
+        <h1 class="citadel-title">The Grand Citadel</h1>
+        <h2 class="citadel-subtitle">Headquarters Online</h2>
+        <button class="cyber-btn" id="enter-btn">Initialize Link</button>
     </div>
 
     <script>
-        const gateBtn = document.getElementById('gate-btn');
-        const flashOverlay = document.getElementById('flash-overlay');
+        document.addEventListener("DOMContentLoaded", () => {
+            const logs = document.querySelectorAll('.log-line');
+            const bootScreen = document.getElementById('boot-screen');
+            const mainUI = document.getElementById('main-ui');
+            const enterBtn = document.getElementById('enter-btn');
+            const body = document.body;
+            const warpOverlay = document.getElementById('warp-overlay');
 
-        // Interaction: Button Falls Away, then Q1 Fades In
-        gateBtn.addEventListener('click', () => {
-            gateBtn.classList.add('fall-away');
+            // Boot Sequence Animation Logic
+            let delay = 500;
             
-            // Wait for the fall-away to halfway finish before showing Q1
+            logs.forEach((log, index) => {
+                setTimeout(() => {
+                    log.style.display = 'block';
+                }, delay);
+                // Increase delay to simulate loading times
+                delay += (Math.random() * 600) + 400; 
+            });
+
+            // Transition from Boot to Main UI
             setTimeout(() => {
-                gateBtn.classList.add('hidden');
-                document.getElementById('q1').classList.add('quick-fade');
-            }, 500);
+                bootScreen.style.opacity = '0';
+                
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    mainUI.classList.add('active');
+                }, 500); // Wait for fade out
+                
+            }, delay + 800); // Trigger after last log line
+
+            // Enter Button Transition Logic
+            enterBtn.addEventListener('click', () => {
+                // Trigger digital warp zoom
+                body.classList.add('warp-active');
+                warpOverlay.style.opacity = '1';
+
+                // Redirect to home.html after transition finishes
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 1200);
+            });
         });
-
-        // Question Progression logic
-        function showNext(currentId, nextId) {
-            const current = document.getElementById(currentId);
-            const next = document.getElementById(nextId);
-            
-            // Fast clear of current question
-            current.style.display = 'none';
-            
-            // Instant trigger of next question's fade
-            next.classList.add('quick-fade');
-        }
-
-        // Final Transition to Home
-        function triggerFinalTransition() {
-            flashOverlay.style.opacity = '1';
-            setTimeout(() => {
-                // Moving to the next page
-                window.location.href = 'home.html';
-            }, 1500);
-        }
     </script>
 </body>
 </html>
