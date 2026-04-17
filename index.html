@@ -31,7 +31,7 @@
             color: var(--starlight-white);
         }
 
-        /* User Background Image with a dark overlay */
+        /* User Background Image */
         .bg-layer {
             position: fixed;
             top: 0;
@@ -43,7 +43,7 @@
             background-position: center;
             z-index: 0;
             filter: brightness(0.4) contrast(1.2);
-            transition: transform 1.5s cubic-bezier(0.8, 0, 0.2, 1);
+            transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1), filter 1s ease;
         }
 
         /* Tron-style Digital Scanlines & Grid */
@@ -68,23 +68,40 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
+            width: 90%;
             max-width: 600px;
             z-index: 10;
             font-family: monospace;
             color: var(--success-green);
             text-shadow: 0 0 5px var(--success-green);
-            font-size: 1.1rem;
+            /* Fluid typography for mobile and desktop */
+            font-size: clamp(0.9rem, 3vw, 1.2rem); 
             line-height: 1.8;
             opacity: 1;
             transition: opacity 0.5s ease;
         }
 
-        .log-line {
-            display: none;
+        .terminal-line {
+            display: block;
+            min-height: 1.8em;
+            word-wrap: break-word;
         }
 
-        /* Main Welcome UI (Hidden initially) */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: var(--success-green);
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Main Welcome UI */
         #main-ui {
             position: absolute;
             top: 0;
@@ -99,7 +116,8 @@
             opacity: 0;
             transform: scale(0.95);
             transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-            pointer-events: none; /* Ignored until active */
+            pointer-events: none;
+            padding: 20px;
         }
 
         #main-ui.active {
@@ -110,21 +128,24 @@
 
         .citadel-title {
             font-family: 'Cinzel', serif;
-            font-size: 4rem;
+            /* Fluid scaling for the title */
+            font-size: clamp(2.5rem, 8vw, 5rem); 
             color: var(--relic-gold);
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.2);
-            letter-spacing: 5px;
+            letter-spacing: clamp(2px, 2vw, 5px);
             text-align: center;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .citadel-subtitle {
-            font-size: 1.2rem;
+            /* Fluid scaling for the subtitle */
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
             color: var(--aura-purple);
-            letter-spacing: 10px;
+            letter-spacing: clamp(4px, 2vw, 10px);
             text-transform: uppercase;
             margin-bottom: 50px;
+            text-align: center;
             text-shadow: 0 0 10px var(--aura-purple);
         }
 
@@ -133,9 +154,9 @@
             background: transparent;
             border: 2px solid var(--aura-purple);
             color: var(--starlight-white);
-            padding: 15px 50px;
+            padding: clamp(10px, 3vw, 15px) clamp(30px, 8vw, 50px);
             font-family: 'SF Pro', sans-serif;
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
             font-weight: bold;
             letter-spacing: 4px;
             text-transform: uppercase;
@@ -168,7 +189,7 @@
             left: 100%;
         }
 
-        /* Transition Effect */
+        /* Fast White Transition Overlay */
         #warp-overlay {
             position: fixed;
             top: 0;
@@ -179,13 +200,13 @@
             z-index: 100;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-in;
-            mix-blend-mode: overlay;
+            /* Accelerated fade to white */
+            transition: opacity 0.4s ease-in; 
         }
 
         .warp-active .bg-layer {
-            transform: scale(3); /* Zooms into the background */
-            filter: brightness(2) blur(10px);
+            transform: scale(3);
+            filter: brightness(3) blur(15px);
         }
     </style>
 </head>
@@ -196,12 +217,7 @@
     <div id="warp-overlay"></div>
 
     <div id="boot-screen">
-        <div class="log-line">INITIALIZING VANGUARD_OS v3.1... [ <span style="color:var(--relic-gold)">WAIT</span> ]</div>
-        <div class="log-line">ESTABLISHING SECURE CONNECTION... [ <span style="color:var(--success-green)">OK</span> ]</div>
-        <div class="log-line">BYPASSING EXTERNAL FIREWALLS... [ <span style="color:var(--success-green)">OK</span> ]</div>
-        <div class="log-line">DECRYPTING CITADEL PROTOCOLS... [ <span style="color:var(--success-green)">OK</span> ]</div>
-        <div class="log-line" style="color:var(--starlight-white); margin-top: 20px;">WELCOME, CITIZEN KNIGHT.</div>
-    </div>
+        </div>
 
     <div id="main-ui">
         <h1 class="citadel-title">The Grand Citadel</h1>
@@ -211,45 +227,102 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const logs = document.querySelectorAll('.log-line');
             const bootScreen = document.getElementById('boot-screen');
             const mainUI = document.getElementById('main-ui');
             const enterBtn = document.getElementById('enter-btn');
             const body = document.body;
             const warpOverlay = document.getElementById('warp-overlay');
 
-            // Boot Sequence Animation Logic
-            let delay = 500;
-            
-            logs.forEach((log, index) => {
-                setTimeout(() => {
-                    log.style.display = 'block';
-                }, delay);
-                // Increase delay to simulate loading times
-                delay += (Math.random() * 600) + 400; 
-            });
+            // Boot Sequence Data
+            const terminalData = [
+                { text: "INITIALIZING VANGUARD_OS v3.1... ", status: "[ WAIT ]", color: "var(--relic-gold)" },
+                { text: "ESTABLISHING SECURE CONNECTION... ", status: "[ OK ]", color: "var(--success-green)" },
+                { text: "BYPASSING EXTERNAL FIREWALLS... ", status: "[ OK ]", color: "var(--success-green)" },
+                { text: "DECRYPTING CITADEL PROTOCOLS... ", status: "[ OK ]", color: "var(--success-green)" },
+                { text: "WELCOME, CITIZEN.", status: "", color: "var(--starlight-white)", specialClass: "welcome-text" }
+            ];
 
-            // Transition from Boot to Main UI
-            setTimeout(() => {
-                bootScreen.style.opacity = '0';
-                
-                setTimeout(() => {
-                    bootScreen.style.display = 'none';
-                    mainUI.classList.add('active');
-                }, 500); // Wait for fade out
-                
-            }, delay + 800); // Trigger after last log line
+            let lineIndex = 0;
+            let charIndex = 0;
+            const typeSpeed = 30; // ms per character
+            const lineDelay = 400; // ms between lines
 
-            // Enter Button Transition Logic
+            // Function to handle the typing effect
+            function typeLine() {
+                if (lineIndex >= terminalData.length) {
+                    finishBootSequence();
+                    return;
+                }
+
+                const currentData = terminalData[lineIndex];
+                
+                // Create container for the new line if starting it
+                if (charIndex === 0) {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'terminal-line';
+                    lineDiv.id = `line-${lineIndex}`;
+                    if(currentData.specialClass) {
+                        lineDiv.style.color = currentData.color;
+                        lineDiv.style.marginTop = "20px"; // Give "Welcome, Citizen" some breathing room
+                    }
+                    
+                    // Add cursor to current line
+                    const cursor = document.createElement('span');
+                    cursor.className = 'cursor';
+                    cursor.id = 'active-cursor';
+                    
+                    lineDiv.appendChild(cursor);
+                    bootScreen.appendChild(lineDiv);
+                }
+
+                const currentLineDiv = document.getElementById(`line-${lineIndex}`);
+                const cursor = document.getElementById('active-cursor');
+
+                // Type out characters
+                if (charIndex < currentData.text.length) {
+                    const charNode = document.createTextNode(currentData.text.charAt(charIndex));
+                    currentLineDiv.insertBefore(charNode, cursor);
+                    charIndex++;
+                    setTimeout(typeLine, typeSpeed);
+                } else {
+                    // Line text finished, append status bracket
+                    if (currentData.status) {
+                        const statusSpan = document.createElement('span');
+                        statusSpan.style.color = currentData.color;
+                        statusSpan.textContent = currentData.status;
+                        currentLineDiv.insertBefore(statusSpan, cursor);
+                    }
+                    
+                    // Cleanup cursor and move to next line
+                    cursor.remove();
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeLine, lineDelay);
+                }
+            }
+
+            // Start typing sequence
+            setTimeout(typeLine, 500);
+
+            function finishBootSequence() {
+                setTimeout(() => {
+                    bootScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        bootScreen.style.display = 'none';
+                        mainUI.classList.add('active');
+                    }, 500);
+                }, 1000); // Pause on "Welcome, Citizen" before transitioning
+            }
+
+            // Quick White Fade & Redirect
             enterBtn.addEventListener('click', () => {
-                // Trigger digital warp zoom
                 body.classList.add('warp-active');
                 warpOverlay.style.opacity = '1';
 
-                // Redirect to home.html after transition finishes
+                // Accelerated redirect to match the fast white fade (0.4s fade + buffer)
                 setTimeout(() => {
                     window.location.href = 'home.html';
-                }, 1200);
+                }, 600); 
             });
         });
     </script>
