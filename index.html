@@ -8,15 +8,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   
   <style>
+    /* Global Reset & Base Styling */
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: 'Orbitron', sans-serif;
-      background-color: #050505; 
+      background-color: #000000; /* Pure black base for the fade transition */
       overflow: hidden; 
     }
 
+    /* --- TITLE SCREEN --- */
     #title-screen {
       height: 100vh;
       width: 100vw;
@@ -26,15 +28,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      transition: opacity 1.5s ease-in-out; 
+      position: absolute; /* Absolute positioning allows clean fading over the black body */
+      top: 0; left: 0;
+      transition: opacity 2s ease-in-out; 
+      z-index: 10;
     }
 
+    /* Dark overlay for text readability */
     #title-screen::before {
       content: "";
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%);
+      background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);
     }
 
     .title-container {
@@ -42,44 +47,59 @@
       z-index: 1;
       text-align: center;
       color: #ffffff;
+      padding: 20px; /* Padding helps keep text off edges on small screens */
     }
 
     .company-name {
-      font-size: 1.2rem;
+      font-size: clamp(0.8rem, 3vw, 1.2rem); /* Fluid typography for responsiveness */
       letter-spacing: 4px;
       margin-bottom: 10px;
       text-transform: uppercase;
       color: #a0a0a0;
     }
 
+    /* Glowing, Pulsing Game Title */
     .game-title {
-      font-size: 4.5rem;
+      font-size: clamp(2.5rem, 8vw, 6rem); 
       margin: 0;
       letter-spacing: 6px;
-      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff;
+      color: #ffffff;
+      animation: powerPulse 3s infinite alternate; /* The subtle power pulse */
+    }
+
+    @keyframes powerPulse {
+      0% {
+        text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+        transform: scale(1);
+      }
+      100% {
+        text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff, 0 0 80px rgba(0, 255, 255, 0.5);
+        transform: scale(1.02); /* Slight expansion creates a breathing effect */
+      }
     }
 
     .location-text {
-      font-size: 1.5rem;
-      color: #ff0055; /* A contrasting neon pink/red for the zone name */
+      font-size: clamp(1rem, 4vw, 1.5rem);
+      color: #ff0055; 
       letter-spacing: 3px;
       margin-top: 15px;
-      margin-bottom: 50px;
+      margin-bottom: 5vh;
       text-shadow: 0 0 10px #ff0055;
     }
 
+    /* Start Button */
     #start-button {
-      padding: 15px 50px;
-      font-size: 1.5rem;
+      padding: 15px 40px;
+      font-size: clamp(1rem, 3vw, 1.5rem);
       font-family: 'Orbitron', sans-serif;
-      background: rgba(0, 255, 255, 0.1);
+      background: rgba(0, 255, 255, 0.05);
       color: #00ffff;
       border: 2px solid #00ffff;
       box-shadow: 0 0 10px #00ffff inset, 0 0 10px #00ffff;
       cursor: pointer;
       text-transform: uppercase;
       transition: all 0.3s ease;
-      animation: pulse 2s infinite; 
+      animation: pulseBtn 2s infinite; 
     }
 
     #start-button:hover {
@@ -88,16 +108,39 @@
       box-shadow: 0 0 20px #00ffff inset, 0 0 30px #00ffff;
     }
 
-    @keyframes pulse {
+    @keyframes pulseBtn {
       0% { opacity: 1; }
       50% { opacity: 0.6; }
       100% { opacity: 1; }
     }
 
+    /* --- GAME WORLD (DESTINATION SCREEN) --- */
     #game-world {
+      height: 100vh;
+      width: 100vw;
+      display: none; /* Hidden entirely to start */
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+      opacity: 0; /* Starts transparent for the fade-in effect */
+      transition: opacity 2.5s ease-in-out;
+      z-index: 5;
+    }
+
+    .terminal-text {
       color: #00ffff;
-      padding: 50px;
-      text-align: center;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      text-shadow: 0 0 10px #00ffff;
+      border-right: 4px solid #00ffff; /* The typing cursor */
+      white-space: nowrap;
+      overflow: hidden;
+      padding-right: 5px;
+      animation: blinkCursor 0.8s infinite normal;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { border-color: transparent; }
+      50% { border-color: #00ffff; }
     }
   </style>
 </head>
@@ -112,29 +155,57 @@
     </div>
   </div>
 
-  <div id="game-world" style="display: none;">
-    <h1>The Citadel Terminal Online.</h1>
-    <p>Awaiting hero input...</p>
-    </div>
+  <div id="game-world">
+    <div class="terminal-text" id="typing-output"></div>
+  </div>
 
   <script>
     document.getElementById('start-button').addEventListener('click', function() {
       const titleScreen = document.getElementById('title-screen');
       const gameWorld = document.getElementById('game-world');
+      const typingOutput = document.getElementById('typing-output');
 
+      // 1. Visual feedback on click
       this.style.background = '#ffffff';
       this.style.color = '#000000';
-      this.innerText = 'LOADING CITADEL...';
+      this.innerText = 'AUTHENTICATING...';
+      this.style.animation = 'none'; // Stop the blinking
 
+      // 2. Delay slightly, then fade out the title screen to pure black
       setTimeout(() => {
         titleScreen.style.opacity = '0';
         
+        // 3. Wait for the fade-to-black to finish
         setTimeout(() => {
-          titleScreen.style.display = 'none';
-          gameWorld.style.display = 'block';
-          document.body.style.overflow = 'auto'; 
-        }, 1500); 
-      }, 800); 
+          titleScreen.style.display = 'none'; // Remove title from document flow
+          gameWorld.style.display = 'flex';   // Activate the next screen layout
+          
+          // Force a reflow so the browser registers the display change before changing opacity
+          void gameWorld.offsetWidth; 
+
+          // Fade in the new screen
+          gameWorld.style.opacity = '1';
+
+          // 4. Wait for the fade-in, then start the typing effect
+          setTimeout(() => {
+            const textToType = "Somewhere in Musubi...";
+            let i = 0;
+            
+            function typeWriter() {
+              if (i < textToType.length) {
+                typingOutput.innerHTML += textToType.charAt(i);
+                i++;
+                // Randomize typing speed slightly for realism (between 50ms and 150ms)
+                setTimeout(typeWriter, Math.floor(Math.random() * 100) + 50);
+              }
+            }
+            
+            typeWriter(); // Trigger the typing function
+            
+          }, 2500); // Waits for the game-world fade in
+
+        }, 2000); // Matches the 2s fade out in CSS
+      }, 800); // Initial delay after clicking the button
     });
   </script>
 </body>
