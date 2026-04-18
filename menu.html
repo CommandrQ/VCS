@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project V</title>
+    <title>Menu - Project V</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -71,11 +71,12 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
             /* Masking ensures the sheen only appears over the pixels of your logo image */
-            mask-image: url('images/vanguardorglogo.png');
+            /* Updated to explicit relative paths */
+            mask-image: url('./images/vanguardorglogo.png');
             mask-size: contain;
             mask-repeat: no-repeat;
             mask-position: center;
-            -webkit-mask-image: url('images/vanguardorglogo.png');
+            -webkit-mask-image: url('./images/vanguardorglogo.png');
             -webkit-mask-size: contain;
             -webkit-mask-repeat: no-repeat;
             -webkit-mask-position: center;
@@ -182,7 +183,7 @@
 
     <div id="ui-layer">
         <div class="logo-container">
-            <img src="images/vanguardorglogo.png" alt="Vanguard Organization Logo">
+            <img src="./images/vanguardorglogo.png" alt="Vanguard Organization Logo">
             <div class="logo-sheen"></div>
         </div>
 
@@ -200,6 +201,8 @@
             <div class="footer-text">&copy; 2026 Vanguard Citizen Services</div>
         </div>
     </div>
+
+    <script src="force-refresh.js"></script>
 
     <script>
         // --- 3D Space Warp Effect Logic ---
