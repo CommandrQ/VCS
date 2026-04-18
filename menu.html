@@ -49,16 +49,19 @@
             align-items: center;
             width: 100%;
             height: 100%;
-            padding-top: 15vh; /* Center weighting */
+            padding-top: 15vh;
         }
 
         /* Floating Logo Container */
         .logo-container {
             position: relative;
-            width: 200px; /* Made the logo much smaller */
+            width: 200px; 
             max-width: 80%;
             animation: float 4s ease-in-out infinite;
             margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .logo-container img {
             width: 100%;
@@ -69,16 +72,22 @@
         /* The Sheen Effect */
         .logo-sheen {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none; /* Let clicks pass through */
-            background: linear-gradient(60deg, transparent 20%, rgba(255, 255, 255, 0.9) 50%, transparent 80%);
-            /* Strict masking ensures it adheres to your image alpha channel */
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; 
+            /* Tightened the gradient for a sharper, laser-like sheen */
+            background: linear-gradient(60deg, transparent 35%, rgba(255, 255, 255, 0.8) 50%, transparent 65%);
+            
+            /* Using contain ensures the mask exactly matches the image's aspect ratio */
             mask-image: url('./images/vanguardorglogo.png');
-            mask-size: 100% 100%;
+            mask-size: contain;
             mask-repeat: no-repeat;
+            mask-position: center;
+            
             -webkit-mask-image: url('./images/vanguardorglogo.png');
-            -webkit-mask-size: 100% 100%;
+            -webkit-mask-size: contain;
             -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            
             animation: sheen 3s infinite;
         }
 
@@ -90,7 +99,7 @@
         }
         @keyframes sheen {
             0% { transform: translateX(-100%); }
-            30%, 100% { transform: translateX(100%); } /* Quick sweep, then pause */
+            30%, 100% { transform: translateX(100%); }
         }
 
         /* Carousel Menu Container */
@@ -239,14 +248,6 @@
         </div>
     </div>
 
-    <div class="footer-banner">
-        <div class="footer-text-container">
-            <div class="footer-text">&copy; 2026 Vanguard Citizen Services</div>
-            <div class="footer-text highlight-text">Empower . Educate . Elevate</div>
-            <div class="footer-text">&copy; 2026 Vanguard Citizen Services</div>
-        </div>
-    </div>
-
     <script src="force-refresh.js"></script>
 
     <script>
@@ -261,41 +262,35 @@
         const currentMenuItem = document.getElementById('current-menu-item');
         const btnUp = document.getElementById('btn-up');
         const btnDown = document.getElementById('btn-down');
-        let isAnimating = false; // Prevents spam clicking the arrows
+        let isAnimating = false;
 
         function cycleMenu(direction) {
             if (isAnimating) return;
             isAnimating = true;
 
-            // Determine exit and entry animations
             const exitClass = direction === 'up' ? 'slide-out-up' : 'slide-out-down';
             const enterClass = direction === 'up' ? 'slide-in-up' : 'slide-in-down';
 
-            // Trigger exit
             currentMenuItem.classList.add(exitClass);
 
             setTimeout(() => {
-                // Update Index
                 if (direction === 'up') {
                     currentIndex = (currentIndex - 1 + menuItems.length) % menuItems.length;
                 } else {
                     currentIndex = (currentIndex + 1) % menuItems.length;
                 }
 
-                // Update DOM content
                 currentMenuItem.textContent = menuItems[currentIndex].text;
                 currentMenuItem.href = menuItems[currentIndex].link;
 
-                // Swap classes to trigger entry animation
                 currentMenuItem.classList.remove(exitClass);
                 currentMenuItem.classList.add(enterClass);
 
-                // Clean up classes and release lock
                 setTimeout(() => {
                     currentMenuItem.classList.remove(enterClass);
                     isAnimating = false;
-                }, 300); // Wait for entry to finish
-            }, 300); // Wait for exit to finish
+                }, 300); 
+            }, 300); 
         }
 
         btnUp.addEventListener('click', () => cycleMenu('up'));
