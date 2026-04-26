@@ -1,9 +1,29 @@
-/* --- Split Landing Page Logic (Updated for White Text) --- */
+/* --- Global Logic & Reset --- */
+:root {
+    --vcs-purple: #A855F7;
+    --knight-gold: #D4AF37;
+    --knight-neon: rgba(212, 175, 55, 0.6);
+    --dark-bg: #050505;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: #ffffff; /* Global White Text */
+    overflow-x: hidden;
+}
+
+/* --- Split Landing Page (The Choice) --- */
 .split-landing {
     display: flex;
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
 }
 
 .screen-half {
@@ -13,70 +33,99 @@
     justify-content: center;
     text-align: center;
     text-decoration: none;
-    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    color: #ffffff; /* Ensures all text in the half is white */
+    overflow: hidden;
 }
 
-.screen-half .content {
-    z-index: 2;
-    padding: 20px;
+.content {
+    z-index: 10;
 }
 
 .symbol {
-    font-size: 4rem;
-    margin-bottom: 20px;
+    font-size: 5rem;
+    margin-bottom: 1rem;
     display: block;
 }
 
-/* VCS Side - The Shield */
+/* Specific Force: Pure White Text for Landing */
+.landing-text {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 0.5rem;
+}
+
+h1.landing-text {
+    font-size: 3.5rem;
+    font-weight: 800;
+}
+
+p.landing-text {
+    font-size: 1rem;
+    font-weight: 300;
+    opacity: 0.8;
+}
+
+/* VCS Side (The Shield) */
 .vcs-side {
-    background: linear-gradient(135deg, #1a0b2e 0%, #050505 100%);
+    background: linear-gradient(rgba(26, 11, 46, 0.8), rgba(5, 5, 5, 0.9)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.vcs-side h1, .vcs-side p {
-    color: #ffffff !important; /* Force White */
-    font-size: 3rem;
-}
-
 .vcs-side:hover {
-    flex: 1.5;
-    background: linear-gradient(135deg, #2e1550 0%, #0a0a0a 100%);
+    flex: 1.4;
 }
 
-/* Knights Side - The Sword */
+/* Knights Side (The Sword) */
 .knights-side {
-    background: linear-gradient(135deg, #050505 0%, #1a1400 100%);
-}
-
-.knights-side h1, .knights-side p {
-    color: #ffffff !important; /* Force White */
-    font-size: 3rem;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); /* White Glow */
+    background: linear-gradient(rgba(5, 5, 5, 0.8), rgba(26, 20, 0, 0.9)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
 }
 
 .knights-side:hover {
-    flex: 1.5;
-    background: linear-gradient(135deg, #0a0a0a 0%, #2e2400 100%);
+    flex: 1.4;
 }
 
-/* Shared Button Style (Now Pure White) */
+/* Landing Buttons */
 .action-btn {
     display: inline-block;
-    margin-top: 20px;
-    padding: 12px 30px;
-    border: 1px solid #ffffff;
+    margin-top: 2rem;
+    padding: 12px 40px;
+    border: 2px solid #ffffff;
     border-radius: 50px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.8rem;
-    transition: 0.3s;
     color: #ffffff !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    transition: 0.3s;
 }
 
 .screen-half:hover .action-btn {
     background: #ffffff;
     color: #000000 !important;
+}
+
+/* --- Future Page Styles (VCS & Knights) --- */
+.glass-vcs {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.neon-knight {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid var(--knight-gold);
+    box-shadow: 0 0 20px var(--knight-neon);
+}
+
+/* Responsive Logic */
+@media (max-width: 768px) {
+    .split-landing { flex-direction: column; }
+    h1.landing-text { font-size: 2.5rem; }
 }
