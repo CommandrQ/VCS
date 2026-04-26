@@ -11,8 +11,10 @@
             --gold: #D4AF37;
             --gold-glow: rgba(212, 175, 55, 0.5);
             --ambient-glow: rgba(212, 175, 55, 0.2);
-            --dark-glass: rgba(10, 10, 10, 0.9);
+            --dark-glass: rgba(15, 15, 15, 0.95); /* High contrast dark window */
             --border-gold: rgba(212, 175, 55, 0.4);
+            --nav-height: 85px;
+            --footer-height: 100px;
         }
 
         * {
@@ -25,10 +27,10 @@
             font-family: 'Inter', sans-serif;
             background-color: #000;
             color: white;
-            overflow: hidden; /* Maintains the cinematic, non-scrolling look */
+            overflow: hidden; /* Cinematic view */
         }
 
-        /* --- STARFIELD ENGINE (Matching Index) --- */
+        /* --- STARFIELD FLIGHT ENGINE --- */
         .stars-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -54,31 +56,33 @@
         nav {
             position: fixed;
             top: 0; width: 100%;
+            height: var(--nav-height);
             display: flex;
             justify-content: center;
-            padding: 25px;
+            align-items: center;
             background: rgba(0,0,0,0.85);
             border-bottom: 1px solid var(--border-gold);
             z-index: 1000;
             backdrop-filter: blur(15px);
         }
 
-        nav ul { display: flex; list-style: none; gap: 50px; }
+        nav ul { display: flex; list-style: none; gap: 40px; }
         nav ul li a {
             text-decoration: none; color: var(--gold);
             font-family: 'Cinzel', serif; font-weight: bold;
-            font-size: 0.9rem; letter-spacing: 2px;
+            font-size: 0.85rem; letter-spacing: 2px;
             text-transform: uppercase; transition: 0.4s;
         }
         nav ul li a:hover { color: white; text-shadow: 0 0 15px var(--gold); }
 
-        /* --- MAIN WINDOW CONTAINER --- */
+        /* --- AUTO-ADJUSTING GLASS PANEL --- */
         .page-content {
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0 10%;
+            padding-top: var(--nav-height);
+            padding-bottom: var(--footer-height);
         }
 
         .glass-panel {
@@ -86,58 +90,77 @@
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border-gold);
-            border-radius: 24px;
-            padding: 80px;
-            max-width: 900px;
+            border-radius: 20px;
+            padding: 50px;
+            width: 90%;
+            max-width: 700px; /* Reduced width for a cleaner look */
             text-align: center;
-            box-shadow: 0 0 120px 10px var(--ambient-glow);
+            box-shadow: 0 0 100px 5px var(--ambient-glow);
+            
+            /* Safe Zone Logic: window shrinks before it touches UI */
+            max-height: calc(100vh - (var(--nav-height) + var(--footer-height) + 40px));
+            
+            /* Invisible Scrollbar Logic */
+            overflow-y: auto; 
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
         }
+
+        .glass-panel::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         h1 {
             font-family: 'Cinzel', serif;
             color: var(--gold);
-            font-size: 3.5rem;
-            margin-bottom: 30px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
         }
 
         .divider {
-            height: 2px;
-            width: 100px;
+            height: 1px;
+            width: 80px;
             background: var(--gold);
             margin: 0 auto 30px;
             box-shadow: 0 0 10px var(--gold);
         }
 
         p {
-            font-size: 1.25rem;
-            line-height: 2.2;
+            font-size: 1.15rem;
+            line-height: 2;
             color: #ececec;
             font-weight: 300;
         }
 
-        /* --- FOOTER --- */
+        /* --- PERSISTENT FOOTER --- */
         footer {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
-            padding: 25px 0;
-            text-align: center;
-            background: linear-gradient(to top, rgba(0,0,0,1), transparent);
+            height: var(--footer-height);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to top, rgba(0,0,0,1) 60%, transparent);
             z-index: 1000;
         }
 
         .legal-links { margin-bottom: 8px; }
         .legal-links a {
-            color: white; text-decoration: none;
-            font-size: 0.8rem; margin: 0 15px;
-            letter-spacing: 1px; transition: 0.3s;
+            color: white;
+            text-decoration: none;
+            font-size: 0.75rem;
+            margin: 0 15px;
+            letter-spacing: 1.5px;
+            transition: 0.3s;
         }
         .legal-links a:hover { color: var(--gold); }
 
         .copyright {
-            color: var(--gold); font-family: 'Cinzel', serif;
-            font-size: 0.75rem; letter-spacing: 1px; opacity: 0.8;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -159,12 +182,16 @@
             <h1>Civic Impact</h1>
             <div class="divider"></div>
             <p>
-                Vanguard Citizen Services operates at the intersection of technology and community. 
+                Vanguard Citizen Services operates at the intersection of security and community. 
                 Our civic impact is measured by the fortification of the individual. 
                 By providing elite-level guidance and unwavering advocacy, we empower 
                 citizens to navigate the complexities of modern life with the 
-                confidence of the Knights. We don't just solve problems, we build 
-                the foundations for lasting communal elevation.
+                confidence of the Knights. 
+                <br><br>
+                True leadership is found in the removal of barriers. Whether through 
+                tactical technological education or strategic community initiatives, 
+                we don't just solve immediate problems; we build the foundations 
+                for lasting communal elevation and digital sovereignty.
             </p>
         </div>
     </main>
@@ -189,7 +216,6 @@
                 navData.forEach(item => {
                     const li = document.createElement('li');
                     const a = document.createElement('a');
-                    // Check if we are on index to handle the #about link properly
                     a.href = item.link;
                     a.textContent = item.name;
                     li.appendChild(a);
@@ -197,6 +223,7 @@
                 });
             } catch (error) {
                 console.error('Nav Load Error:', error);
+                // Fallback tabs if JSON is unavailable
                 navContainer.innerHTML = `
                     <li><a href="about.html">About Us</a></li>
                     <li><a href="story.html">Our Story</a></li>
