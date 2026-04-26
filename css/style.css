@@ -1,192 +1,78 @@
-/* --- Logic & Infrastructure --- */
-:root {
-    --vcs-purple: #A855F7;
-    --knight-gold: #D4AF37;
-    --knight-neon: rgba(212, 175, 55, 0.6);
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --dark-bg: #050505;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-}
-
-body {
-    background-color: var(--dark-bg);
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-
-/* --- Navigation: VCS Glassmorphism --- */
-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.2rem 5%;
-}
-
-nav {
+/* --- Split Landing Page Logic --- */
+.split-landing {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: var(--vcs-purple);
-    letter-spacing: -0.5px;
-    text-transform: uppercase;
-}
-
-nav ul {
-    display: flex;
-    list-style: none;
-}
-
-nav ul li {
-    margin-left: 1.5rem;
-}
-
-nav ul li a {
-    color: #eeeeee;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-nav ul li a:hover {
-    color: var(--vcs-purple);
-}
-
-/* --- Layout Structure --- */
-main {
-    padding-top: 120px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-section {
-    padding: 60px 5%;
-    margin-bottom: 40px;
-}
-
-h1, h2, h3 {
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-p {
-    margin-bottom: 1.5rem;
-    color: #cccccc;
-}
-
-ul {
-    list-style: none;
-    margin-bottom: 1.5rem;
-}
-
-ul li {
-    margin-bottom: 0.8rem;
-    padding-left: 1.5rem;
-    position: relative;
-}
-
-/* --- VCS Style: Apple Dark Glassmorphism --- */
-.glass-vcs {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 40px;
-}
-
-.glass-vcs h1, .glass-vcs h2 {
-    color: #ffffff;
-}
-
-.glass-vcs ul li::before {
-    content: "•";
-    color: var(--vcs-purple);
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-}
-
-/* --- Vanguard Knights Style: Neon Gold on Dark --- */
-.neon-knight {
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid var(--knight-gold);
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
-    position: relative;
+    height: 100vh;
+    width: 100vw;
     overflow: hidden;
 }
 
-.neon-knight h2, .neon-knight h3 {
-    color: var(--knight-gold);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 0 0 12px var(--knight-neon);
-}
-
-.neon-knight p {
-    color: #f0e68c;
-}
-
-.neon-knight ul li {
-    border-left: 2px solid var(--knight-gold);
-    padding-left: 15px;
-    color: #ffffff;
-}
-
-.motto {
-    font-style: italic;
-    font-weight: 600;
-    color: var(--knight-gold) !important;
+.screen-half {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin-bottom: 2rem;
-}
-
-/* --- Roster Logic: Dual Column Grid --- */
-.roster-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-@media (max-width: 768px) {
-    .roster-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* --- Physical Action: Contact & Footer --- */
-footer {
-    text-align: center;
-    padding: 60px 5%;
-    background: #000;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-footer a {
-    color: var(--vcs-purple);
     text-decoration: none;
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
 }
 
-footer a:hover {
-    text-decoration: underline;
+.screen-half .content {
+    z-index: 2;
+    padding: 20px;
 }
+
+.symbol {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+/* VCS Side - The Shield */
+.vcs-side {
+    background: linear-gradient(135deg, #1a0b2e 0%, #050505 100%);
+    border-right: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.vcs-side h1 {
+    color: var(--vcs-purple);
+    font-size: 3rem;
+}
+
+.vcs-side:hover {
+    flex: 1.5;
+    background: linear-gradient(135deg, #2e1550 0%, #0a0a0a 100%);
+}
+
+/* Knights Side - The Sword */
+.knights-side {
+    background: linear-gradient(135deg, #050505 0%, #1a1400 100%);
+}
+
+.knights-side h1 {
+    color: var(--knight-gold);
+    font-size: 3rem;
+    text-shadow: 0 0 15px var(--knight-neon);
+}
+
+.knights-side:hover {
+    flex: 1.5;
+    background: linear-gradient(135deg, #0a0a0a 0%, #2e2400 100%);
+}
+
+/* Shared Button Style */
+.action-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    border: 1px solid currentColor;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    transition: 0.3s;
+}
+
+.vcs-side .action-btn { color: var(--vcs-purple); }
+.knights-side .action-btn { color: var(--knight-gold); }
