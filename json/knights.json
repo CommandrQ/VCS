@@ -3,15 +3,19 @@
     {
       "name": "Commander Q",
       "rank": "Captain Commander",
-      "link": "https://cmdrq.vcscitizen.org",
+      "link": "https://cmdrq.vcscitizen.org"
     }
   ],
   "projects": [
-    { "name": "Operation Starshield", "description": "Community data fortification." },
-    { "name": "Civic Portal Alpha", "description": "Simplified citizen access systems." }
+    {
+      "name": "Operation Starshield",
+      "description": "Securing communal knowledge."
+    }
   ],
   "partnerships": [
-    { "org": "Global Tech Initiative", "status": "Strategic Partner" },
-    { "org": "Civic Guard Collective", "status": "Operational Ally" }
+    {
+      "org": "Global Tech Initiative",
+      "status": "Strategic Partner"
+    }
   ]
 }
