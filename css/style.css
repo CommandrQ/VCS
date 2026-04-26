@@ -1,4 +1,4 @@
-/* --- Split Landing Page Logic --- */
+/* --- Split Landing Page Logic (Updated for White Text) --- */
 .split-landing {
     display: flex;
     height: 100vh;
@@ -15,6 +15,7 @@
     text-decoration: none;
     transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
+    color: #ffffff; /* Ensures all text in the half is white */
 }
 
 .screen-half .content {
@@ -31,11 +32,11 @@
 /* VCS Side - The Shield */
 .vcs-side {
     background: linear-gradient(135deg, #1a0b2e 0%, #050505 100%);
-    border-right: 1px solid rgba(168, 85, 247, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.vcs-side h1 {
-    color: var(--vcs-purple);
+.vcs-side h1, .vcs-side p {
+    color: #ffffff !important; /* Force White */
     font-size: 3rem;
 }
 
@@ -49,10 +50,10 @@
     background: linear-gradient(135deg, #050505 0%, #1a1400 100%);
 }
 
-.knights-side h1 {
-    color: var(--knight-gold);
+.knights-side h1, .knights-side p {
+    color: #ffffff !important; /* Force White */
     font-size: 3rem;
-    text-shadow: 0 0 15px var(--knight-neon);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); /* White Glow */
 }
 
 .knights-side:hover {
@@ -60,19 +61,22 @@
     background: linear-gradient(135deg, #0a0a0a 0%, #2e2400 100%);
 }
 
-/* Shared Button Style */
+/* Shared Button Style (Now Pure White) */
 .action-btn {
     display: inline-block;
     margin-top: 20px;
     padding: 12px 30px;
-    border: 1px solid currentColor;
+    border: 1px solid #ffffff;
     border-radius: 50px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: 0.8rem;
     transition: 0.3s;
+    color: #ffffff !important;
 }
 
-.vcs-side .action-btn { color: var(--vcs-purple); }
-.knights-side .action-btn { color: var(--knight-gold); }
+.screen-half:hover .action-btn {
+    background: #ffffff;
+    color: #000000 !important;
+}
