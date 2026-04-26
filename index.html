@@ -2,40 +2,185 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vanguard | Choose Your Path</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Citizen Services | Vanguard Knights</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark-glass: rgba(15, 15, 15, 0.65);
+            --border-gold: rgba(212, 175, 55, 0.3);
+            --star-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050505; /* Deep black base */
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Starfield Background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(1px 1px at 20px 30px, var(--star-color), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, var(--star-color), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, var(--star-color), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, var(--star-color), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, var(--star-color), rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.4;
+        }
+
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid var(--border-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container img {
+            height: 60px; /* Adjust based on your logo shape */
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5));
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--gold);
+        }
+
+        /* The Frosted Glass Container */
+        .container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .glass-window {
+            background: var(--dark-glass);
+            backdrop-filter: blur(15px); /* This creates the frost effect */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #d1d1d1;
+            margin-bottom: 20px;
+        }
+
+        .gold-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
-    <div class="vcs-wordmark">VCS</div>
-    
-    <main class="split-container">
-        <section class="side shield">
-            <div class="glass-card">
-                <img src="assets/images/shield-icon.png" alt="Shield" class="emblem">
-                <h1>THE SHIELD</h1>
-                <p class="subtitle">VANGUARD CITIZEN SERVICES</p>
-                <ul class="features">
-                    <li>Civilian Protection</li>
-                    <li>Resource Management</li>
-                    <li>Community Support</li>
-                </ul>
-                <a href="./vcs/index.html" class="btn">ENTER VCS</a>
-            </div>
+
+    <div class="starfield"></div>
+
+    <nav>
+        <div class="logo-container">
+            <img src="images/vanguardorglogo.png" alt="Vanguard Citizen Services">
+        </div>
+        <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#mission">Mission</a></li>
+            <li><a href="#history">History</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <section id="mission" class="glass-window">
+            <h1>Our Mission</h1>
+            <div class="gold-line"></div>
+            <p>
+                At Vanguard Citizen Services, we stand as the shield and the guide for the modern citizen. 
+                Our mission is to provide elite-level support, navigating complex civic landscapes with 
+                the precision and honor of the knights of old. We believe in transparency, 
+                steadfastness, and the relentless pursuit of excellence for those we serve.
+            </p>
         </section>
 
-        <section class="side sword">
-            <div class="glass-card">
-                <img src="assets/images/sword-icon.png" alt="Sword" class="emblem">
-                <h1>THE SWORD</h1>
-                <p class="subtitle">VANGUARD KNIGHTS</p>
-                <ul class="features">
-                    <li>Elite Tactical Ops</li>
-                    <li>Strategic Defense</li>
-                    <li>Combat Readiness</li>
-                </ul>
-                <a href="./knights/index.html" class="btn">ENTER KNIGHTS</a>
-            </div>
+        <section id="services" class="glass-window">
+            <h2>Our Services</h2>
+            <p><strong>Civic Consulting:</strong> Strategic guidance for navigating local regulations.</p>
+            <p><strong>Community Advocacy:</strong> Standing at the forefront of citizen interests.</p>
+            <p><strong>Vanguard Logistics:</strong> Specialized planning and operational support.</p>
         </section>
-    </main>
+
+        <section id="history" class="glass-window">
+            <h2>The History of the Knights</h2>
+            <p>
+                Founded on the principles of duty and merit, Vanguard Citizen Services began as a 
+                small collective of specialists. Today, we have grown into a premier organization 
+                dedicated to the empowerment of the citizenry.
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 Vanguard Citizen Services. All Rights Reserved.
+    </footer>
+
 </body>
 </html>
