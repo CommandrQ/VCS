@@ -3,183 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project V - Vanguard Citizen Services</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Base Reset & Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            /* Path to point to your images folder */
-            background-image: url('images/introbkgd.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: #050510; /* Fallback color */
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            font-family: 'Rajdhani', sans-serif;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px; /* Gives a 3D depth feel */
-        }
-
-        /* Black overlay for the fade-to-black effect */
-        #fade-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            opacity: 0;
-            pointer-events: none; /* Allows clicking through before fade */
-            transition: opacity 1.2s ease-in;
-            z-index: 9999;
-        }
-
-        /* Main Content Container */
-        #ui-container {
-            text-align: center;
-            background: rgba(10, 15, 30, 0.7); /* Dark glass effect */
-            backdrop-filter: blur(8px);
-            padding: 4rem 5rem;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1), inset 0 0 20px rgba(0, 255, 255, 0.05);
-            transition: transform 1.5s cubic-bezier(0.5, 0, 0.5, 1), opacity 1s ease-in;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem; /* Creates clean spacing between the header and button */
-        }
-
-        /* SAO/Ready Player One Typography */
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 3rem;
-            letter-spacing: 2px;
-            color: #a0c4ff;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(160, 196, 255, 0.5);
-        }
-
-        /* Makes the word "Citizen" pop and pulse */
-        h1 span {
-            font-weight: 900;
-            color: #00ffff;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #0088ff;
-            display: inline-block;
-            animation: pulse-glow 2s infinite alternate ease-in-out;
-        }
-
-        /* The pulsing loop animation */
-        @keyframes pulse-glow {
-            0% { 
-                opacity: 0.8; 
-                text-shadow: 0 0 10px #00ffff, 0 0 20px #0088ff; 
-                transform: scale(0.98); 
-            }
-            100% { 
-                opacity: 1; 
-                text-shadow: 0 0 20px #00ffff, 0 0 30px #0088ff, 0 0 50px #ffffff; 
-                transform: scale(1.02); 
-            }
-        }
-
-        /* Hi-Tech Button */
-        #start-btn {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #00ffff;
-            background: transparent;
-            padding: 15px 40px;
-            border: 2px solid #00ffff;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.2);
-            align-self: center;
-        }
-
-        #start-btn:hover {
-            background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6), inset 0 0 15px rgba(0, 255, 255, 0.4);
-            text-shadow: 0 0 8px #00ffff;
-        }
-
-        /* Sparking Animation Triggered via JS */
-        .sparking {
-            animation: energy-spark 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-        }
-
-        @keyframes energy-spark {
-            0% { border-color: #00ffff; box-shadow: 0 0 10px #00ffff; }
-            20% { border-color: #ffffff; background: #00ffff; color: #000; box-shadow: 0 0 50px #ffffff, inset 0 0 30px #ffffff; transform: scale(1.05); }
-            40% { background: transparent; color: #00ffff; box-shadow: 0 0 10px #00ffff; }
-            60% { border-color: #ffffff; background: #00ffff; color: #000; box-shadow: 0 0 60px #ffffff, inset 0 0 40px #ffffff; transform: scale(1.1); }
-            80% { background: transparent; color: #00ffff; box-shadow: 0 0 20px #00ffff; }
-            100% { border-color: #ffffff; background: #ffffff; color: #000; box-shadow: 0 0 100px #00ffff, inset 0 0 50px #00ffff; transform: scale(1.2); }
-        }
-
-        /* Zoom Animation for the UI Container */
-        .zoom-in {
-            transform: scale(5) translateZ(500px);
-            opacity: 0;
-        }
-
-        /* Fade Animation for the Overlay */
-        .fade-out {
-            opacity: 1 !important;
-        }
-    </style>
-</head>
+    <title>Vanguard Citizen Services | VCS</title>
+    </head>
 <body>
 
-    <div id="fade-overlay"></div>
+    <header>
+        <nav>
+            <div class="logo">VCS</div>
+            <ul>
+                <li><a href="#mission">Mission</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#knights">Vanguard Knights</a></li>
+                <li><a href="#rosters">Rosters</a></li>
+                <li><a href="mailto:commandrq@gmail.com">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div id="ui-container">
-        <h1>You've Arrived, <span>Citizen.</span></h1>
-        <button id="start-btn">Press Start</button>
-    </div>
+    <main>
+        <section id="mission">
+            <h1>Vanguard Citizen Services</h1>
+            <p>Our mission is built on a balanced perspective: using pure logic and physical action to stay true to our purpose.</p>
+        </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const startBtn = document.getElementById('start-btn');
-            const uiContainer = document.getElementById('ui-container');
-            const fadeOverlay = document.getElementById('fade-overlay');
+        <section id="services">
+            <h2>Our Services</h2>
+            <ul>
+                <li><strong>Strategic Consulting:</strong> Logical breakdowns of community infrastructure.</li>
+                <li><strong>Operational Support:</strong> Physical deployment of resources to meet citizen needs.</li>
+                <li><strong>Crisis Management:</strong> Rapid response protocols designed for maximum efficiency.</li>
+            </ul>
+        </section>
 
-            startBtn.addEventListener('click', () => {
-                // 1. Trigger the sparking energy animation on the button
-                startBtn.classList.add('sparking');
+        <section id="knights">
+            <h2>The Vanguard Knights</h2>
+            <p>The Knights are the execution arm of VCS. They are responsible for taking the mission into the community with discipline and hard work.</p>
+        </section>
 
-                // 2. Wait slightly for the spark to build up, then zoom the screen and fade to black
-                setTimeout(() => {
-                    uiContainer.classList.add('zoom-in');
-                    fadeOverlay.classList.add('fade-out');
-                }, 500); 
+        <section id="rosters">
+            <div class="roster-vcs">
+                <h3>Our Team (VCS Business)</h3>
+                <ul>
+                    <li>Commander Q - Founder & Lead Strategist</li>
+                    <li>[Add Team Member] - [Role]</li>
+                </ul>
+            </div>
 
-                // 3. Once the screen is black, redirect to the menu file
-                setTimeout(() => {
-                    window.location.href = 'menu.html';
-                }, 1800); 
-            });
-        });
-    </script>
+            <div class="roster-knights">
+                <h3>Vanguard Knights Roster</h3>
+                <ul>
+                    <li>[Knight Name] - [Specialization]</li>
+                    <li>[Knight Name] - [Specialization]</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Vanguard Citizen Services. Contact: commandrq@gmail.com</p>
+    </footer>
 
 </body>
 </html>
