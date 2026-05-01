@@ -112,6 +112,7 @@
         /* --- CONTENT WINDOW --- */
         .page-content {
             height: 100vh;
+            height: 100dvh; /* Fixes mobile browser address bar cut-offs */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -124,7 +125,7 @@
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border-gold);
             border-radius: 20px;
-            padding: 45px;
+            padding: 45px 45px 80px 45px; /* Added extra bottom padding for scroll clearance */
             width: 100%;
             max-width: 750px;
             text-align: center;
@@ -237,7 +238,7 @@
             nav ul::-webkit-scrollbar { display: none; }
             nav ul li a { font-size: 1.1rem; }
 
-            .glass-panel { padding: 30px 20px; }
+            .glass-panel { padding: 30px 20px 60px 20px; } /* Added extra bottom padding here too */
             
             footer { flex-direction: row; white-space: nowrap; }
             .legal-links { margin-bottom: 0; display: flex; align-items: center; }
