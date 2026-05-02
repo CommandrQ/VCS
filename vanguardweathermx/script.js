@@ -1,6 +1,6 @@
 /**
  * VANGUARD WEATHER MX: COMMAND SCRIPT
- * V7: POPUP LOGIC & DESKTOP SYNC
+ * V8: UNIFIED PARITY BUILD
  */
 
 const CONFIG = {
@@ -15,18 +15,12 @@ const UI = {};
 document.addEventListener('DOMContentLoaded', () => {
     const ids = ['update-btn', 'reset-loc-btn', 'geo-btn', 'location-search', 'autocomplete-results', 
                  'notify-btn', 'close-modal', 'alert-modal', 'dashboard', 'primary-alert', 
-                 'beginner-action', 'chaser-bulletin', 'modal-title', 'modal-body', 'last-scan-time',
-                 'telemetry-toggle', 'expert-panel'];
+                 'beginner-action', 'chaser-bulletin', 'modal-title', 'modal-body', 'last-scan-time'];
     ids.forEach(id => UI[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
     if (localStorage.getItem('vanguard_mx_alerts') === 'true' && Notification.permission === 'granted') {
         UI.notifyBtn.style.color = "#00ff00";
     }
-
-    UI.telemetryToggle.onclick = () => {
-        UI.expertPanel.classList.toggle('hidden-panel');
-        UI.telemetryToggle.classList.toggle('active-toggle');
-    };
 
     UI.updateBtn.onclick = () => SESSION.sector && executeSweep();
     UI.geoBtn.onclick = requestGeolocation;
@@ -74,7 +68,6 @@ function processAlerts(features) {
             if (a.event === 'Tornado Warning') tornado = a;
             else if (a.event.includes('Thunderstorm') || a.event.includes('Flood')) severe = a;
             
-            // Reconstructed simple alert with dedicated popup link
             list += `<div class="alert-item ${a.event === 'Tornado Warning' ? 'tornado-alert' : ''}">
                         <strong>[NATURE OF THREAT]:</strong> ${a.event}<br>
                         <span class="nws-popup-link" onclick="openModal(${i})">>>> OPEN FULL NWS ALERT <<<</span>
