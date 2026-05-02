@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Weather MX</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>VANGUARD COMMAND // WEATHER MX</h1>
+        <div class="controls">
+            <div class="search-container">
+                <label for="location-search">MONITORING REGION:</label>
+                <input type="text" id="location-search" placeholder="Locating..." autocomplete="off">
+                <ul id="autocomplete-results" class="hidden"></ul>
+            </div>
+            <button id="update-btn">UPDATE FEED</button>
+            <button id="reset-loc-btn" title="Clear saved location">RESET LOC</button>
+            <button id="notify-btn">ENABLE ALERTS</button>
+        </div>
+    </header>
 
+    <main id="dashboard" class="status-green">
+        <div id="status-banner">
+            <h2 id="primary-alert">AWAITING LOCATION DATA.</h2>
+        </div>
+
+        <div class="info-grid">
+            <section class="action-panel">
+                <h3>CITIZEN ACTION STEPS</h3>
+                <div id="beginner-action">
+                    <p>Enter your sector to begin monitoring.</p>
+                </div>
+            </section>
+
+            <section class="expert-panel">
+                <h3>CHASER BULLETIN</h3>
+                <button id="ai-share-btn">SEND TO AI FOR SUMMARY</button>
+                <div id="chaser-bulletin" class="scroll-box">
+                    <p>System standing by...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
