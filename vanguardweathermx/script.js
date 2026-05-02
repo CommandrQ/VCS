@@ -6,7 +6,7 @@ const CONFIG = {
 
 const UI_LABELS = {
     err_zip: "VANGUARD COMMAND: Invalid Zip Code.",
-    err_jurisdiction: "VANGUARD COMMAND: Sector must be within US jurisdiction.",
+    err_jurisdiction: "VANGUARD COMMAND: Sector must be within U.S jurisdiction.",
     err_not_found: "VANGUARD COMMAND: Sector not found. Verify spelling.",
     err_db: "VANGUARD COMMAND: Location database offline.",
     err_gps_fail: "GPS Bridge Failure.",
@@ -16,7 +16,7 @@ const UI_LABELS = {
     offline_action: "Monitor radio or local weather for additional threats.",
     offline_bulletin: "<p>[!] DATA LINK INTERRUPTED.</p>",
     clear_banner: "ALL CLEAR IN ",
-    clear_action: "No forecasted threats. Monitoring nominal.",
+    clear_action: "No forecasted threats.",
     clear_bulletin: " is clear.</p>",
     warn_orange_action: "Stay indoors. Secure property.",
     warn_red_banner: "TORNADO WARNING: ",
