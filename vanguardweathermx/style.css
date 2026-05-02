@@ -1,4 +1,4 @@
-/* Vanguard Tactical Aesthetic V6 - Toggleable Telemetry */
+/* Vanguard Tactical Aesthetic V6.1 - Master Build */
 :root {
     --gold: #D4AF37;
     --black-rich: #121212;
@@ -19,6 +19,11 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* CORE UTILITY CLASSES */
+.hidden { display: none !important; }
+.hidden-panel { display: none !important; }
+
+/* Fluid Viewport Enforcement */
 html, body {
     height: 100%;
     height: 100dvh;
@@ -50,6 +55,7 @@ h1 {
 }
 
 .search-container { width: 100%; max-width: 400px; position: relative; }
+
 #location-search {
     background: var(--glass);
     border: 1px solid #333;
@@ -129,9 +135,6 @@ button:active, button.active-toggle { background: var(--gold); color: #000; }
 
 .action-panel { flex: 1; }
 .expert-panel { flex: 1; }
-
-/* Toggle Class */
-.hidden-panel { display: none !important; }
 
 h3 {
     font-family: 'Cinzel', serif;
