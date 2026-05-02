@@ -1,3 +1,8 @@
+/**
+ * VANGUARD WEATHER MX: CORE COMMAND SCRIPT
+ * STABLE BUILD: SESSION MEMORY + WRAP SUPPORT
+ */
+
 const CONFIG = {
     USER_AGENT: '(Vanguard Weather Mx, commandrq@gmail.com)',
     POLL_RATE: 180000, // 3 Mins
@@ -13,7 +18,7 @@ let SESSION = {
 const UI = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. CACHE DOM
+    // 1. CACHE DOM ELEMENTS
     const ids = ['update-btn', 'reset-loc-btn', 'geo-btn', 'location-search', 'autocomplete-results', 
                  'notify-btn', 'close-modal', 'alert-modal', 'dashboard', 'primary-alert', 
                  'beginner-action', 'chaser-bulletin', 'modal-title', 'modal-body', 'last-scan-time'];
@@ -24,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         UI.notifyBtn.style.color = "#00ff00";
     }
 
-    // 3. EVENTS
+    // 3. CORE EVENTS
     UI.updateBtn.onclick = () => SESSION.sector && executeSweep();
     UI.geoBtn.onclick = requestGeolocation;
     UI.notifyBtn.onclick = toggleAlerts;
@@ -37,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /^\d{5}$/.test(val) ? fetchZip(val) : fetchCity(val);
     };
 
+    // Auto-update Loop
     setInterval(() => SESSION.sector && executeSweep(true), CONFIG.POLL_RATE);
 });
 
@@ -50,12 +56,13 @@ async function executeSweep() {
         processAlerts(data.features);
     } catch (e) {
         updateTimestamp(); 
-        renderUI('status-offline', 'SYSTEM INACTIVE', 'Please monitor radio or local weather for additional threats.', '<p>[!] CONNECTION INTERRUPTED. DATA MAY BE STALE.</p>');
+        renderUI('status-offline', 'SYSTEM INACTIVE', 'Please monitor radio or local weather for additional threats.', '<p>[!] CONNECTION INTERRUPTED. MONITORING SUSPENDED.</p>');
     }
 }
 
 function updateTimestamp() {
     const now = new Date();
+    // Requirements: Large enough to see, white text (styled in CSS)
     UI.lastScanTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
@@ -98,8 +105,8 @@ function requestGeolocation() {
             SESSION.sector = { state: data.properties.relativeLocation.properties.state, lat: latitude, lon: longitude };
             UI.locationSearch.value = SESSION.sector.state;
             executeSweep();
-        } catch(e) { alert("GPS Bridge Failure."); }
-    }, () => alert("Location access required for tactical monitoring."));
+        } catch(e) { alert("Tactical Link Failure."); }
+    }, () => alert("GPS access required for tactical monitoring."));
 }
 
 function openModal(i) {
