@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANGUARD MX // WEATHER COMMAND</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VANGUARD COMMAND // WEATHER MX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,28 +17,31 @@
                 <input type="text" id="location-search" placeholder="Enter City/Zip" autocomplete="off">
                 <ul id="autocomplete-results" class="hidden"></ul>
             </div>
-            <button id="geo-btn" title="Sync GPS Coordinates">CURRENT LOCATION</button>
-            <button id="update-btn">UPDATE FEED</button>
+            <button id="geo-btn">LOCATION</button>
+            <button id="update-btn">UPDATE</button>
             <button id="reset-loc-btn">RESET</button>
-            <button id="notify-btn">ALERTS: OFF</button>
+            <button id="notify-btn">ALERTS</button>
         </div>
     </header>
 
     <main id="dashboard" class="status-green">
         <div id="status-banner">
             <h2 id="primary-alert">AWAITING SECTOR DATA</h2>
+            <div id="last-scan-container">
+                LAST SCAN: <span id="last-scan-time">NEVER</span>
+            </div>
         </div>
 
         <div class="info-grid">
             <section class="action-panel">
                 <h3>CITIZEN PROTOCOL</h3>
                 <div id="beginner-action">
-                    <p>Provide location to initiate monitoring.</p>
+                    <p>Initiate monitoring to receive tactical directives.</p>
                 </div>
             </section>
 
             <section class="expert-panel">
-                <h3>CHASER BULLETIN (RAW FEED)</h3>
+                <h3>CHASER BULLETIN</h3>
                 <div id="chaser-bulletin" class="scroll-box">
                     <p>System standing by...</p>
                 </div>
@@ -46,7 +52,7 @@
     <div id="alert-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" id="close-modal">&times;</span>
-            <h2 id="modal-title">TELEMETRY DATA</h2>
+            <h2 id="modal-title">TELEMETRY</h2>
             <div id="modal-body" class="scroll-box"></div>
         </div>
     </div>
