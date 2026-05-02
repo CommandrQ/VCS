@@ -1,4 +1,4 @@
-/* Vanguard Tactical Aesthetic V6.1 - Master Build */
+/* Vanguard Tactical Aesthetic V7 - Desktop Optimization */
 :root {
     --gold: #D4AF37;
     --black-rich: #121212;
@@ -83,13 +83,14 @@ h1 {
 
 button {
     background: transparent;
-    color: var(--gold);
+    color: var(--gold); /* Default Mobile Color */
     border: 1px solid var(--gold);
     font-family: 'Cinzel', serif;
     padding: 0.5rem;
     font-size: 0.7rem;
     cursor: pointer;
     text-transform: uppercase;
+    transition: color 0.2s, background 0.2s;
 }
 
 button:active, button.active-toggle { background: var(--gold); color: #000; }
@@ -148,9 +149,26 @@ h3 {
 
 .scroll-box { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 0.8rem; overflow-y: auto; font-size: 0.9rem; }
 
-.alert-item { border-left: 3px solid var(--gold); background: rgba(255,255,255,0.05); margin-bottom: 0.5rem; padding: 1rem; cursor: pointer; }
+.alert-item { 
+    border-left: 3px solid var(--gold); 
+    background: rgba(255,255,255,0.05); 
+    margin-bottom: 0.5rem; 
+    padding: 1rem; 
+}
 
-/* Modal */
+.nws-popup-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--white);
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.nws-popup-link:hover { color: var(--gold); }
+
+/* Modal / Popup */
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
 .modal-content { background: var(--black-rich); border: 1px solid var(--gold); padding: 1.5rem; width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; }
 .close-btn { color: var(--emergency-red); float: right; font-size: 2rem; cursor: pointer; }
@@ -167,7 +185,20 @@ h3 {
     100% { border-color: #500; }
 }
 
+/* ========================================= */
+/* DESKTOP COMMAND OVERRIDE                  */
+/* ========================================= */
 @media (min-width: 768px) {
     header { flex-direction: row; justify-content: space-between; }
+    
+    /* Force buttons to have White text on Desktop */
+    .controls button { color: var(--white); }
+    
+    /* Hide the Telemetry Toggle button on Desktop */
+    #telemetry-toggle { display: none !important; }
+    
     .info-grid { flex-direction: row; }
+    
+    /* Force Expert Panel to ALWAYS be visible on Desktop, overriding the JS hidden-panel class */
+    #expert-panel { display: flex !important; }
 }
