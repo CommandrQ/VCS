@@ -1,6 +1,6 @@
 /**
  * VANGUARD WEATHER MX: COMMAND SCRIPT
- * V9.1: OVERRIDE PROTOCOL + STABILIZED SEARCH ENGINE
+ * V10: LOGIC AUDIT & BUG FIX PATCH
  */
 
 const CONFIG = {
@@ -10,20 +10,31 @@ const CONFIG = {
 };
 
 let SESSION = { sector: null, alerts: [], pendingScan: null };
-let searchThrottleTimeout; // Required to prevent API rate-limiting
+let searchThrottleTimeout;
 const UI = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. CACHE DOM ELEMENTS
     const ids = ['update-btn', 'reset-loc-btn', 'geo-btn', 'location-search', 'autocomplete-results', 
                  'notify-btn', 'close-modal', 'alert-modal', 'dashboard', 'primary-alert', 
                  'beginner-action', 'chaser-bulletin', 'modal-title', 'modal-body', 'last-scan-time',
-                 'is-current-loc', 'disclaimer-modal', 'accept-disclaimer-btn'];
+                 'is-current-loc', 'disclaimer-modal', 'accept-disclaimer-btn', 'close-disclaimer'];
     ids.forEach(id => UI[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
-    if (localStorage.getItem('vanguard_mx_alerts') === 'true' && Notification.permission === 'granted') {
+    // FAILSAFE 1: iOS Crash Prevention (Check if Notifications exist before calling)
+    const notificationsSupported = 'Notification' in window;
+    if (localStorage.getItem('vanguard_mx_alerts') === 'true' && notificationsSupported && Notification.permission === 'granted') {
         UI.notifyBtn.style.color = "#00ff00";
     }
+
+    // FAILSAFE 2: Modals can now be aborted by clicking outside or hitting the X
+    window.addEventListener('click', (e) => {
+        if (e.target === UI.alertModal) UI.alertModal.classList.add('hidden');
+        if (e.target === UI.disclaimerModal) abortScan();
+        if (!e.target.closest('.search-container')) UI.autocompleteResults.classList.add('hidden');
+    });
+
+    UI.closeModal.onclick = () => UI.alertModal.classList.add('hidden');
+    UI.closeDisclaimer.onclick = abortScan;
 
     // --- SEARCH OVERRIDES ---
     UI.locationSearch.addEventListener('keydown', (e) => {
@@ -35,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     UI.updateBtn.onclick = () => {
         const val = UI.locationSearch.value.trim();
-        // Logic: If they typed a raw location without a comma, force a new search. Otherwise, refresh current.
         if (val.length >= 3 && !val.includes(",")) {
             processManualInput();
         } else if (SESSION.sector) {
@@ -43,35 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Input Throttling (Debounce)
     UI.locationSearch.oninput = (e) => {
         clearTimeout(searchThrottleTimeout);
         const val = e.target.value.trim();
         if (val.length < 3) return UI.autocompleteResults.classList.add('hidden');
         
-        // Wait 500ms after the Citizen stops typing before hitting the API
         searchThrottleTimeout = setTimeout(() => {
             /^\d{5}$/.test(val) ? fetchZip(val) : fetchCity(val);
         }, 500); 
     };
 
-    // Close autocomplete when clicking outside the box
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-container')) {
-            UI.autocompleteResults.classList.add('hidden');
-        }
-    });
-
-    // --- CORE BUTTONS ---
     UI.geoBtn.onclick = requestGeolocation;
     UI.notifyBtn.onclick = toggleAlerts;
-    UI.closeModal.onclick = () => UI.alertModal.classList.add('hidden');
     UI.resetLocBtn.onclick = resetSystem;
 
     // Acknowledge Disclaimer Button
     UI.acceptDisclaimerBtn.onclick = () => {
         UI.disclaimerModal.classList.add('hidden');
-        // 500ms tactical delay after closing modal
+        // FAILSAFE 3: Clear the checkbox so it doesn't trigger on the next search
+        UI.isCurrentLoc.checked = false;
+        
         setTimeout(() => {
             if (SESSION.pendingScan) {
                 commitSearch(SESSION.pendingScan.state, SESSION.pendingScan.text);
@@ -83,14 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => SESSION.sector && executeSweep(true), CONFIG.POLL_RATE);
 });
 
-// --- SCAN PIPELINE WITH DELAYS ---
+// --- SCAN PIPELINE ---
+
+function abortScan() {
+    UI.disclaimerModal.classList.add('hidden');
+    SESSION.pendingScan = null;
+}
 
 async function processManualInput() {
     const val = UI.locationSearch.value.trim();
     UI.autocompleteResults.classList.add('hidden'); 
     if (val.length < 3) return;
 
-    // Direct API verification for Enter Key / Update Button
     if (/^\d{5}$/.test(val)) {
         try {
             const res = await fetch(`https://api.zippopotam.us/us/${val}`);
@@ -101,7 +106,9 @@ async function processManualInput() {
         } catch(e) { alert("VANGUARD COMMAND: Invalid Zip Code."); }
     } else {
         try {
-            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${val}&count=1&format=json`);
+            // FAILSAFE 4: encodeURIComponent() prevents spaces from crashing the API bridge
+            const encodedVal = encodeURIComponent(val);
+            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodedVal}&count=1&format=json`);
             const data = await res.json();
             if (data.results && data.results.length > 0) {
                 const p = data.results.find(x => x.country_code === "US");
@@ -118,7 +125,6 @@ async function processManualInput() {
 }
 
 function handleLocationSelection(stateCode, text) {
-    // 500ms delay to process the physical action
     setTimeout(() => {
         if (UI.isCurrentLoc.checked) {
             SESSION.pendingScan = { state: stateCode, text: text };
@@ -195,10 +201,7 @@ function requestGeolocation() {
             SESSION.sector = { state: data.properties.relativeLocation.properties.state };
             UI.locationSearch.value = SESSION.sector.state;
             
-            // Uncheck the override box since they used real GPS
             UI.isCurrentLoc.checked = false; 
-            
-            // 500ms delay before executing the GPS sweep
             setTimeout(() => executeSweep(), 500);
         } catch(e) { alert("GPS Bridge Failure."); }
     }, () => alert("Location access required for tactical monitoring."));
@@ -214,6 +217,10 @@ function openModal(i) {
 function resetSystem() { location.reload(); }
 
 function toggleAlerts() {
+    if (!('Notification' in window)) {
+        alert("System notifications are not supported on this device.");
+        return;
+    }
     Notification.requestPermission().then(p => {
         if (p === 'granted') {
             localStorage.setItem('vanguard_mx_alerts', 'true');
@@ -246,10 +253,10 @@ async function fetchZip(zip) {
 
 async function fetchCity(city) {
     try {
-        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=5&format=json`);
+        const encodedVal = encodeURIComponent(city);
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodedVal}&count=5&format=json`);
         const data = await res.json();
         
-        // Logical Null Check: Prevent crashes if the API returns undefined results
         if (!data.results) return; 
 
         const results = data.results.filter(x => x.country_code === "US");
