@@ -1,29 +1,31 @@
 /**
  * VANGUARD WEATHER MX: COMMAND SCRIPT
- * V6: TELEMETRY TOGGLE + HUD OPTIMIZATION
+ * V6.1: MASTER DEPLOYMENT BUILD
  */
 
 const CONFIG = {
     USER_AGENT: '(Vanguard Weather Mx, commandrq@gmail.com)',
-    POLL_RATE: 180000,
-    STATE_MAP: { "Kentucky": "KY", "Tennessee": "TN", "Ohio": "OH", "Indiana": "IN" } 
+    POLL_RATE: 180000, // 3 Minutes
+    STATE_MAP: { "Kentucky": "KY", "Tennessee": "TN", "Ohio": "OH", "Indiana": "IN", "Illinois": "IL" } 
 };
 
 let SESSION = { sector: null, alerts: [] };
 const UI = {};
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. CACHE DOM ELEMENTS
     const ids = ['update-btn', 'reset-loc-btn', 'geo-btn', 'location-search', 'autocomplete-results', 
                  'notify-btn', 'close-modal', 'alert-modal', 'dashboard', 'primary-alert', 
                  'beginner-action', 'chaser-bulletin', 'modal-title', 'modal-body', 'last-scan-time',
                  'telemetry-toggle', 'expert-panel'];
     ids.forEach(id => UI[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
+    // 2. CHECK ALERTS PREFERENCE
     if (localStorage.getItem('vanguard_mx_alerts') === 'true' && Notification.permission === 'granted') {
         UI.notifyBtn.style.color = "#00ff00";
     }
 
-    // Toggle Telemetry Box
+    // 3. CORE EVENTS
     UI.telemetryToggle.onclick = () => {
         UI.expertPanel.classList.toggle('hidden-panel');
         UI.telemetryToggle.classList.toggle('active-toggle');
@@ -41,8 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
         /^\d{5}$/.test(val) ? fetchZip(val) : fetchCity(val);
     };
 
+    // Auto-update Loop
     setInterval(() => SESSION.sector && executeSweep(true), CONFIG.POLL_RATE);
 });
+
+// --- DATA PROCESSING LOGIC ---
 
 async function executeSweep() {
     const url = `https://api.weather.gov/alerts/active?area=${SESSION.sector.state}&cb=${Date.now()}`;
@@ -81,6 +86,8 @@ function processAlerts(features) {
     else renderUI('status-green', `ALL CLEAR IN ${SESSION.sector.state}`, 'No forecasted threats. Monitoring nominal.', list);
 }
 
+// --- UI COMMANDS ---
+
 function renderUI(cls, banner, action, bulletin) {
     UI.dashboard.className = cls;
     UI.primaryAlert.textContent = banner;
@@ -91,12 +98,14 @@ function renderUI(cls, banner, action, bulletin) {
 function requestGeolocation() {
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const res = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, { headers: { 'User-Agent': CONFIG.USER_AGENT } });
-        const data = await res.json();
-        SESSION.sector = { state: data.properties.relativeLocation.properties.state };
-        UI.locationSearch.value = SESSION.sector.state;
-        executeSweep();
-    });
+        try {
+            const res = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, { headers: { 'User-Agent': CONFIG.USER_AGENT } });
+            const data = await res.json();
+            SESSION.sector = { state: data.properties.relativeLocation.properties.state };
+            UI.locationSearch.value = SESSION.sector.state;
+            executeSweep();
+        } catch(e) { alert("GPS Bridge Failure."); }
+    }, () => alert("Location access required for tactical monitoring."));
 }
 
 function openModal(i) {
@@ -117,18 +126,25 @@ function toggleAlerts() {
     });
 }
 
-// Search Helpers
+// --- SEARCH FALLBACKS ---
+
 async function fetchZip(zip) {
-    const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
-    const data = await res.json();
-    commitSearch(data.places[0]["state abbreviation"], `${data.places[0]["place name"]}, ${data.places[0]["state abbreviation"]}`);
+    try {
+        const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        const data = await res.json();
+        commitSearch(data.places[0]["state abbreviation"], `${data.places[0]["place name"]}, ${data.places[0]["state abbreviation"]}`);
+    } catch(e) {}
 }
+
 async function fetchCity(city) {
-    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=5&format=json`);
-    const data = await res.json();
-    const p = data.results.find(x => x.country_code === "US");
-    if(p) commitSearch(CONFIG.STATE_MAP[p.admin1], `${p.name}, ${CONFIG.STATE_MAP[p.admin1]}`);
+    try {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=5&format=json`);
+        const data = await res.json();
+        const p = data.results.find(x => x.country_code === "US");
+        if(p) commitSearch(CONFIG.STATE_MAP[p.admin1], `${p.name}, ${CONFIG.STATE_MAP[p.admin1]}`);
+    } catch(e) {}
 }
+
 function commitSearch(state, text) {
     SESSION.sector = { state };
     UI.locationSearch.value = text;
