@@ -1,53 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>VCS | Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; padding: 40px; }
-        .app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
-        .app-card { background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; text-align: center; text-decoration: none; color: white; }
-        .app-card:hover { border-color: #3b82f6; }
-        button.logout { background: #ef4444; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>Vanguard Command Hub</h1>
-        <button class="logout" onclick="logout()">Logout</button>
-    </div>
-    
-    <p id="welcome">Verifying Identity...</p>
+<script>
+    const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
+    const SB_KEY = 'YOUR_KEY_HERE'; // Use your eyJ... key
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    <div class="app-grid">
-        <a href="apps/constitution.html" class="app-card">⚖️ Constitution</a>
-        <a href="apps/mission-logs.html" class="app-card">📝 Mission Logs</a>
-    </div>
-
-    <script>
-        const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzaGd0YWt1cHdybGJ6enNiaXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mzg3MzAsImV4cCI6MjA5MzMxNDczMH0._A79P3VYFuwvtDeDj6ZX6ortqidkelDQGAAwCcsgNDQ';
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-        async function checkSession() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            
-            if (!session) {
-                window.location.href = 'index.html'; // Kick out unauthorized users
-            } else {
-                // Retrieve User Info from the "Vault"
-                const userEmail = session.user.email;
-                const username = session.user.user_metadata.display_name || "Citizen";
-                document.getElementById('welcome').innerText = `Welcome, ${username} (${userEmail})`;
-            }
-        }
-
-        checkSession();
-
-        async function logout() {
-            await _supabase.auth.signOut();
+    async function loadCitizenProfile() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        
+        if (!session) {
             window.location.href = 'index.html';
+            return;
         }
-    </script>
-</body>
-</html>
+
+        // 1. Fetch the Blueprint from your src folder
+        const response = await fetch('./src/datafields.json');
+        const fields = await response.json();
+
+        // 2. Ask Supabase for the specific data in those fields
+        // We create a string of IDs like "display_name, discord_tag, division"
+        const columnQuery = fields.map(f => f.id).join(', ');
+        
+        const { data: profile, error } = await _supabase
+            .from('profiles')
+            .select(columnQuery)
+            .eq('id', session.user.id)
+            .single();
+
+        if (error) {
+            console.error("Error fetching profile:", error);
+            return;
+        }
+
+        // 3. Display the info on the page
+        const infoContainer = document.getElementById('user-info');
+        infoContainer.innerHTML = ''; // Clear previous
+
+        fields.forEach(field => {
+            const value = profile[field.id] || 'Not Set';
+            infoContainer.innerHTML += `
+                <div class="info-row">
+                    <strong>${field.label}:</strong> <span>${value}</span>
+                </div>
+            `;
+        });
+    }
+
+    loadCitizenProfile();
+</script>
