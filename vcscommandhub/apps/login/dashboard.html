@@ -2,53 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VCS | Command Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        /* SECURITY SHIELD: Hide everything until authorized */
-        body { opacity: 0; transition: opacity 0.5s; background: #0f172a; color: white; }
-        .authorized { opacity: 1 !important; }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        /* SECURITY SHIELD: Hide page until authorized */
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            opacity: 0; 
+            transition: opacity 0.5s ease;
+        }
+
+        /* This class is added via JS only if logged in */
+        body.authorized { opacity: 1; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #334155; 
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-badge { font-size: 0.9rem; color: var(--text-dim); }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .logout-btn:hover { background: #ef4444; color: white; }
+
+        /* The App Suite Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .app-card {
+            background: var(--card);
+            border: 1px solid #334155;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .app-icon { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+        .app-title { font-weight: bold; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <div id="app-library">
-        <h1>Vanguard Command Hub</h1>
-        <p>Welcome, <span id="user-name">Citizen</span></p>
-        
-        <div class="grid">
-            <a href="apps/constitution.html">⚖️ Constitution</a>
-            <button onclick="logout()">Logout</button>
-        </div>
+    <div class="container">
+        <header>
+            <div>
+                <h1>VANGUARD HUB</h1>
+                <div class="user-badge" id="user-email">Verifying...</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </header>
+
+        <main>
+            <div class="app-grid">
+                <a href="apps/constitution.html" class="app-card">
+                    <span class="app-icon">⚖️</span>
+                    <span class="app-title">CONSTITUTION</span>
+                </a>
+
+                <a href="apps/mission-logs.html" class="app-card">
+                    <span class="app-icon">📝</span>
+                    <span class="app-title">MISSION LOGS</span>
+                </a>
+
+                <a href="apps/worldbuilding.html" class="app-card">
+                    <span class="app-icon">🌍</span>
+                    <span class="app-title">WORLDBUILDING</span>
+                </a>
+            </div>
+        </main>
     </div>
 
     <script type="module">
-        // 1. Initialize Supabase
-        const URL = import.meta.env.VITE_SUPABASE_URL;
-        const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        const _supabase = supabase.createClient(URL, KEY);
+        // 1. HARDCODE YOUR KEYS HERE
+        // (Since GitHub Pages cannot read your local .env file)
+        const SB_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SB_KEY = 'YOUR_ANON_PUBLIC_KEY';
 
-        async function checkAccess() {
-            // 2. Ask the Guard for a Badge
-            const { data: { session } } = await _supabase.auth.getSession();
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-            if (!session) {
-                // NO BADGE: Kick them out to the login page
+        async function gatekeeper() {
+            console.log("Checking credentials...");
+            
+            // Check if the user has a "Badge" (Active Session)
+            const { data: { session }, error } = await _supabase.auth.getSession();
+
+            if (error || !session) {
+                // NO BADGE: Kick them to the login page (index.html)
+                console.log("Unauthorized. Redirecting to login...");
                 window.location.href = 'index.html'; 
             } else {
-                // AUTHORIZED: Show the page and set name
-                document.getElementById('user-name').innerText = session.user.email;
+                // AUTHORIZED: Reveal the dashboard
+                console.log("Access Granted.");
+                document.getElementById('user-email').innerText = `Logged in as: ${session.user.email}`;
                 document.body.classList.add('authorized');
             }
         }
 
-        // Run the check immediately
-        checkAccess();
+        // Run the check as soon as the file loads
+        gatekeeper();
 
-        // Logout Function
+        // Global Logout Function
         window.logout = async () => {
-            await _supabase.auth.signOut();
+            const { error } = await _supabase.auth.signOut();
             window.location.href = 'index.html';
         };
     </script>
