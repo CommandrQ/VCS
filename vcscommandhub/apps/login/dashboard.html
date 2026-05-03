@@ -1,21 +1,153 @@
-<header>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <h1 style="margin:0; font-size: 1.5rem;">VANGUARD HUB</h1>
-        <a href="settings.html" class="settings-cog" title="Personnel Settings">⚙️</a>
-    </div>
-    <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
-</header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCS | Command Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6;
+            --text: #f8fafc; --text-dim: #94a3b8; --danger: #ef4444;
+        }
 
-<style>
-    .settings-cog {
-        text-decoration: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        filter: grayscale(1) brightness(1.5);
+        body { 
+            background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 20px; opacity: 0; transition: opacity 0.5s ease; 
+        }
+        body.authorized { opacity: 1; }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        /* Tactical Header */
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px;
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        
+        .settings-cog {
+            text-decoration: none; font-size: 1.5rem; cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block; filter: grayscale(1) brightness(1.5);
+        }
+        .settings-cog:hover { transform: rotate(90deg); filter: grayscale(0) brightness(1); }
+
+        /* Profile Summary Card */
+        .profile-card { 
+            background: var(--card); border: 1px solid #334155; 
+            padding: 20px; border-radius: 12px; margin-bottom: 30px;
+        }
+        .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .data-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .data-value { font-size: 1.1rem; font-weight: bold; color: var(--accent); display: block; }
+
+        /* App Grid */
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .app-link { 
+            background: var(--card); border: 1px solid #334155; padding: 30px; 
+            border-radius: 12px; text-decoration: none; color: white; text-align: center;
+            transition: all 0.2s ease;
+        }
+        .app-link:hover { transform: translateY(-5px); border-color: var(--accent); background: #26334d; }
+        .app-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+        .btn-logout { 
+            background: transparent; border: 1px solid var(--danger); 
+            color: var(--danger); padding: 8px 16px; border-radius: 6px; cursor: pointer; 
+        }
+        .btn-logout:hover { background: var(--danger); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-left">
+            <h1 style="margin:0; letter-spacing: 2px;">VANGUARD HUB</h1>
+            <a href="settings.html" class="settings-cog" title="Personnel Settings">⚙️</a>
+        </div>
+        <button class="btn-logout" onclick="logout()">LOGOUT</button>
+    </header>
+
+    <div class="profile-card">
+        <h2 style="margin-top:0; font-size: 0.9rem; color: var(--text-dim);">PUBLIC SERVICE RECORD</h2>
+        <div id="public-profile" class="profile-grid">
+            <span>Loading profile...</span>
+        </div>
+    </div>
+
+    <div class="app-grid">
+        <a href="apps/constitution.html" class="app-link">
+            <span class="app-icon">⚖️</span>
+            <strong>CONSTITUTION</strong>
+        </a>
+        <a href="apps/mission-logs.html" class="app-link">
+            <span class="app-icon">📝</span>
+            <strong>MISSION LOGS</strong>
+        </a>
+        <a href="apps/armory.html" class="app-link">
+            <span class="app-icon">⚔️</span>
+            <strong>ARMORY</strong>
+        </a>
+    </div>
+</div>
+
+<script>
+    const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzaGd0YWt1cHdybGJ6enNiaXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mzg3MzAsImV4cCI6MjA5MzMxNDczMH0._A79P3VYFuwvtDeDj6ZX6ortqidkelDQGAAwCcsgNDQ';
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    async function loadDashboard() {
+        // 1. Session Check
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session) {
+            window.location.href = 'index.html';
+            return;
+        }
+        document.body.classList.add('authorized');
+
+        // 2. Load Blueprint and Data
+        try {
+            const blueprintReq = await fetch('./src/datafields.json');
+            const fields = await blueprintReq.json();
+
+            // Only request columns defined in the JSON
+            const columns = fields.map(f => f.id).join(',');
+            const { data: profile } = await _supabase
+                .from('profiles')
+                .select(columns)
+                .eq('id', session.user.id)
+                .single();
+
+            // 3. Render Public Fields Only
+            const display = document.getElementById('public-profile');
+            display.innerHTML = '';
+
+            fields.forEach(field => {
+                if (field.public === true) {
+                    const val = profile ? profile[field.id] : '---';
+                    display.innerHTML += `
+                        <div>
+                            <span class="data-label">${field.label}</span>
+                            <span class="data-value">${val || 'Not Set'}</span>
+                        </div>
+                    `;
+                }
+            });
+
+        } catch (err) {
+            console.error("Dashboard Load Error:", err);
+        }
     }
-    .settings-cog:hover {
-        transform: rotate(90deg);
-        filter: grayscale(0) brightness(1);
+
+    async function logout() {
+        await _supabase.auth.signOut();
+        window.location.href = 'index.html';
     }
-</style>
+
+    loadDashboard();
+</script>
+
+</body>
+</html>
