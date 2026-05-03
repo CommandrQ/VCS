@@ -1,48 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCS | Command Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6;
+            --success: #10b981; --danger: #ef4444; --text: #f8fafc; --text-dim: #94a3b8;
+        }
+
+        body { 
+            background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 20px; opacity: 0; transition: opacity 0.4s; 
+        }
+        body.authorized { opacity: 1; }
+
+        .container { max-width: 900px; margin: 0 auto; }
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px;
+        }
+
+        .section { background: var(--card); border: 1px solid #334155; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        h2 { margin-top: 0; color: var(--accent); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Profile Display Grid */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .data-item { padding: 10px; background: #0f172a; border-radius: 6px; border: 1px solid #1e293b; }
+        .label { font-size: 0.75rem; color: var(--text-dim); display: block; text-transform: uppercase; }
+        .value { font-weight: bold; color: white; }
+
+        /* Settings Form */
+        .settings-form input, .settings-form select, .settings-form textarea {
+            width: 100%; padding: 10px; margin: 10px 0; background: #0f172a; 
+            border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box;
+        }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-update { background: var(--success); color: white; width: 100%; margin-top: 10px; }
+        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .btn-logout:hover { background: var(--danger); color: white; }
+        
+        #status-msg { margin-top: 10px; font-size: 0.9rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1 style="margin:0; font-size: 1.5rem;">VANGUARD HUB</h1>
+            <span id="header-email" style="font-size: 0.8rem; color: var(--text-dim);">Checking credentials...</span>
+        </div>
+        <button class="btn btn-logout" onclick="handleLogout()">LOGOUT</button>
+    </header>
+
+    <div class="section">
+        <h2>Citizen Personnel Record</h2>
+        <div id="profile-display" class="profile-grid">
+            </div>
+    </div>
+
+    <div class="section">
+        <h2>Update Identity Details</h2>
+        <form id="settings-form" class="settings-form">
+            <div id="form-fields">
+                </div>
+            <button type="submit" class="btn btn-update">SYNC WITH VAULT</button>
+        </form>
+        <div id="status-msg"></div>
+    </div>
+</div>
+
 <script>
     const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
-    const SB_KEY = 'YOUR_KEY_HERE'; // Use your eyJ... key
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzaGd0YWt1cHdybGJ6enNiaXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mzg3MzAsImV4cCI6MjA5MzMxNDczMH0._A79P3VYFuwvtDeDj6ZX6ortqidkelDQGAAwCcsgNDQ';
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-    async function loadCitizenProfile() {
+    let masterFields = [];
+
+    async function initializeDashboard() {
+        // 1. Check Session
         const { data: { session } } = await _supabase.auth.getSession();
-        
         if (!session) {
             window.location.href = 'index.html';
             return;
         }
+        document.getElementById('header-email').innerText = session.user.email;
+        document.body.classList.add('authorized');
 
-        // 1. Fetch the Blueprint from your src folder
-        const response = await fetch('./src/datafields.json');
-        const fields = await response.json();
-
-        // 2. Ask Supabase for the specific data in those fields
-        // We create a string of IDs like "display_name, discord_tag, division"
-        const columnQuery = fields.map(f => f.id).join(', ');
-        
-        const { data: profile, error } = await _supabase
-            .from('profiles')
-            .select(columnQuery)
-            .eq('id', session.user.id)
-            .single();
-
-        if (error) {
-            console.error("Error fetching profile:", error);
-            return;
+        // 2. Load Blueprint (JSON)
+        try {
+            const response = await fetch('./src/datafields.json');
+            masterFields = await response.json();
+            
+            // 3. Build the Form UI
+            renderForm(masterFields);
+            
+            // 4. Fetch the actual User Data
+            await fetchAndDisplayData(session.user.id);
+        } catch (err) {
+            console.error("Blueprint Error:", err);
         }
+    }
 
-        // 3. Display the info on the page
-        const infoContainer = document.getElementById('user-info');
-        infoContainer.innerHTML = ''; // Clear previous
-
+    function renderForm(fields) {
+        const container = document.getElementById('form-fields');
+        container.innerHTML = '';
         fields.forEach(field => {
-            const value = profile[field.id] || 'Not Set';
-            infoContainer.innerHTML += `
-                <div class="info-row">
-                    <strong>${field.label}:</strong> <span>${value}</span>
-                </div>
-            `;
+            let input = '';
+            if (field.type === 'select') {
+                input = `<select id="field-${field.id}">
+                    ${field.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                </select>`;
+            } else {
+                input = `<input type="${field.type}" id="field-${field.id}" placeholder="${field.label}">`;
+            }
+            container.innerHTML += `<label style="font-size:0.8rem; color:var(--text-dim)">${field.label}</label>${input}`;
         });
     }
 
-    loadCitizenProfile();
+    async function fetchAndDisplayData(userId) {
+        const columns = masterFields.map(f => f.id).join(',');
+        const { data: profile, error } = await _supabase
+            .from('profiles')
+            .select(columns)
+            .eq('id', userId)
+            .single();
+
+        if (error) return;
+
+        const display = document.getElementById('profile-display');
+        display.innerHTML = '';
+        
+        masterFields.forEach(field => {
+            const val = profile[field.id] || '---';
+            // Update Display
+            display.innerHTML += `
+                <div class="data-item">
+                    <span class="label">${field.label}</span>
+                    <span class="value">${val}</span>
+                </div>
+            `;
+            // Fill Form Inputs for editing
+            const input = document.getElementById(`field-${field.id}`);
+            if (input) input.value = profile[field.id] || '';
+        });
+    }
+
+    // UPDATE LOGIC
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('status-msg');
+        msg.innerText = "Syncing...";
+
+        const { data: { session } } = await _supabase.auth.getSession();
+        const updates = {};
+        
+        masterFields.forEach(field => {
+            updates[field.id] = document.getElementById(`field-${field.id}`).value;
+        });
+
+        const { error } = await _supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', session.user.id);
+
+        if (error) {
+            msg.innerText = "Error: " + error.message;
+            msg.style.color = "var(--danger)";
+        } else {
+            msg.innerText = "Vault Updated Successfully!";
+            msg.style.color = "var(--success)";
+            await fetchAndDisplayData(session.user.id); // Refresh display
+        }
+    });
+
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.href = 'index.html';
+    }
+
+    initializeDashboard();
 </script>
+
+</body>
+</html>
