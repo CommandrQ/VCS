@@ -1,29 +1,187 @@
-<script>
-    const _supabase = supabase.createClient('URL', 'KEY');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Induction | Vanguard Citizen Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --dark-glass: rgba(10, 10, 10, 0.95);
+            --border-gold: rgba(212, 175, 55, 0.4);
+            --accent: #3b82f6;
+        }
 
-    async function registerUser() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('pass').value;
-        const firstName = document.getElementById('first_name').value;
-        const lastName = document.getElementById('last_name').value;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #000; 
+            color: white; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-        const { data, error } = await _supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                // This metadata is what our SQL trigger "grabs"
-                data: { 
-                    first_name: firstName, 
-                    last_name: lastName 
+        /* --- STARFIELD ENGINE --- */
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%); overflow: hidden;
+        }
+        .star-layer { position: absolute; top: -100%; left: 0; width: 200%; height: 200%; background-repeat: repeat; animation: move-stars linear infinite; }
+        .layer-1 { background-image: radial-gradient(1px 1px at 10% 10%, #fff, transparent); background-size: 300px 300px; animation-duration: 120s; opacity: 0.3; }
+        .layer-2 { background-image: radial-gradient(2px 2px at 20% 80%, #fff, transparent); background-size: 400px 400px; animation-duration: 80s; opacity: 0.5; }
+        @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(50%); } }
+
+        /* --- HUD NAVIGATION --- */
+        nav {
+            width: 100%; height: 90px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border-gold);
+            backdrop-filter: blur(20px); z-index: 10;
+        }
+        .nav-logo { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 4px; font-size: 1.2rem; text-decoration: none; }
+
+        /* --- INDUCTION CONSOLE --- */
+        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        
+        .console-panel {
+            background: var(--dark-glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--border-gold); border-radius: 20px;
+            width: 100%; max-width: 450px; padding: 40px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
+            position: relative; overflow: hidden;
+        }
+
+        /* Scanning HUD Line */
+        .console-panel::before {
+            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(transparent, rgba(212, 175, 55, 0.05), transparent);
+            animation: scan 4s linear infinite; pointer-events: none;
+        }
+        @keyframes scan { from { top: -100%; } to { top: 100%; } }
+
+        h2 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 3px; font-size: 1.5rem; text-align: center; margin-bottom: 30px; text-transform: uppercase; }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.7rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold; }
+        
+        input {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(212, 175, 55, 0.2); color: white; border-radius: 4px;
+            font-family: 'Inter', sans-serif; font-size: 0.95rem; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--gold); background: rgba(212, 175, 55, 0.05); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
+
+        .btn-induct {
+            width: 100%; padding: 15px; background: transparent; border: 1px solid var(--gold);
+            color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; letter-spacing: 2px;
+            cursor: pointer; transition: 0.4s; margin-top: 10px; text-transform: uppercase;
+        }
+        .btn-induct:hover { background: var(--gold); color: black; box-shadow: 0 0 20px var(--gold-glow); }
+
+        .auth-footer { text-align: center; margin-top: 25px; }
+        .auth-footer a { color: #888; text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+        .auth-footer a:hover { color: var(--gold); }
+
+        #status-msg { margin-top: 20px; text-align: center; font-size: 0.85rem; min-height: 1.2em; }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container">
+        <div class="star-layer layer-1"></div>
+        <div class="star-layer layer-2"></div>
+    </div>
+
+    <nav>
+        <a href="index.html" class="nav-logo">VCS CITIZEN SERVICES</a>
+    </nav>
+
+    <main>
+        <div class="console-panel">
+            <h2>Citizen Induction</h2>
+            
+            <form id="register-form">
+                <div style="display: flex; gap: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>First Name</label>
+                        <input type="text" id="first_name" placeholder="John" required>
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Last Name</label>
+                        <input type="text" id="last_name" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Registry Email</label>
+                    <input type="email" id="email" placeholder="recruit@vanguard.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Security Key (Password)</label>
+                    <input type="password" id="pass" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-induct">Initialize Identity</button>
+            </form>
+
+            <div id="status-msg"></div>
+
+            <div class="auth-footer">
+                <a href="index.html">Existing Citizen? Access Command Hub</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzaGd0YWt1cHdybGJ6enNiaXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mzg3MzAsImV4cCI6MjA5MzMxNDczMH0._A79P3VYFuwvtDeDj6ZX6ortqidkelDQGAAwCcsgNDQ';
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        const form = document.getElementById('register-form');
+        const status = document.getElementById('status-msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            status.innerText = "Encrypting Identity...";
+            status.style.color = "var(--gold)";
+
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            const first = document.getElementById('first_name').value;
+            const last = document.getElementById('last_name').value;
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: pass,
+                options: {
+                    // This metadata is caught by your SQL Trigger to fill the profiles table
+                    data: {
+                        first_name: first,
+                        last_name: last
+                    }
                 }
+            });
+
+            if (error) {
+                status.innerText = "Access Denied: " + error.message;
+                status.style.color = "#ff4d4d";
+            } else {
+                status.innerText = "Induction Complete. Check your email for verification.";
+                status.style.color = "#10b981";
+                form.reset();
+                
+                // Optional: Redirect to login after a few seconds
+                setTimeout(() => { window.location.href = 'index.html'; }, 3000);
             }
         });
-
-        if (error) {
-            alert("Registration Failed: " + error.message);
-        } else {
-            alert("Identity Created. Welcome to the Vanguard.");
-            window.location.href = 'index.html'; // Send to login
-        }
-    }
-</script>
+    </script>
+</body>
+</html>
