@@ -1,54 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>VCS | Register</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 8px; border: 1px solid #334155; text-align: center; width: 320px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #10b981; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        #msg { margin-top: 15px; font-size: 0.85rem; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h2>Citizen Induction</h2>
-        <input type="text" id="username" placeholder="Callsign">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="pass" placeholder="Create Password">
-        <button onclick="register()">REGISTER</button>
-        <div id="msg"></div>
-        <p style="font-size: 0.8rem; margin-top: 20px;">
-            <a href="index.html" style="color: #94a3b8; text-decoration: none;">Back to Login</a>
-        </p>
-    </div>
+<script>
+    const _supabase = supabase.createClient('URL', 'KEY');
 
-    <script>
-        const SB_URL = 'https://ushgtakupwrlbzzsbivv.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzaGd0YWt1cHdybGJ6enNiaXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mzg3MzAsImV4cCI6MjA5MzMxNDczMH0._A79P3VYFuwvtDeDj6ZX6ortqidkelDQGAAwCcsgNDQ';
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+    async function registerUser() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('pass').value;
+        const firstName = document.getElementById('first_name').value;
+        const lastName = document.getElementById('last_name').value;
 
-        async function register() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('pass').value;
-            const username = document.getElementById('username').value;
-            const msg = document.getElementById('msg');
-
-            const { data, error } = await _supabase.auth.signUp({
-                email,
-                password,
-                options: { data: { display_name: username } }
-            });
-
-            if (error) {
-                msg.innerText = error.message;
-                msg.style.color = "#fca5a5";
-            } else {
-                msg.innerText = "Registration successful! You can now login.";
-                msg.style.color = "#6ee7b7";
+        const { data, error } = await _supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                // This metadata is what our SQL trigger "grabs"
+                data: { 
+                    first_name: firstName, 
+                    last_name: lastName 
+                }
             }
+        });
+
+        if (error) {
+            alert("Registration Failed: " + error.message);
+        } else {
+            alert("Identity Created. Welcome to the Vanguard.");
+            window.location.href = 'index.html'; // Send to login
         }
-    </script>
-</body>
-</html>
+    }
+</script>
