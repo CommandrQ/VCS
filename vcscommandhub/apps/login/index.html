@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCS | Access Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #3b82f6; /* Citizen Blue */
+            --knight: #ef4444; /* Knight Red */
+            --text: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        h2 { text-align: center; margin-top: 0; }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .knight-mode .toggle-btn.active {
+            background: var(--knight);
+            border-color: var(--knight);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 4px;
+        }
+
+        button#submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .knight-mode button#submit-btn { background: var(--knight); }
+
+        #error-msg {
+            color: #fca5a5;
+            background: #450a0a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            border: 1px solid #7f1d1d;
+        }
+
+        .support-link { color: #60a5fa; text-decoration: underline; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="login-card" id="card">
+    <h2 id="terminal-title">Citizen Access</h2>
+    
+    <div class="toggle-container">
+        <button class="toggle-btn active" onclick="setMode('citizen')">Citizen</button>
+        <button class="toggle-btn" onclick="setMode('knight')">Knight</button>
+    </div>
+
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Registry Email" required>
+        <input type="password" id="password" placeholder="Access Cipher" required>
+        <button type="submit" id="submit-btn">Authorize Entry</button>
+    </form>
+
+    <div id="error-msg"></div>
+</div>
+
+<script>
+    // 1. Logic: Initialization
+    // REPLACE THESE with your actual keys from Supabase
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const form = document.getElementById('login-form');
+    const errorDiv = document.getElementById('error-msg');
+    const title = document.getElementById('terminal-title');
+    const card = document.getElementById('card');
+
+    // 2. Logic: The Toggle Switch
+    function setMode(mode) {
+        const btns = document.querySelectorAll('.toggle-btn');
+        btns.forEach(btn => btn.classList.remove('active'));
+        
+        if (mode === 'knight') {
+            btns[1].classList.add('active');
+            card.classList.add('knight-mode');
+            title.innerText = "Knight Command";
+        } else {
+            btns[0].classList.add('active');
+            card.classList.remove('knight-mode');
+            title.innerText = "Citizen Access";
+        }
+    }
+
+    // 3. Logic: The Authorization Handshake
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.style.display = 'none';
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const { data, error } = await _supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+
+        if (error) {
+            // Failure logic: Direct to support/registration
+            errorDiv.innerHTML = `
+                <strong>Access Denied:</strong> ${error.message}<br><br>
+                Identity not found in Registry. Please 
+                <a href="/register.html" class="support-link">Register</a> or 
+                <span class="support-link">Contact Support</span>.
+            `;
+            errorDiv.style.display = 'block';
+        } else {
+            // Success logic: Redirect to the dashboard suite
+            window.location.href = '../dashboard.html'; 
+        }
+    });
+</script>
+
+</body>
+</html>
