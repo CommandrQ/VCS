@@ -1,0 +1,6 @@
+[
+  { "id": "display_name", "label": "Callsign", "type": "text", "required": true },
+  { "id": "discord_tag", "label": "Discord ID", "type": "text", "required": false },
+  { "id": "division", "label": "Division", "type": "select", "options": ["Infantry", "Intelligence", "Medical", "Support"], "required": true },
+  { "id": "bio", "label": "Service History", "type": "text", "required": false }
+]
