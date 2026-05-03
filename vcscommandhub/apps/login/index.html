@@ -3,182 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VCS | Access Terminal</title>
+    <title>Vanguard Command Hub | Access</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --bg: #0f172a;
             --card: #1e293b;
-            --accent: #3b82f6; /* Citizen Blue */
-            --knight: #ef4444; /* Knight Red */
-            --text: #f8fafc;
+            --citizen-accent: #3b82f6;
+            --knight-accent: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            transition: background 0.5s ease;
         }
 
+        /* The Tactical Container */
         .login-card {
             background: var(--card);
-            padding: 2rem;
-            border-radius: 8px;
+            padding: 2.5rem;
+            border-radius: 12px;
             border: 1px solid #334155;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
         }
 
-        h2 { text-align: center; margin-top: 0; }
+        h2 { margin-bottom: 0.5rem; font-size: 1.5rem; letter-spacing: 0.05em; }
+        p.subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 2rem; }
 
-        .toggle-container {
+        /* The Toggle Switch */
+        .toggle-box {
+            background: #0f172a;
+            padding: 4px;
+            border-radius: 8px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
         }
 
         .toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
             background: transparent;
-            border: 1px solid #475569;
-            color: #94a3b8;
-            padding: 8px 16px;
+            color: var(--text-dim);
             cursor: pointer;
-            border-radius: 4px;
-            transition: 0.3s;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
         .toggle-btn.active {
-            background: var(--accent);
+            background: var(--citizen-accent);
             color: white;
-            border-color: var(--accent);
         }
 
-        .knight-mode .toggle-btn.active {
-            background: var(--knight);
-            border-color: var(--knight);
-        }
+        /* Knight Mode Overrides */
+        .knight-theme .toggle-btn.active { background: var(--knight-accent); }
+        .knight-theme h2 { color: var(--knight-accent); }
 
+        /* Form Styling */
         input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            box-sizing: border-box;
+            padding: 12px 16px;
+            margin-bottom: 1rem;
             background: #0f172a;
             border: 1px solid #334155;
             color: white;
-            border-radius: 4px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
         }
 
-        button#submit-btn {
+        input:focus { border-color: var(--citizen-accent); }
+        .knight-theme input:focus { border-color: var(--knight-accent); }
+
+        #submit-btn {
             width: 100%;
-            padding: 12px;
-            background: var(--accent);
+            padding: 14px;
+            background: var(--citizen-accent);
             border: none;
             color: white;
             font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 4px;
-            margin-top: 10px;
+            font-size: 1rem;
+            transition: opacity 0.2s;
         }
 
-        .knight-mode button#submit-btn { background: var(--knight); }
+        .knight-theme #submit-btn { background: var(--knight-accent); }
+        #submit-btn:hover { opacity: 0.9; }
 
-        #error-msg {
-            color: #fca5a5;
-            background: #450a0a;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+        /* Error Message Box */
+        #error-box {
             display: none;
+            margin-top: 1.5rem;
+            padding: 12px;
+            background: #450a0a;
             border: 1px solid #7f1d1d;
+            border-radius: 6px;
+            color: #fca5a5;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
-        .support-link { color: #60a5fa; text-decoration: underline; cursor: pointer; }
+        .link-text {
+            color: #60a5fa;
+            text-decoration: underline;
+            cursor: pointer;
+        }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-<div class="login-card" id="card">
-    <h2 id="terminal-title">Citizen Access</h2>
-    
-    <div class="toggle-container">
-        <button class="toggle-btn active" onclick="setMode('citizen')">Citizen</button>
-        <button class="toggle-btn" onclick="setMode('knight')">Knight</button>
+    <div class="login-card">
+        <h2 id="header-title">CITIZEN LOGIN</h2>
+        <p class="subtitle" id="header-desc">Enter your credentials to access the hub.</p>
+
+        <div class="toggle-box">
+            <button class="toggle-btn active" id="btn-citizen" onclick="switchMode('citizen')">Citizen</button>
+            <button class="toggle-btn" id="btn-knight" onclick="switchMode('knight')">Knight</button>
+        </div>
+
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Registry Email" required>
+            <input type="password" id="password" placeholder="Request Access" required>
+            <button type="submit" id="submit-btn">AUTHORIZE ENTRY</button>
+        </form>
+
+        <div id="error-box">
+            </div>
     </div>
 
-    <form id="login-form">
-        <input type="email" id="email" placeholder="Registry Email" required>
-        <input type="password" id="password" placeholder="Access Cipher" required>
-        <button type="submit" id="submit-btn">Authorize Entry</button>
-    </form>
+    <script type="module">
+        // 1. Initialization (Vite automatically swaps these for your .env values)
+        const URL = import.meta.env.VITE_SUPABASE_URL;
+        const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const _supabase = supabase.createClient(URL, KEY);
 
-    <div id="error-msg"></div>
-</div>
+        const form = document.getElementById('login-form');
+        const errorBox = document.getElementById('error-box');
 
-<script>
-    // 1. Logic: Initialization
-    // REPLACE THESE with your actual keys from Supabase
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // 2. The Toggle Logic
+        window.switchMode = (mode) => {
+            const body = document.getElementById('main-body');
+            const title = document.getElementById('header-title');
+            const btnC = document.getElementById('btn-citizen');
+            const btnK = document.getElementById('btn-knight');
 
-    const form = document.getElementById('login-form');
-    const errorDiv = document.getElementById('error-msg');
-    const title = document.getElementById('terminal-title');
-    const card = document.getElementById('card');
+            if (mode === 'knight') {
+                body.classList.add('knight-theme');
+                btnK.classList.add('active');
+                btnC.classList.remove('active');
+                title.innerText = "KNIGHT COMMAND";
+            } else {
+                body.classList.remove('knight-theme');
+                btnC.classList.add('active');
+                btnK.classList.remove('active');
+                title.innerText = "CITIZEN LOGIN";
+            }
+        };
 
-    // 2. Logic: The Toggle Switch
-    function setMode(mode) {
-        const btns = document.querySelectorAll('.toggle-btn');
-        btns.forEach(btn => btn.classList.remove('active'));
-        
-        if (mode === 'knight') {
-            btns[1].classList.add('active');
-            card.classList.add('knight-mode');
-            title.innerText = "Knight Command";
-        } else {
-            btns[0].classList.add('active');
-            card.classList.remove('knight-mode');
-            title.innerText = "Citizen Access";
-        }
-    }
+        // 3. The Login Handshake
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // STOP THE PAGE REFRESH
+            errorBox.style.display = 'none';
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-    // 3. Logic: The Authorization Handshake
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorDiv.style.display = 'none';
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-        const { data, error } = await _supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
+            if (error) {
+                // FAILURE: Show specific instructions
+                errorBox.innerHTML = `
+                    <strong>ACCESS DENIED:</strong> ${error.message}<br><br>
+                    Credentials not found in the Registry. Please 
+                    <a href="register.html" class="link-text">Register a New Identity</a> or 
+                    <span class="link-text">Contact Support</span> for induction.
+                `;
+                errorBox.style.display = 'block';
+            } else {
+                // SUCCESS: Send to dashboard
+                window.location.href = 'dashboard.html';
+            }
         });
-
-        if (error) {
-            // Failure logic: Direct to support/registration
-            errorDiv.innerHTML = `
-                <strong>Access Denied:</strong> ${error.message}<br><br>
-                Identity not found in Registry. Please 
-                <a href="/register.html" class="support-link">Register</a> or 
-                <span class="support-link">Contact Support</span>.
-            `;
-            errorDiv.style.display = 'block';
-        } else {
-            // Success logic: Redirect to the dashboard suite
-            window.location.href = '../dashboard.html'; 
-        }
-    });
-</script>
-
+    </script>
 </body>
 </html>
