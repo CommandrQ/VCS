@@ -1,10 +1,11 @@
 [
   {
     "title": "Vanguard Support & Repair",
-    "description": "agement.",
+    "description": "Simple tech support and light repair.",
     "link": "docs/actuation-guide.html",
-    "buttonText": "ACCESS",
-    "highlight": true
+    "buttonText": "Contact",
+    "locked": true,
+    "state": "Kentucky"
   }
 ]
 
