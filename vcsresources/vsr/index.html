@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VSR | Vanguard Systems & Remediation</title>
+    <title>VSR | Vanguard Support & Repair</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
@@ -114,9 +114,9 @@
         h1 {
             font-family: 'Cinzel', serif;
             color: var(--gold);
-            font-size: 3rem;
+            font-size: 2.6rem; /* Scaled down slightly to fit the longer title */
             margin-bottom: 20px;
-            letter-spacing: 5px;
+            letter-spacing: 4px;
         }
 
         .divider {
@@ -127,12 +127,28 @@
         }
 
         .intro-text {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.8;
             color: #ececec;
             font-weight: 300;
             margin: 0 auto 40px;
-            max-width: 800px;
+            max-width: 850px;
+        }
+
+        .intro-text strong {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .intro-text a.inline-link {
+            color: var(--gold);
+            text-decoration: underline;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .intro-text a.inline-link:hover {
+            color: #fff;
         }
 
         /* --- VSR TIERS GRID --- */
@@ -356,7 +372,7 @@
             nav ul { gap: 20px; padding: 0 10px; }
             nav ul li a { font-size: 0.8rem; }
             .glass-panel { padding: 30px 5% 80px; } 
-            h1 { font-size: 2.2rem; }
+            h1 { font-size: 1.8rem; }
             .tier-grid { grid-template-columns: 1fr; }
             .signal-btn { min-width: 100%; }
         }
@@ -379,11 +395,12 @@
 
     <main class="page-content">
         <div class="glass-panel">
-            <h1>VSR COMMAND</h1>
+            <h1>Vanguard Support and Repair</h1>
             <div class="divider"></div>
             
             <p class="intro-text">
-                Welcome to Vanguard Systems & Remediation. Select a support tier below to dispatch a secure mail request to Command HQ. 
+                Welcome to the VSR operational terminal. This platform provides direct access to our tiered technical remediation services, ranging from rapid remote assistance to comprehensive in-home deployment and setup.<br><br>
+                <strong>Operational Scope:</strong> All physical deployments are based in Kentucky and are subject to operational travel limits. We highly encourage all operators to review the <a href="javascript:void(0);" onclick="openModal('modal-terms')" class="inline-link">VSR Terms & Conditions</a> to understand our service boundaries, warranties, and cancellation policies before initiating a dispatch.
             </p>
 
             <div class="tier-grid">
