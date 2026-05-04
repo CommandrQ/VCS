@@ -1,4 +1,4 @@
-/* VCS DYNAMIC DATA ENGINE - v09.DIAGNOSTIC */
+/* VCS DYNAMIC DATA ENGINE & MODAL CONTROLLER - v10.M */
 
 document.addEventListener("DOMContentLoaded", () => {
     loadResources();
@@ -14,13 +14,13 @@ function getTargetAttribute(url) {
     return 'target="_self"';
 }
 
+// Fetch Resources with Cache-Busting
 async function loadResources() {
     const container = document.getElementById('resources-container');
     try {
-        const response = await fetch('json/resources.json');
-        
-        // This checks if the file path is actually correct
-        if (!response.ok) throw new Error(`HTTP Error ${response.status} - Path not found`);
+        // { cache: "no-store" } forces the browser to download the freshest JSON every time
+        const response = await fetch('json/resources.json', { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
         
         const data = await response.json();
         container.innerHTML = ''; 
@@ -40,17 +40,17 @@ async function loadResources() {
         });
     } catch (error) {
         console.error("Resource Uplink Failed:", error);
-        // This will print the EXACT error to your screen
-        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Check Console (F12) or verify JSON formatting / Local Server status.</span></p>`;
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Ensure json/resources.json exists and is valid.</span></p>`;
     }
 }
 
+// Fetch Guilds with Cache-Busting
 async function loadGuilds() {
     const container = document.getElementById('guilds-container');
     try {
-        const response = await fetch('json/guilds.json');
-        
-        if (!response.ok) throw new Error(`HTTP Error ${response.status} - Path not found`);
+        // { cache: "no-store" } ensures updates appear instantly
+        const response = await fetch('json/guilds.json', { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
         
         const data = await response.json();
         container.innerHTML = ''; 
@@ -73,7 +73,24 @@ async function loadGuilds() {
         });
     } catch (error) {
         console.error("Guild Uplink Failed:", error);
-        // Prints error to screen
-        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Check Console (F12) or verify JSON formatting / Local Server status.</span></p>`;
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Ensure json/guilds.json exists and is valid.</span></p>`;
+    }
+}
+
+// --- MODAL CONTROLS ---
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Closes the modal if the user clicks the dark background outside the box
+function closeModalOnOutsideClick(event, modalId) {
+    const modal = document.getElementById(modalId);
+    if (event.target === modal) {
+        closeModal(modalId);
     }
 }
