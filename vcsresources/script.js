@@ -1,13 +1,22 @@
 /* VCS DYNAMIC DATA ENGINE & SORT CONTROLLER */
 
+// --- BROWSER CACHE DEFEAT PROTOCOL ---
+// Forces the page to completely reload if the user navigates here via the "Back" button
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
 let allGuilds = []; // Stores the master list in original order
-let sortState = 0;  // 0: Default, 1: A-Z, 2: State
+let sortState = 0;  // 0: Default, 1: Name A-Z, 2: State A-Z
 
 document.addEventListener("DOMContentLoaded", () => {
     loadResources();
     loadGuilds();
 });
 
+// --- SECURE LINK ROUTER ---
 function getTargetAttribute(url) {
     if (url && !url.startsWith("mailto:") && url !== "#" && !url.startsWith("javascript:")) {
         if (url.startsWith('http') || url.startsWith('//')) {
@@ -17,6 +26,7 @@ function getTargetAttribute(url) {
     return 'target="_self"';
 }
 
+// --- FETCH RESOURCES ---
 async function loadResources() {
     const container = document.getElementById('resources-container');
     try {
@@ -26,10 +36,9 @@ async function loadResources() {
         container.innerHTML = ''; 
         
         data.forEach(item => {
-            const highlightClass = item.highlight ? 'highlight' : '';
             const targetInfo = getTargetAttribute(item.link);
             container.innerHTML += `
-                <div class="resource-item ${highlightClass}">
+                <div class="resource-item">
                     <h3>${item.title}</h3>
                     <p>${item.description}</p>
                     <a href="${item.link}" class="tier-btn" ${targetInfo}>${item.buttonText}</a>
@@ -38,10 +47,11 @@ async function loadResources() {
         });
     } catch (error) {
         console.error("Resource Uplink Failed:", error);
-        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]</p>`;
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: Check JSON path ]</p>`;
     }
 }
 
+// --- FETCH GUILDS ---
 async function loadGuilds() {
     const container = document.getElementById('guilds-container');
     try {
@@ -51,11 +61,11 @@ async function loadGuilds() {
         renderGuilds(allGuilds); // Render default order
     } catch (error) {
         console.error("Guild Uplink Failed:", error);
-        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]</p>`;
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: Check JSON path ]</p>`;
     }
 }
 
-// Draws the guilds to the screen
+// --- DRAW GUILDS TO SCREEN ---
 function renderGuilds(guildArray) {
     const container = document.getElementById('guilds-container');
     container.innerHTML = ''; 
@@ -65,7 +75,7 @@ function renderGuilds(guildArray) {
         const targetInfo = getTargetAttribute(guild.link);
         
         // Adds the [STATE] tag next to the title if a state exists
-        const stateDisplay = guild.state ? `<span style="font-size:0.75rem; color:var(--text-muted); margin-left: 8px;">[${guild.state.toUpperCase()}]</span>` : '';
+        const stateDisplay = guild.state ? `<span style="font-size:0.75rem; color:#888; font-family:'Inter'; margin-left: 10px;">[${guild.state.toUpperCase()}]</span>` : '';
         
         const buttonHTML = guild.locked 
             ? `<button class="contact-btn" disabled>${guild.buttonText}</button>`
@@ -87,18 +97,18 @@ function renderGuilds(guildArray) {
 function toggleSort() {
     sortState = (sortState + 1) % 3; // Cycles 0, 1, 2
     const btn = document.getElementById('sort-btn');
-    let sortedList = [...allGuilds]; // Copy the array so we don't destroy the original order
+    let sortedList = [...allGuilds]; // Copy array to prevent overwriting default order
 
     if (sortState === 1) {
-        // Sort A-Z by Title
+        // Sort 1: Alphabetical by Name (A-Z)
         btn.innerText = "SORT: A-Z";
-        btn.style.color = "var(--vcs-amber)";
+        btn.style.color = "#ffffff";
         sortedList.sort((a, b) => a.title.localeCompare(b.title));
     } 
     else if (sortState === 2) {
-        // Sort by State (Alphabetical)
+        // Sort 2: Alphabetical by State
         btn.innerText = "SORT: STATE";
-        btn.style.color = "#00ff00"; // Green indicator
+        btn.style.color = "#ffffff";
         sortedList.sort((a, b) => {
             const stateA = a.state || "ZZZ"; // Pushes items without a state to the bottom
             const stateB = b.state || "ZZZ";
@@ -106,10 +116,9 @@ function toggleSort() {
         });
     } 
     else {
-        // Default Order
+        // Sort 0: Default (Original JSON order)
         btn.innerText = "SORT: DEFAULT";
-        btn.style.color = "var(--text-main)";
-        // sortedList is already the default copy
+        btn.style.color = "var(--gold)";
     }
 
     renderGuilds(sortedList);
