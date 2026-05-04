@@ -1,6 +1,7 @@
-/* VCS DYNAMIC DATA ENGINE & LOCATION SCANNER */
+/* VCS DYNAMIC DATA ENGINE & SORT CONTROLLER */
 
-let allGuilds = []; // Stores the master list of guilds in memory
+let allGuilds = []; // Stores the master list in original order
+let sortState = 0;  // 0: Default, 1: A-Z, 2: State
 
 document.addEventListener("DOMContentLoaded", () => {
     loadResources();
@@ -46,28 +47,25 @@ async function loadGuilds() {
     try {
         const response = await fetch('json/guilds.json', { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-        allGuilds = await response.json(); // Save to memory
-        renderGuilds(allGuilds); // Render all by default
+        allGuilds = await response.json(); 
+        renderGuilds(allGuilds); // Render default order
     } catch (error) {
         console.error("Guild Uplink Failed:", error);
         container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]</p>`;
     }
 }
 
-// Function to draw the guilds based on an array
+// Draws the guilds to the screen
 function renderGuilds(guildArray) {
     const container = document.getElementById('guilds-container');
     container.innerHTML = ''; 
     
-    if (guildArray.length === 0) {
-        container.innerHTML = `<p style="color: var(--text-main);">[ NO LOCAL PARTNERS FOUND IN THIS SECTOR ]</p>`;
-        return;
-    }
-
     guildArray.forEach(guild => {
         const lockedClass = guild.locked ? 'locked' : '';
         const targetInfo = getTargetAttribute(guild.link);
-        const stateTag = guild.state ? `<span style="font-size:0.7rem; color:var(--vcs-amber);">[${guild.state.toUpperCase()}]</span>` : '';
+        
+        // Adds the [STATE] tag next to the title if a state exists
+        const stateDisplay = guild.state ? `<span style="font-size:0.75rem; color:var(--text-muted); margin-left: 8px;">[${guild.state.toUpperCase()}]</span>` : '';
         
         const buttonHTML = guild.locked 
             ? `<button class="contact-btn" disabled>${guild.buttonText}</button>`
@@ -75,7 +73,9 @@ function renderGuilds(guildArray) {
 
         container.innerHTML += `
             <div class="guild-card ${lockedClass}">
-                <div class="guild-header">${guild.title} ${stateTag}</div>
+                <div class="guild-header" style="display:flex; align-items:baseline;">
+                    ${guild.title} ${stateDisplay}
+                </div>
                 <p>${guild.description}</p>
                 ${buttonHTML}
             </div>
@@ -83,47 +83,36 @@ function renderGuilds(guildArray) {
     });
 }
 
-// --- LOCATION SCANNER ---
-async function scanLocation() {
-    const btn = document.getElementById('scan-btn');
-    btn.innerText = "SCANNING...";
-    btn.style.color = "var(--vcs-amber)";
+// --- SORTING ENGINE ---
+function toggleSort() {
+    sortState = (sortState + 1) % 3; // Cycles 0, 1, 2
+    const btn = document.getElementById('sort-btn');
+    let sortedList = [...allGuilds]; // Copy the array so we don't destroy the original order
 
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        btn.innerText = "SCAN FAILED";
-        return;
+    if (sortState === 1) {
+        // Sort A-Z by Title
+        btn.innerText = "SORT: A-Z";
+        btn.style.color = "var(--vcs-amber)";
+        sortedList.sort((a, b) => a.title.localeCompare(b.title));
+    } 
+    else if (sortState === 2) {
+        // Sort by State (Alphabetical)
+        btn.innerText = "SORT: STATE";
+        btn.style.color = "#00ff00"; // Green indicator
+        sortedList.sort((a, b) => {
+            const stateA = a.state || "ZZZ"; // Pushes items without a state to the bottom
+            const stateB = b.state || "ZZZ";
+            return stateA.localeCompare(stateB);
+        });
+    } 
+    else {
+        // Default Order
+        btn.innerText = "SORT: DEFAULT";
+        btn.style.color = "var(--text-main)";
+        // sortedList is already the default copy
     }
 
-    // Request GPS access
-    navigator.geolocation.getCurrentPosition(async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        
-        try {
-            // Free API to reverse geocode lat/lon into a US State
-            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-            const data = await res.json();
-            
-            const userState = data.principalSubdivision; // e.g., "Kentucky"
-            
-            // Filter the guilds: Show if state matches, or if state is "ALL"
-            const localGuilds = allGuilds.filter(g => 
-                g.state && (g.state.toLowerCase() === userState.toLowerCase() || g.state.toUpperCase() === "ALL")
-            );
-            
-            renderGuilds(localGuilds);
-            btn.innerText = `SECTOR: ${userState.toUpperCase()}`;
-            btn.style.color = "#00ff00"; // Green for success
-            
-        } catch (e) {
-            console.error("Geocoding failed:", e);
-            btn.innerText = "API FAULT";
-        }
-    }, () => {
-        btn.innerText = "LOC DENIED";
-        alert("Location access denied. Please check your browser privacy settings.");
-    });
+    renderGuilds(sortedList);
 }
 
 // --- MODAL CONTROLS ---
