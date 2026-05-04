@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard Resources HQ</title>
+    <title>VCS Resources & Partners HQ</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
@@ -78,10 +78,11 @@
         .scroll-body { flex: 1; overflow-y: auto; padding: 25px; scrollbar-width: none; }
         .scroll-body::-webkit-scrollbar { display: none; }
 
-        /* Location Bar */
-        .loc-bar { padding: 12px 20px; background: rgba(212, 175, 55, 0.1); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
-        .loc-bar p { font-size: 0.65rem; color: #888; font-style: italic; max-width: 65%; }
-        .loc-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 4px 10px; cursor: pointer; font-family: 'Cinzel'; font-size: 0.6rem; text-transform: uppercase; }
+        /* Filter Bar */
+        .filter-bar { padding: 12px 20px; background: rgba(212, 175, 55, 0.1); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .filter-bar p { font-size: 0.65rem; color: #888; font-style: italic; max-width: 65%; }
+        .action-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 4px 10px; cursor: pointer; font-family: 'Cinzel'; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; }
+        .action-btn:hover { background: var(--gold); color: #000; }
 
         /* Card Styling */
         .card {
@@ -104,6 +105,9 @@
 
         footer { position: fixed; bottom: 0; width: 100%; height: var(--footer-height); display: flex; justify-content: center; align-items: center; background: #000; border-top: 1px solid var(--border-gold); }
         .copyright { color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; }
+
+        /* Error Text */
+        .error-text { color: #ff4c4c; font-size: 0.85rem; line-height: 1.5; border-left: 2px solid #ff4c4c; padding-left: 10px; }
 
         /* Responsive Mobile Layout */
         @media (max-width: 900px) {
@@ -129,19 +133,24 @@
 
     <main class="page-content">
         <div class="console-panel">
-            <div class="console-header"><h2>VCS Intelligence</h2></div>
+            <div class="console-header"><h2>VCS Resources</h2></div>
+            <div class="filter-bar">
+                <p>Internal intelligence, field manuals, and operational guides.</p>
+            </div>
             <div class="scroll-body" id="resource-list">
-                </div>
+                <p style="color:var(--gold); opacity:0.7;">Decrypting records...</p>
+            </div>
         </div>
 
         <div class="console-panel">
-            <div class="console-header"><h2>Authorized Guilds</h2></div>
-            <div class="loc-bar">
-                <p>Your location is used to identify local providers. VCS does not log your location</p>
-                <button class="loc-btn" onclick="getLocation()">Scan</button>
+            <div class="console-header"><h2>Authorized Partners</h2></div>
+            <div class="filter-bar">
+                <p>Location scanning is used to identify local providers. Coordinates are not logged.</p>
+                <button class="action-btn" onclick="getLocation()">Scan Sector</button>
             </div>
             <div class="scroll-body" id="guild-list">
-                </div>
+                <p style="color:var(--gold); opacity:0.7;">Scanning for local Guilds...</p>
+            </div>
         </div>
     </main>
 
@@ -155,41 +164,59 @@
         const hRight = document.getElementById('hint-right');
 
         async function init() {
-            // Load Navigation from Main HQ
+            // 1. Load Global Navigation (Looking OUTSIDE the vcsresources folder)
             try {
                 const nRes = await fetch('../json/nav.json');
+                if(!nRes.ok) throw new Error("Nav file not found.");
                 const nData = await nRes.json();
                 navList.innerHTML = nData.map(i => `<li><a href="../${i.link}">${i.name}</a></li>`).join('');
                 updateHints();
-            } catch(e) {}
+            } catch(e) {
+                console.warn("Navigation fallback deployed.");
+                navList.innerHTML = `<li><a href="../index.html">HQ Home</a></li>`;
+            }
 
-            // Load Resources (Internal Intel) - Points to json/resources.json
+            // 2. Load Resources (Looking INSIDE the vcsresources/json folder)
             try {
                 const rRes = await fetch('json/resources.json');
+                if(!rRes.ok) throw new Error(`HTTP Error: ${rRes.status}`);
                 const rData = await rRes.json();
+                
                 document.getElementById('resource-list').innerHTML = rData.map(r => `
                     <div class="card">
-                        <span class="tag">Internal Protocol</span>
+                        <span class="tag">Field Manual</span>
                         <h4>${r.title}</h4>
                         <p>${r.desc}</p>
-                        <a href="${r.path}" class="btn-link">Access</a>
+                        <a href="${r.path}" class="btn-link">Access Protocol</a>
                     </div>
                 `).join('');
-            } catch(e) {}
+            } catch(e) {
+                document.getElementById('resource-list').innerHTML = `
+                    <div class="error-text">
+                        <strong>Link Severed: json/resources.json</strong><br>
+                        ${e.message} <br>
+                        <em>Ensure you are using a local server (like Live Server) and not just opening the HTML file directly.</em>
+                    </div>`;
+            }
 
-            // Load Guilds (External Partners)
+            // 3. Load Guilds (Looking INSIDE the vcsresources/json folder)
             loadGuilds();
         }
 
         async function loadGuilds(filterState = null) {
             try {
-                // Updated Path: points to json/guilds.json inside vcsresources
-                const gRes = await fetch('json/guilds.json'); 
+                const gRes = await fetch('json/guilds.json');
+                if(!gRes.ok) throw new Error(`HTTP Error: ${gRes.status}`);
                 const gData = await gRes.json();
-                let filtered = gData;
                 
+                let filtered = gData;
                 if(filterState) {
                     filtered = gData.filter(g => g.state.toLowerCase() === filterState.toLowerCase());
+                }
+
+                if (filtered.length === 0) {
+                    document.getElementById('guild-list').innerHTML = `<p>No authorized guilds found in the selected sector.</p>`;
+                    return;
                 }
 
                 document.getElementById('guild-list').innerHTML = filtered.map(g => `
@@ -197,7 +224,7 @@
                         <span class="tag">${g.state} Sector</span>
                         <h4>${g.name}</h4>
                         <p>${g.desc}</p>
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
                             ${g.phone ? `<a href="tel:${g.phone}" class="btn-link">Comms</a>` : ''}
                             ${g.email ? `<a href="mailto:${g.email}" class="btn-link">Email</a>` : ''}
                             ${g.website ? `<a href="${g.website}" target="_blank" class="btn-link">Intel</a>` : ''}
@@ -205,20 +232,30 @@
                     </div>
                 `).join('');
             } catch(e) {
-                document.getElementById('guild-list').innerHTML = "<p style='color:red'>Data Link Severed: json/guilds.json not found.</p>";
+                document.getElementById('guild-list').innerHTML = `
+                    <div class="error-text">
+                        <strong>Link Severed: json/guilds.json</strong><br>
+                        ${e.message} <br>
+                        <em>Check for typos in the JSON file or ensure you are running on a local server.</em>
+                    </div>`;
             }
         }
 
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
-                    // Placeholder for actual geo-filtering logic
+                    // Placeholder for future geo-filtering
                     alert("Scanning Local Sector... Coordinate Sync complete.");
+                }, () => {
+                    alert("Coordinate Sync Denied. Displaying global directory.");
                 });
+            } else {
+                alert("Geo-location hardware not detected.");
             }
         }
 
         function updateHints() {
+            if(window.innerWidth > 600) return;
             const sL = navList.scrollLeft;
             const mS = navList.scrollWidth - navList.clientWidth;
             hLeft.style.opacity = (sL > 15) ? "1" : "0";
@@ -226,6 +263,7 @@
         }
 
         navList.addEventListener('scroll', updateHints);
+        window.addEventListener('resize', updateHints);
         window.onload = init;
     </script>
 </body>
