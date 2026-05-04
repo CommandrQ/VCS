@@ -8,11 +8,11 @@
 </head>
 <body>
     <header>
-        <div class="logo">VCS_OPS_CENTER_v10.M</div>
+        <div class="logo">VCS_OPS_CENTER_v10.N</div>
         <nav>
             <a href="../index.html" class="nav-return-btn">RETURN TO HQ</a>
-            <button onclick="openModal('modal-instructions')" class="nav-link-btn">INSTRUCTIONS</button>
-            <button onclick="openModal('modal-privacy')" class="nav-link-btn">PRIVACY</button>
+            <a href="javascript:void(0);" onclick="openModal('modal-instructions')">INSTRUCTIONS</a>
+            <a href="javascript:void(0);" onclick="openModal('modal-privacy')">PRIVACY</a>
         </nav>
     </header>
 
@@ -38,7 +38,7 @@
 
     <div id="modal-instructions" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-instructions')">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('modal-instructions')">[X] CLOSE</button>
+            <a href="javascript:void(0);" class="close-btn" onclick="closeModal('modal-instructions')">[X] CLOSE</a>
             <h3 class="modal-title">INSTRUCTIONS / FAQ</h3>
             <p><strong>Resources (Left):</strong> Scroll the directory to access internal VCS guides, protocols, and manuals. These files are hosted internally and open in your current viewport.</p>
             <p><strong>Partners (Right):</strong> Scroll to view authorized Guilds that power our infrastructure. External partner links will automatically open securely in a new window.</p>
@@ -47,7 +47,7 @@
 
     <div id="modal-privacy" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-privacy')">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('modal-privacy')">[X] CLOSE</button>
+            <a href="javascript:void(0);" class="close-btn" onclick="closeModal('modal-privacy')">[X] CLOSE</a>
             <h3 class="modal-title">PRIVACY_POLICY</h3>
             <p>Vanguard Citizen Services operates on a zero-tracking framework. No user metrics, data, or operational habits are retained by this terminal.</p>
         </div>
