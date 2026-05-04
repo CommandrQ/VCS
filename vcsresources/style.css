@@ -198,9 +198,32 @@ footer {
 }
 .close-btn:hover { color: var(--text-main); }
 
-/* RESPONSIVE DESIGN (Stacks windows on small screens) */
+/* RESPONSIVE DESIGN (Forces terminal app-view on Mobile) */
 @media (max-width: 850px) {
-    body { overflow: auto; height: auto; }
-    .windows-container { flex-direction: column; min-height: 100vh; }
-    .window-pane { max-height: none; min-height: 400px; }
+    /* Keep the body locked, do not let the main page scroll */
+    body {
+        overflow: hidden;
+    }
+
+    .ops-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Stack the windows vertically, but give them equal space */
+    .windows-container {
+        flex-direction: column;
+        gap: 15px;
+        padding-bottom: 10px;
+    }
+
+    .window-pane {
+        flex: 1; /* Both windows share the screen 50/50 */
+        min-height: 0; /* Critical: forces the scrollbar to stay inside the window */
+    }
+
+    .window-header {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
 }
