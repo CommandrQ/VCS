@@ -1,11 +1,10 @@
-/* VCS DYNAMIC DATA ENGINE - v09.JSON */
+/* VCS DYNAMIC DATA ENGINE - v09.DIAGNOSTIC */
 
 document.addEventListener("DOMContentLoaded", () => {
     loadResources();
     loadGuilds();
 });
 
-// Helper function: Smart Link Routing
 function getTargetAttribute(url) {
     if (url && !url.startsWith("mailto:") && url !== "#") {
         if (url.startsWith('http') || url.startsWith('//')) {
@@ -15,20 +14,20 @@ function getTargetAttribute(url) {
     return 'target="_self"';
 }
 
-// Fetch and render Resources (Left Column)
 async function loadResources() {
     const container = document.getElementById('resources-container');
     try {
         const response = await fetch('json/resources.json');
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
         
-        container.innerHTML = ''; // Clear loading text
+        // This checks if the file path is actually correct
+        if (!response.ok) throw new Error(`HTTP Error ${response.status} - Path not found`);
+        
+        const data = await response.json();
+        container.innerHTML = ''; 
         
         data.forEach(item => {
             const highlightClass = item.highlight ? 'highlight' : '';
             const targetInfo = getTargetAttribute(item.link);
-            
             container.innerHTML += `
                 <div class="resource-item ${highlightClass}">
                     <div class="item-info">
@@ -41,25 +40,25 @@ async function loadResources() {
         });
     } catch (error) {
         console.error("Resource Uplink Failed:", error);
-        container.innerHTML = `<p style="color: red;">[ ERROR: FAILED TO LOAD RESOURCES ]</p>`;
+        // This will print the EXACT error to your screen
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Check Console (F12) or verify JSON formatting / Local Server status.</span></p>`;
     }
 }
 
-// Fetch and render Guilds (Right Column)
 async function loadGuilds() {
     const container = document.getElementById('guilds-container');
     try {
         const response = await fetch('json/guilds.json');
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
         
-        container.innerHTML = ''; // Clear loading text
+        if (!response.ok) throw new Error(`HTTP Error ${response.status} - Path not found`);
+        
+        const data = await response.json();
+        container.innerHTML = ''; 
         
         data.forEach(guild => {
             const lockedClass = guild.locked ? 'locked' : '';
             const targetInfo = getTargetAttribute(guild.link);
             
-            // If locked, render a disabled button instead of an anchor tag
             const buttonHTML = guild.locked 
                 ? `<button class="contact-btn" disabled>${guild.buttonText}</button>`
                 : `<a href="${guild.link}" class="contact-btn" ${targetInfo}>${guild.buttonText}</a>`;
@@ -74,6 +73,7 @@ async function loadGuilds() {
         });
     } catch (error) {
         console.error("Guild Uplink Failed:", error);
-        container.innerHTML = `<p style="color: red;">[ ERROR: FAILED TO ESTABLISH GUILD NETWORK ]</p>`;
+        // Prints error to screen
+        container.innerHTML = `<p style="color: #ff5f1f;">[ SYSTEM FAULT: ${error.message} ]<br><span style="font-size: 0.8rem; color: #8b949e;">Check Console (F12) or verify JSON formatting / Local Server status.</span></p>`;
     }
 }
