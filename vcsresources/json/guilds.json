@@ -4,7 +4,7 @@
     "description": "Simple tech support and light repair.",
     "link": "vcsresources/vsr/index.html",
     "buttonText": "Contact",
-    "locked": true,
+    "locked": false,
     "state": "Kentucky"
   }
 ]
