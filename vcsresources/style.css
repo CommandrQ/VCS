@@ -1,41 +1,60 @@
-/* VCS OPS CENTER STYLESHEET - TERMINAL REDESIGN */
+/* VCS OPS CENTER STYLESHEET - VANGUARD GOLD AESTHETIC */
 
 :root {
-    --bg-dark: #0d1117;
-    --bg-window: #161b22;
-    --vcs-amber: #ffcc00;
-    --border-dim: #30363d;
-    --text-main: #ffffff; /* All text is now absolute white */
+    --gold: #D4AF37;
+    --gold-glow: rgba(212, 175, 55, 0.5);
+    --dark-glass: rgba(15, 15, 15, 0.85);
+    --border-gold: rgba(212, 175, 55, 0.4);
+    --text-main: #ececec;
+    --bg-dark: #000000;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     background-color: var(--bg-dark);
     color: var(--text-main);
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.6;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Locks the page height to the screen */
-    overflow: hidden; /* Prevents the main page from scrolling */
+    height: 100vh;
+    overflow: hidden; /* Locks body, allows internal windows to scroll */
 }
 
-/* HEADER & NAVIGATION */
+/* --- STARFIELD ENGINE --- */
+.stars-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
+    overflow: hidden;
+}
+.star-layer {
+    position: absolute;
+    top: -100%; left: 0; width: 200%; height: 200%;
+    background-repeat: repeat;
+    animation: move-stars linear infinite;
+}
+.layer-1 { background-image: radial-gradient(1px 1px at 10% 10%, #fff, transparent); background-size: 300px 300px; animation-duration: 180s; opacity: 0.3; }
+.layer-2 { background-image: radial-gradient(2px 2px at 20% 80%, #fff, transparent); background-size: 400px 400px; animation-duration: 140s; opacity: 0.5; }
+.layer-3 { background-image: radial-gradient(4px 4px at 40% 40%, #fff, transparent); background-size: 600px 600px; animation-duration: 100s; opacity: 0.7; }
+@keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(50%); } }
+
+/* --- HEADER & NAVIGATION --- */
 .ops-header {
     text-align: center;
-    padding: 2rem 5% 1.5rem;
+    padding: 1.5rem 5% 1.5rem;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
 }
 
 .ops-title {
-    color: var(--vcs-amber);
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
     font-size: 2.5rem;
-    margin: 0 0 1.5rem 0;
-    text-transform: uppercase;
+    margin: 0 0 1.2rem 0;
     letter-spacing: 4px;
 }
 
@@ -47,46 +66,63 @@ body {
 }
 
 .nav-btn {
-    border: 1px solid var(--vcs-amber);
+    border: 1px solid var(--border-gold);
     padding: 8px 25px;
-    color: var(--text-main);
+    color: var(--gold);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
     font-weight: bold;
-    background: rgba(255, 204, 0, 0.05);
+    letter-spacing: 1px;
+    background: rgba(212, 175, 55, 0.05);
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .nav-btn:hover {
-    background: var(--vcs-amber);
-    color: var(--bg-dark);
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 10px var(--gold-glow);
 }
 
-/* TWO-WINDOW LAYOUT */
+.sort-toggle-btn {
+    padding: 3px 10px;
+    font-size: 0.75rem;
+}
+
+/* --- TWO-WINDOW LAYOUT (DARK GLASS) --- */
 .windows-container {
     display: flex;
     flex: 1;
     gap: 30px;
     padding: 0 5% 2rem;
     min-height: 0; /* Critical for inner scrolling */
+    max-width: 1800px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .window-pane {
     flex: 1;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-dim);
-    background: var(--bg-window);
+    background: var(--dark-glass);
+    border: 1px solid var(--border-gold);
+    backdrop-filter: blur(15px);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
 .window-header {
-    background: var(--bg-dark);
-    padding: 12px 15px;
+    background: rgba(0,0,0,0.8);
+    padding: 12px 20px;
+    font-family: 'Cinzel', serif;
     font-weight: bold;
-    color: var(--text-main);
+    color: var(--gold);
     letter-spacing: 2px;
-    text-align: center;
-    border-bottom: 2px solid var(--vcs-amber);
+    text-align: left;
+    border-bottom: 1px solid var(--border-gold);
 }
 
 .window-content {
@@ -95,135 +131,122 @@ body {
     flex: 1;
 }
 
-/* CUSTOM TACTICAL SCROLLBARS */
-.scroll-box::-webkit-scrollbar { width: 8px; }
-.scroll-box::-webkit-scrollbar-track { background: var(--bg-dark); }
-.scroll-box::-webkit-scrollbar-thumb { background: var(--vcs-amber); border-radius: 2px; }
+/* CUSTOM SCROLLBARS */
+.scroll-box::-webkit-scrollbar { width: 6px; }
+.scroll-box::-webkit-scrollbar-track { background: transparent; }
+.scroll-box::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 
-/* DYNAMIC JSON ITEMS */
+/* --- DYNAMIC JSON ITEMS (CARDS) --- */
 .resource-item, .guild-card {
-    background: var(--bg-dark);
-    border: 1px solid var(--border-dim);
-    padding: 15px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-left: 3px solid var(--gold);
+    padding: 20px;
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
+    transition: 0.3s ease;
+}
+
+.resource-item:hover, .guild-card:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: translateX(3px);
 }
 
 .resource-item h3, .guild-header {
-    color: var(--vcs-amber);
-    margin: 0 0 10px 0;
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin: 0 0 8px 0;
     font-size: 1.1rem;
-    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .resource-item p, .guild-card p {
     color: var(--text-main);
     font-size: 0.9rem;
     margin-bottom: 15px;
+    font-weight: 300;
 }
 
 .tier-btn, .contact-btn {
     align-self: flex-start;
-    border: 1px solid var(--text-main);
-    color: var(--text-main);
+    border: 1px solid var(--gold);
+    color: #fff;
+    background: rgba(212, 175, 55, 0.1);
     padding: 6px 15px;
     text-decoration: none;
     font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
     transition: 0.3s;
 }
 
 .tier-btn:hover, .contact-btn:hover {
-    background: var(--text-main);
-    color: var(--bg-dark);
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 10px var(--gold-glow);
 }
 
-.locked { opacity: 0.5; border: 1px dashed var(--border-dim); }
+.locked { opacity: 0.5; border-style: dashed; }
 
-/* FOOTER */
+/* --- FOOTER --- */
 footer {
     text-align: center;
     padding: 1rem;
-    font-size: 0.8rem;
-    color: var(--text-main);
-    border-top: 1px solid var(--border-dim);
-    background: var(--bg-dark);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    background: linear-gradient(to top, rgba(0,0,0,1) 70%, transparent);
 }
 
-/* MODALS */
+/* --- MODALS --- */
 .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(13, 17, 23, 0.9);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 9999;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
 }
 
 .modal-content {
-    background: var(--bg-window);
-    border: 1px solid var(--vcs-amber);
+    background: var(--dark-glass);
+    border: 1px solid var(--gold);
     padding: 30px;
-    max-width: 650px;
+    max-width: 600px;
     width: 90%;
     position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
 }
 
 .modal-title {
-    color: var(--vcs-amber);
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
     margin-top: 0; margin-bottom: 20px;
+    border-bottom: 1px dashed var(--border-gold);
+    padding-bottom: 10px;
 }
 
-/* MARKDOWN STYLING INSIDE MODALS */
-.markdown-box {
-    background: var(--bg-dark);
-    padding: 20px;
-    border: 1px solid var(--border-dim);
-}
-
-.markdown-box p, .markdown-box li {
-    color: var(--text-main);
-    font-size: 0.95rem;
-}
+.markdown-box p, .markdown-box li { color: var(--text-main); font-size: 0.95rem; font-weight: 300; margin-bottom: 10px;}
+.markdown-box strong { color: var(--gold); }
 
 .close-btn {
     position: absolute;
     top: 15px; right: 15px;
-    color: var(--vcs-amber);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
     text-decoration: none;
     font-weight: bold;
 }
-.close-btn:hover { color: var(--text-main); }
+.close-btn:hover { color: #fff; }
 
-/* RESPONSIVE DESIGN (Forces terminal app-view on Mobile) */
+/* --- RESPONSIVE DESIGN (Stacks windows on mobile) --- */
 @media (max-width: 850px) {
-    /* Keep the body locked, do not let the main page scroll */
-    body {
-        overflow: hidden;
-    }
-
-    .ops-title {
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Stack the windows vertically, but give them equal space */
-    .windows-container {
-        flex-direction: column;
-        gap: 15px;
-        padding-bottom: 10px;
-    }
-
-    .window-pane {
-        flex: 1; /* Both windows share the screen 50/50 */
-        min-height: 0; /* Critical: forces the scrollbar to stay inside the window */
-    }
-
-    .window-header {
-        font-size: 0.9rem;
-        padding: 8px 10px;
-    }
+    body { overflow: auto; height: auto; }
+    .windows-container { flex-direction: column; min-height: 100vh; padding-bottom: 60px; }
+    .window-pane { max-height: none; min-height: 400px; }
+    .ops-title { font-size: 2rem; }
 }
