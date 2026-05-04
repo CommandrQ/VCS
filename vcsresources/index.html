@@ -8,11 +8,11 @@
 </head>
 <body>
     <header>
-        <div class="logo">VCS_OPS_CENTER_v09.JSON</div>
+        <div class="logo">VCS_OPS_CENTER_v10.M</div>
         <nav>
-            <a href="../index.html">VCS_ROOT</a>
-            <a href="#instructions">INSTRUCTIONS</a>
-            <a href="#privacy">PRIVACY</a>
+            <a href="../index.html" class="nav-return-btn">RETURN TO HQ</a>
+            <button onclick="openModal('modal-instructions')" class="nav-link-btn">INSTRUCTIONS</button>
+            <button onclick="openModal('modal-privacy')" class="nav-link-btn">PRIVACY</button>
         </nav>
     </header>
 
@@ -32,20 +32,26 @@
         </section>
     </main>
 
-    <section id="instructions" class="info-block">
-        <h3>INSTRUCTIONS / FAQ</h3>
-        <p><strong>Resources (Left):</strong> Scroll the directory to access internal VCS guides, protocols, and manuals. These files are hosted internally and open in your current viewport.</p>
-        <p><strong>Partners (Right):</strong> Scroll to view authorized Guilds that power our infrastructure. External partner links will automatically open securely in a new window.</p>
-    </section>
-
-    <section id="privacy" class="info-block">
-        <h3>PRIVACY_POLICY</h3>
-        <p>Vanguard Citizen Services operates on a zero-tracking framework. No user metrics, data, or operational habits are retained by this terminal.</p>
-    </section>
-
     <footer>
         VANGUARD CITIZEN SERVICES (c) 2026 | SECTOR: COMMAND_HUB | "ACTUATION THROUGH ART"
     </footer>
+
+    <div id="modal-instructions" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-instructions')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('modal-instructions')">[X] CLOSE</button>
+            <h3 class="modal-title">INSTRUCTIONS / FAQ</h3>
+            <p><strong>Resources (Left):</strong> Scroll the directory to access internal VCS guides, protocols, and manuals. These files are hosted internally and open in your current viewport.</p>
+            <p><strong>Partners (Right):</strong> Scroll to view authorized Guilds that power our infrastructure. External partner links will automatically open securely in a new window.</p>
+        </div>
+    </div>
+
+    <div id="modal-privacy" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-privacy')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('modal-privacy')">[X] CLOSE</button>
+            <h3 class="modal-title">PRIVACY_POLICY</h3>
+            <p>Vanguard Citizen Services operates on a zero-tracking framework. No user metrics, data, or operational habits are retained by this terminal.</p>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
