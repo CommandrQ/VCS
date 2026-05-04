@@ -27,7 +27,7 @@
         <section class="window-pane">
             <div class="window-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>AUTHORIZED_PARTNERS</span>
-                <button id="scan-btn" class="nav-btn" style="padding: 3px 10px; font-size: 0.7rem;" onclick="scanLocation()">SCAN LOCATION</button>
+                <button id="sort-btn" class="nav-btn" style="padding: 3px 10px; font-size: 0.7rem;" onclick="toggleSort()">SORT: DEFAULT</button>
             </div>
             <div id="guilds-container" class="window-content scroll-box">
                 <p style="color: var(--vcs-amber);">[ ESTABLISHING GUILD UPLINK... ]</p>
@@ -50,6 +50,7 @@
                     <li><strong>Resources:</strong> Internal guides, manuals, and operational protocols.</li>
                     <li><strong>Partners:</strong> Authorized external Guild networks.</li>
                 </ul>
+                <p><em>> Click the 'SORT' button above the Partners list to cycle through Default, Alphabetical (A-Z), and State-based sorting.</em></p>
             </div>
         </div>
     </div>
@@ -61,9 +62,9 @@
             <div class="markdown-box">
                 <p><strong># DATA & LOCATION PROTOCOLS</strong></p>
                 <p>Vanguard Citizen Services operates on a strict digital sovereignty framework. No operational habits or metrics are retained by this terminal.</p>
-                <p><strong>## LOCATION SCANNING</strong><br>
-                If prompted for location access by a specific module, this data is used <strong>exclusively</strong> to identify your local US State. This enables the system to match you with geographically relevant physical Guilds.</p>
-                <p><em>> Your coordinates are never stored, tracked, or transmitted to third parties. All processing is client-side.</em></p>
+                <p><strong>## LOCATION TRACKING</strong><br>
+                Vanguard Citizen Services does <strong>NOT</strong> request, scan, or utilize GPS or Geolocation APIs. All sorting and sector matching is done manually by the Operator using the local terminal interface.</p>
+                <p><em>> Your coordinates are never stored, tracked, or transmitted. Total operational security is maintained.</em></p>
             </div>
         </div>
     </div>
