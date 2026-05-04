@@ -1,8 +1,0 @@
-[
-  { "id": "display_name", "label": "Callsign", "type": "text", "required": true, "public": true },
-  { "id": "first_name", "label": "First Name", "type": "text", "required": true, "public": false },
-  { "id": "last_name", "label": "Last Name", "type": "text", "required": true, "public": false },
-  { "id": "country", "label": "Country", "type": "text", "required": true, "public": true },
-  { "id": "phone_number", "label": "Phone (Optional)", "type": "tel", "required": false, "public": false },
-  { "id": "email_address", "label": "Registry Email", "type": "email", "required": true, "public": false }
-]
