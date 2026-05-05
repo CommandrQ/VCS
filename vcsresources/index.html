@@ -1,78 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VCS | Ops Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="stars-container">
-        <div class="star-layer layer-1"></div>
-        <div class="star-layer layer-2"></div>
-        <div class="star-layer layer-3"></div>
-    </div>
+<div class="tier-card" style="border: 2px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); grid-column: 1 / -1; background: rgba(212, 175, 55, 0.08);">
+    <div class="op-id" style="color: #000; background: #fff; display: inline-block; padding: 2px 12px; margin-bottom: 15px; font-weight: bold;">ACTIVE DIRECTIVE: PATHWAY PROTOCOL</div>
+    <h3 style="font-size: 1.6rem; color: #fff;">ECTC SEMESTER PREP BUNDLE</h3>
+    <div class="tier-price">$45 <span style="font-size: 0.9rem; text-decoration: line-through; opacity: 0.5; color: #ccc;">$55</span></div>
+    <div class="warranty-tag" style="background: var(--gold); color: #000; border: none;">KCTCS / ECTC CLASS OF 2026 ONLY</div>
+    
+    <p style="text-align: left; font-size: 0.9rem; margin-bottom: 20px; color: #fff;">
+        Ensuring your high school machine is ready for the ECTC Summer Semester (June 1 start).
+    </p>
 
-    <header class="ops-header">
-        <h1 class="ops-title">VCS Ops Center</h1>
-        <nav class="ops-nav">
-            <a href="../index.html" class="nav-btn">HQ</a>
-            <a href="javascript:void(0);" onclick="openModal('modal-instructions')" class="nav-btn">INSTRUCTIONS</a>
-            <a href="javascript:void(0);" onclick="openModal('modal-privacy')" class="nav-btn">PRIVACY</a>
-        </nav>
-    </header>
+    <ul class="tier-specs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; border-top: 1px solid var(--border-gold); padding-top: 20px;">
+        <li>Full KCTCS Office 365 Deployment</li>
+        <li>Blackboard & Portal Verification</li>
+        <li>Public Wi-Fi Security Hardening</li>
+        <li>Browser Optimization for LMS</li>
+        <li>Digital "De-Bloat" for Speed</li>
+        <li>Academic Cloud-Sync Setup</li>
+    </ul>
+    
+    <p style="font-size: 0.75rem; font-style: italic; color: var(--gold); margin: 15px 0;">
+        *Requires valid ECTC Student ID or .edu login at time of deployment.
+    </p>
 
-    <main class="windows-container">
-        <section class="window-pane">
-            <div class="window-header">RESOURCES</div>
-            <div id="resources-container" class="window-content scroll-box">
-                <p style="color: var(--gold);">[ INITIALIZING RESOURCE DATA... ]</p>
-            </div>
-        </section>
-
-        <section class="window-pane">
-            <div class="window-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Alliances</span>
-                <button id="sort-btn" class="nav-btn sort-toggle-btn" onclick="toggleSort()">SORT: DEFAULT</button>
-            </div>
-            <div id="guilds-container" class="window-content scroll-box">
-                <p style="color: var(--gold);">[ ESTABLISHING GUILD DIRECTORY... ]</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="copyright">VANGUARD CITIZEN SERVICES (c) 2026 | SECTOR: COMMAND_HUB</div>
-    </footer>
-
-    <div id="modal-instructions" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-instructions')">
-        <div class="modal-content">
-            <a href="javascript:void(0);" class="close-btn" onclick="closeModal('modal-instructions')">[X] CLOSE</a>
-            <h3 class="modal-title">INSTRUCTIONS</h3>
-            <div class="markdown-box">
-                <p><strong>NAVIGATION</strong></p>
-                <p>Welcome, User This terminal is divided into two primary categories:</p>
-                <ul>
-                    <li><strong>Resources:</strong> Guides, manuals, and operational protocols.</li>
-                    <li><strong>Alliances:</strong> Curated external networks.</li>
-                </ul>
-                <p><em>> Click the 'SORT' button above the Partners list to cycle through Default, Alphabetical (A-Z), and State-based sorting.</em></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-privacy" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-privacy')">
-        <div class="modal-content">
-            <a href="javascript:void(0);" class="close-btn" onclick="closeModal('modal-privacy')">[X] CLOSE</a>
-            <h3 class="modal-title">PRIVACY POLICY</h3>
-            <div class="markdown-box">
-                <p><strong>DATA & LOCATION PROTOCOLS</strong></p>
-                <p>Vanguard Citizen Services operates on a strict digital sovereignty framework. No operational habits or metrics are retained by this terminal.</p>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    <a href="mailto:commandrq@gmail.com?subject=[ECTC PATHWAY] Bundle Request - Class of 2026" class="action-btn" style="background: #fff; color: #000 !important; border: none;">Initialize Pathway Dispatch</a>
+</div>
