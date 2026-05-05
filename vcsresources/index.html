@@ -1,25 +1,500 @@
-<div class="tier-card" style="border: 2px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); grid-column: 1 / -1; background: rgba(212, 175, 55, 0.08);">
-    <div class="op-id" style="color: #000; background: #fff; display: inline-block; padding: 2px 12px; margin-bottom: 15px; font-weight: bold;">ACTIVE DIRECTIVE: PATHWAY PROTOCOL</div>
-    <h3 style="font-size: 1.6rem; color: #fff;">ECTC SEMESTER PREP BUNDLE</h3>
-    <div class="tier-price">$45 <span style="font-size: 0.9rem; text-decoration: line-through; opacity: 0.5; color: #ccc;">$55</span></div>
-    <div class="warranty-tag" style="background: var(--gold); color: #000; border: none;">KCTCS / ECTC CLASS OF 2026 ONLY</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSR | Vanguard Systems & Remediation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <p style="text-align: left; font-size: 0.9rem; margin-bottom: 20px; color: #fff;">
-        Ensuring your high school machine is ready for the ECTC Summer Semester (June 1 start).
-    </p>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+            --ambient-glow: rgba(212, 175, 55, 0.2);
+            --dark-glass: rgba(10, 10, 10, 0.88);
+            --border-gold: rgba(212, 175, 55, 0.4);
+            --nav-height: 80px;
+            --footer-height: 60px;
+        }
 
-    <ul class="tier-specs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; border-top: 1px solid var(--border-gold); padding-top: 20px;">
-        <li>Full KCTCS Office 365 Deployment</li>
-        <li>Blackboard & Portal Verification</li>
-        <li>Public Wi-Fi Security Hardening</li>
-        <li>Browser Optimization for LMS</li>
-        <li>Digital "De-Bloat" for Speed</li>
-        <li>Academic Cloud-Sync Setup</li>
-    </ul>
-    
-    <p style="font-size: 0.75rem; font-style: italic; color: var(--gold); margin: 15px 0;">
-        *Requires valid ECTC Student ID or .edu login at time of deployment.
-    </p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
 
-    <a href="mailto:commandrq@gmail.com?subject=[ECTC PATHWAY] Bundle Request - Class of 2026" class="action-btn" style="background: #fff; color: #000 !important; border: none;">Initialize Pathway Dispatch</a>
-</div>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: white;
+            overflow: hidden; /* Locks body, glass-panel handles internal scrolling */
+        }
+
+        /* --- AMBIENT STARFIELD (SLOW DRIFT) --- */
+        .stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            overflow: hidden;
+        }
+        .star-layer {
+            position: absolute;
+            top: -100%; left: 0; width: 200%; height: 200%;
+            background-repeat: repeat;
+            animation: move-stars linear infinite;
+        }
+        .layer-1 { background-image: radial-gradient(1px 1px at 10% 10%, #fff, transparent); background-size: 300px 300px; animation-duration: 200s; opacity: 0.2; }
+        .layer-2 { background-image: radial-gradient(2px 2px at 20% 80%, #fff, transparent); background-size: 400px 400px; animation-duration: 160s; opacity: 0.4; }
+        .layer-3 { background-image: radial-gradient(3px 3px at 40% 40%, #fff, transparent); background-size: 600px 600px; animation-duration: 120s; opacity: 0.6; }
+        @keyframes move-stars { from { transform: translateY(0); } to { transform: translateY(50%); } }
+
+        /* --- TOP NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.95);
+            border-bottom: 1px solid var(--border-gold);
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none; 
+            color: var(--gold);
+            font-family: 'Cinzel', serif; 
+            font-weight: bold;
+            font-size: 0.85rem; 
+            letter-spacing: 2px;
+            text-transform: uppercase; 
+            transition: 0.4s;
+            cursor: pointer;
+        }
+        nav ul li a:hover { color: white; text-shadow: 0 0 10px var(--gold); }
+
+        /* --- EDGE-TO-EDGE GLASS TERMINAL --- */
+        .page-content {
+            height: 100vh;
+            width: 100vw;
+            padding-top: var(--nav-height);
+            padding-bottom: var(--footer-height);
+        }
+
+        .glass-panel {
+            background: var(--dark-glass);
+            backdrop-filter: blur(25px);
+            width: 100%;
+            height: 100%;
+            padding: 60px 8% 120px; 
+            text-align: center;
+            overflow-y: auto; 
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) rgba(0,0,0,0.5);
+        }
+
+        .glass-panel::-webkit-scrollbar { width: 6px; }
+        .glass-panel::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            letter-spacing: 6px;
+        }
+
+        .divider {
+            height: 1px; width: 120px;
+            background: var(--gold);
+            margin: 0 auto 35px;
+            box-shadow: 0 0 12px var(--gold);
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ececec;
+            font-weight: 300;
+            margin: 0 auto 50px;
+            max-width: 900px;
+        }
+
+        /* --- SERVICE TIER GRID --- */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+            text-align: left;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tier-card {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--border-gold);
+            border-left: 5px solid var(--gold);
+            padding: 35px 25px;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tier-card:hover { 
+            background: rgba(212, 175, 55, 0.12); 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+
+        .tier-card h3 { 
+            font-family: 'Cinzel', serif; 
+            color: var(--gold); 
+            font-size: 1.3rem; 
+            margin-bottom: 10px; 
+            letter-spacing: 1px; 
+        }
+
+        .tier-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .tier-specs {
+            list-style: none;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+        .tier-specs li {
+            font-size: 0.95rem;
+            color: #ddd;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            padding-left: 22px;
+            position: relative;
+        }
+        .tier-specs li::before {
+            content: "✦";
+            color: var(--gold);
+            position: absolute; left: 0;
+            font-size: 0.8rem;
+        }
+
+        .warranty-tag {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-gold);
+            align-self: flex-start;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* --- BUTTONS (WHITE TEXT) --- */
+        .action-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            color: #ffffff !important; 
+            padding: 14px 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .action-btn:hover {
+            background: var(--gold);
+            color: #000 !important; 
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        /* --- ACTIVE DIRECTIVE: ECTC PATHWAY --- */
+        .pathway-card {
+            border: 2px solid #fff; 
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); 
+            grid-column: 1 / -1; 
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+        }
+        .directive-tag {
+            color: #000; background: #fff; 
+            display: inline-block; 
+            padding: 3px 15px; 
+            margin-bottom: 20px; 
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        /* --- SIGNAL CENTER --- */
+        .signal-center {
+            border-top: 1px solid var(--border-gold);
+            padding-top: 50px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .signal-center h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+        }
+        .signal-grid {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .signal-btn {
+            flex: 1;
+            min-width: 300px;
+            padding: 18px;
+            border: 1px dashed var(--gold);
+            background: rgba(212, 175, 55, 0.03);
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .signal-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-style: solid;
+        }
+
+        /* --- MODAL (TERMS) --- */
+        .modal-overlay {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid var(--gold);
+            padding: 50px 40px;
+            max-width: 900px; width: 92%;
+            max-height: 85vh; overflow-y: auto;
+            position: relative; text-align: left;
+        }
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold); font-size: 2rem;
+            margin-bottom: 25px; border-bottom: 1px solid var(--border-gold);
+            padding-bottom: 15px;
+        }
+        .modal-content h4 { color: var(--gold); margin: 25px 0 10px; font-family: 'Cinzel', serif; }
+        .modal-content p, .modal-content li { font-size: 0.9rem; color: #bbb; line-height: 1.7; margin-bottom: 15px; }
+        .close-btn { position: absolute; top: 25px; right: 25px; color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; text-decoration: none; }
+
+        /* --- UNIFORM FOOTER --- */
+        footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            height: var(--footer-height);
+            display: flex; justify-content: center; align-items: center;
+            background: #000; z-index: 2000;
+        }
+        .copyright { color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 4px; }
+
+        /* --- RESPONSIVE ADAPTATION --- */
+        @media (max-width: 800px) {
+            h1 { font-size: 2.5rem; }
+            .glass-panel { padding: 40px 5% 100px; }
+            .tier-grid { grid-template-columns: 1fr; }
+            nav ul { gap: 20px; }
+            .signal-btn { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container">
+        <div class="star-layer layer-1"></div>
+        <div class="star-layer layer-2"></div>
+        <div class="star-layer layer-3"></div>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">RETURN</a></li>
+            <li><a href="javascript:void(0);" onclick="openModal('modal-terms')">VSR TERMS & CONDITIONS</a></li>
+        </ul>
+    </nav>
+
+    <main class="page-content">
+        <div class="glass-panel">
+            <h1>VSR COMMAND</h1>
+            <div class="divider"></div>
+            
+            <p class="intro-text">
+                Welcome to Vanguard Systems & Remediation. Select a remediation tier below to initialize a secure dispatch to Command HQ. 
+            </p>
+
+            <div class="tier-grid">
+                
+                <div class="tier-card pathway-card">
+                    <div class="directive-tag">ACTIVE DIRECTIVE: PATHWAY PROTOCOL</div>
+                    <h3 style="font-size: 1.8rem; color: #fff;">ECTC SEMESTER PREP BUNDLE</h3>
+                    <div class="tier-price">$45 <span style="font-size: 1rem; text-decoration: line-through; opacity: 0.4; color: #fff;">$55</span></div>
+                    <div class="warranty-tag" style="background: #fff; color: #000;">ECTC / KCTCS CLASS OF 2026 ONLY</div>
+                    
+                    <p style="text-align: left; color: #fff; margin-bottom: 25px; line-height: 1.6;">
+                        Ensuring high school machines are compliant for the ECTC Summer Semester (June 1 Start). ECTC confirms that Chromebooks and iPads are <strong>NOT</strong> sufficient for Blackboard LMS requirements.
+                    </p>
+
+                    <ul class="tier-specs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
+                        <li>Full KCTCS Office 365 Setup</li>
+                        <li>Blackboard Portal Verification</li>
+                        <li>Public Wi-Fi Security Audit</li>
+                        <li>Browser Optimization for LMS</li>
+                        <li>Digital "De-Bloat" & Speed Boost</li>
+                        <li>Academic Cloud-Sync Security</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[ECTC PATHWAY] Bundle Request - Class of 2026" class="action-btn" style="background: #fff; color: #000 !important; border: none;">Initialize Pathway Dispatch</a>
+                </div>
+
+                <div class="tier-card">
+                    <h3>Tier 1: Essential Support</h3>
+                    <div class="tier-price">FREE</div>
+                    <ul class="tier-specs">
+                        <li>Email or Video Call dispatch.</li>
+                        <li>Up to 30 minutes of assistance.</li>
+                        <li>Rapid issue troubleshooting.</li>
+                        <li>Remote diagnostic baseline.</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Tier 1 Essential Support Request" class="action-btn">Select Tier 1</a>
+                </div>
+
+                <div class="tier-card">
+                    <h3>Tier 2: Enhanced Support</h3>
+                    <div class="tier-price">$25</div>
+                    <div class="warranty-tag">14-Day Warranty</div>
+                    <ul class="tier-specs">
+                        <li>30-45 minute physical deployment.</li>
+                        <li>Standard setup & diagnostic.</li>
+                        <li>Workmanship & error coverage.</li>
+                        <li>System integrity verification.</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Tier 2 Enhanced Support Request" class="action-btn">Select Tier 2</a>
+                </div>
+
+                <div class="tier-card">
+                    <h3>Tier 3: Extended Support</h3>
+                    <div class="tier-price">$55</div>
+                    <div class="warranty-tag">14-Day Warranty</div>
+                    <ul class="tier-specs">
+                        <li>1 Hour extended deployment.</li>
+                        <li>Advanced setup & deep diagnostic.</li>
+                        <li>Full network environment audit.</li>
+                        <li>Optimization for high-load tasks.</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Tier 3 Extended Support Request" class="action-btn">Select Tier 3</a>
+                </div>
+
+                <div class="tier-card">
+                    <h3>Tier 4: Premier Support</h3>
+                    <div class="tier-price">$85+</div>
+                    <div class="warranty-tag">14-Day Warranty</div>
+                    <ul class="tier-specs">
+                        <li>2+ Hours tactical deployment.</li>
+                        <li>Multi-device synchronization.</li>
+                        <li>Extended light hardware repair.</li>
+                        <li>Full system remediation.</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Tier 4 Premier Support Request" class="action-btn">Select Tier 4</a>
+                </div>
+
+                <div class="tier-card" style="border-color: #fff;">
+                    <h3 style="color: #fff;">VIP TIER: PROCUREMENT</h3>
+                    <div class="tier-price" style="color: var(--gold);">INQUIRE</div>
+                    <div class="warranty-tag">30-Day Warranty</div>
+                    <ul class="tier-specs">
+                        <li>Expert shopping recommendations.</li>
+                        <li>Home delivery & secure install.</li>
+                        <li>White-glove priority support.</li>
+                        <li>Custom hardware consultation.</li>
+                    </ul>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] VIP Tier Inquiry" class="action-btn" style="border-color: #fff;">Request VIP</a>
+                </div>
+
+            </div>
+
+            <div class="signal-center">
+                <h3>SIGNAL CENTER</h3>
+                <div class="signal-grid">
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Request Installation" class="signal-btn">REQUEST INSTALLATION</a>
+                    <a href="mailto:commandrq@gmail.com?subject=[VSR] Work Order Support" class="signal-btn">WORK ORDER SUPPORT</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="copyright">VSR &copy; 2026</div>
+    </footer>
+
+    <div id="modal-terms" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'modal-terms')">
+        <div class="modal-content">
+            <a href="javascript:void(0);" class="close-btn" onclick="closeModal('modal-terms')">[X] CLOSE</a>
+            <h3 class="modal-title">Terms & Conditions</h3>
+            
+            <h4>1. Right to Refuse & Refined Pricing</h4>
+            <p>VSR reserves the absolute right to refuse, modify, or terminate any service at our discretion. If a client misrepresents the scope of work or hides existing damage during dispatch, VSR reserves the right to immediately adjust the tier pricing or abort the mission. Misrepresentation of issues voids all pre-paid agreements.</p>
+
+            <h4>2. Site Safety & Adult Presence</h4>
+            <p>An adult (18+) <strong>must</strong> be present for the entire duration of any in-home deployment. Pets must be secured. Technicians will not move heavy furniture or work in hazardous/hostile environments. VSR operators will abort any deployment deemed unsafe without refund.</p>
+
+            <h4>3. Dead on Arrival (DOA) & Diagnostics</h4>
+            <p>If a device is found to be catastrophic or "Dead on Arrival" (DOA) upon technician inspection, the service converts to a <strong>Tier 2 Diagnostic ($25 fee)</strong>. The remainder of higher-tier fees will be refunded. Attempting to conceal liquid or physical damage to secure lower rates immediately voids warranties and forfeits all refunds.</p>
+
+            <h4>4. Credentials & Software Sovereignty</h4>
+            <p>Clients must have all passwords, PINs, and network keys ready. VSR will not bypass legal password locks. We strictly adhere to digital licensing laws and will not support pirated or unlicensed software.</p>
+
+            <h4>5. Hardware Procurement & Abandonment</h4>
+            <p>Parts are billed separately and must be paid in full prior to procurement. Any hardware left with VSR for off-site repair must be claimed within <strong>30 days</strong> of completion notification or it will be legally deemed abandoned and recycled to cover costs.</p>
+
+            <h4>6. Pathway Protocol (ECTC Bundle) Verification</h4>
+            <p>The Pathway Protocol ($45) is a subsidized service for <strong>active students only</strong>. Valid ECTC/KCTCS ID or .edu login verification is mandatory upon arrival. Failure to provide proof reverts the deployment to standard <strong>Extended Support ($55)</strong> or <strong>Premier ($85+)</strong> rates.</p>
+
+            <h4>7. Physical Installation Boundaries</h4>
+            <p>Physical monitor or TV setup is strictly limited to displays <strong>up to 50 inches</strong>. We <strong>do not</strong> perform wall-mounting services of any kind.</p>
+
+            <h4>8. Cancellation & Rescheduling</h4>
+            <p>Notification of cancellation must be provided at least <strong>two (2) hours prior</strong> to the appointment. Failure to do so forfeits the service fee. Clients are permitted up to <strong>two (2) reschedules</strong> before the service is permanently canceled.</p>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        function closeModalOnOutsideClick(event, modalId) {
+            if (event.target === document.getElementById(modalId)) closeModal(modalId);
+        }
+    </script>
+</body>
+</html>
