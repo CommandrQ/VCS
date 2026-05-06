@@ -3,66 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard Command Center</title>
+    <title>Vanguard Citizen Services | Access</title>
+    <script>
+        if (document.cookie.split('; ').find(row => row.startsWith('vanguard_access='))) {
+            window.location.href = 'directory.html';
+        }
+    </script>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div id="lobby-view" class="view">
-        <div class="lobby-content">
-            <h1 class="gold-text pulse">VANGUARD CITIZEN KNIGHTS</h1>
-            <p>Hardin County Local Sovereignty Hub</p>
-            <div class="lobby-nav">
-                <button class="btn-outline">PROJECTS</button>
-                <button class="btn-gold" onclick="showAuth()">ENTER COMMAND CENTER</button>
-            </div>
-        </div>
-    </div>
+    <div class="scanlines"></div>
 
-    <div id="hud-view" class="view hidden">
-        <header class="hud-header">
-            <div class="logo">VCS COMMAND</div>
-            <div id="user-display" class="gold-text"></div>
-        </header>
+    <div class="starfield s1"></div>
+    <div class="starfield s2"></div>
+    <div class="starfield s3"></div>
 
-        <div class="category-tuner" id="cat-bar"></div>
+    <main class="intro-container">
+        <img src="images/vanguardorglogo.png" alt="Vanguard Logo" class="org-logo">
 
-        <div class="dual-pane">
-            <section class="pane" id="resources-pane">
-                <h2 class="pane-title">INTERNAL RESOURCES</h2>
-                <div class="list" id="res-list"></div>
-            </section>
-            <section class="pane" id="alliances-pane">
-                <h2 class="pane-title">AUTHORIZED ALLIANCES</h2>
-                <div class="list" id="all-list"></div>
-            </section>
+        <div class="entry-portal">
+            <button id="enter-btn" class="btn-vanguard" onclick="initializeVanguard()">ENTER</button>
         </div>
 
-        <div class="footer-action">
-            <button class="btn-gold large" onclick="showRequestModal()">INITIATE MISSION REQUEST</button>
-        </div>
-    </div>
+        <p class="motto">Empower. Educate. Elevate.</p>
+    </main>
 
-    <div id="auth-modal" class="modal hidden">
-        <div class="modal-box">
-            <h3 class="gold-text">IDENTITY CLEARANCE</h3>
-            <input type="text" id="fname" placeholder="FIRST NAME">
-            <input type="email" id="uemail" placeholder="SECURE EMAIL">
-            <button class="btn-gold" onclick="handleAuth()">SEND MAGIC LINK</button>
-            <button class="btn-link" onclick="closeModals()">CANCEL</button>
+    <footer class="vanguard-footer">
+        <p>&copy; 2026 Vanguard Citizen Services. All Rights Reserved.</p>
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <span>|</span>
+            <a href="terms.html">Terms of Service</a>
         </div>
-    </div>
+    </footer>
 
-    <div id="request-modal" class="modal hidden">
-        <div class="modal-box">
-            <h3 class="gold-text">SIGNAL DETAILS</h3>
-            <textarea id="mission-details" placeholder="Describe the service or problem..."></textarea>
-            <button class="btn-gold" onclick="submitMission()">SUBMIT SIGNAL</button>
-            <button class="btn-link" onclick="closeModals()">CANCEL</button>
-        </div>
-    </div>
+    <script>
+        // Supabase Initialization (REPLACE WITH YOUR KEYS)
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    <script src="app.js"></script>
+        async function initializeVanguard() {
+            const btn = document.getElementById('enter-btn');
+            btn.innerText = "INITIALIZING...";
+            btn.disabled = true;
+
+            try {
+                // 1. Assign UDID via Anonymous Login
+                const { data, error } = await supabase.auth.signInAnonymously();
+                
+                if (error) throw error;
+
+                // 2. Set the 30-Day Persistence Cookie
+                const d = new Date();
+                d.setTime(d.getTime() + (30*24*60*60*1000));
+                let expires = "expires="+ d.toUTCString();
+                document.cookie = `vanguard_access=${data.user.id}; ${expires}; path=/`;
+
+                // 3. Shunt to Directory
+                window.location.href = 'directory.html';
+
+            } catch (err) {
+                console.error("Vanguard Access Denied:", err.message);
+                btn.innerText = "ACCESS FAILED";
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
