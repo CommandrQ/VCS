@@ -5,51 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vanguard Command | Directory</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="directory-body">
+<body class="fixed-hud">
 
     <div class="scanlines"></div>
     <div class="starfield s1"></div>
 
     <header class="hud-header">
         <div class="logo-area">
-            <img src="images/vanguardorglogo.png" alt="VCS" class="hud-logo" style="width: 40px; height: auto;">
-            <span class="gold-text" style="margin-left: 10px;">Operational Directory</span>
+            <img src="images/vanguardorglogo.png" alt="VCS Logo" class="hud-logo">
+            <span class="gold-text">OPERATIONAL DIRECTORY</span>
         </div>
         <nav class="hud-nav">
-            <button class="btn-gold" onclick="showRequestModal()">REQUEST SERVICE</button>
+            <button class="btn-outline" onclick="location.href='index.html'">EXIT SYSTEM</button>
+            <button class="btn-gold" onclick="showRequestModal()">REQUEST SIGNAL</button>
         </nav>
     </header>
 
-    <div class="category-tuner" id="cat-bar"></div>
-
-    <main class="dual-pane">
-        <section class="pane">
-            <h2 class="pane-title">VANGUARD RESOURCES</h2>
-            <div class="list" id="res-list"></div>
+    <main class="hud-workspace">
+        
+        <section class="window-pane" id="window-resources">
+            <div class="window-header">
+                <h2 class="pane-title">INTELLIGENCE & RESOURCES</h2>
+                <div class="category-tuner" id="cat-bar"></div>
+            </div>
+            <div class="window-content" id="res-list">
+                </div>
         </section>
 
-        <section class="pane">
-            <h2 class="pane-title">AUTHORIZED ALLIANCES</h2>
-            <div class="list" id="all-list"></div>
+        <section class="window-pane" id="window-services">
+            <div class="window-header">
+                <h2 class="pane-title">OPERATIONAL SERVICES</h2>
+                <p class="sub-title">Internal Capabilities & External Alliances</p>
+            </div>
+            <div class="window-content">
+                
+                <h3 class="section-divider">VANGUARD SERVICES</h3>
+                <div id="internal-list">
+                    </div>
+
+                <h3 class="section-divider" style="margin-top: 30px;">AUTHORIZED ALLIANCES</h3>
+                <div id="alliance-list">
+                    </div>
+
+            </div>
         </section>
+
     </main>
 
     <div id="request-modal" class="modal hidden">
         <div class="modal-box">
-            <h3 class="gold-text">MISSION SIGNAL</h3>
-            <textarea id="mission-details" placeholder="Describe the service required..."></textarea>
-            <button class="btn-gold" onclick="alert('Manual Triage: Please email vanguard@example.com for now.')">SUBMIT</button>
+            <h3 class="gold-text">INITIATE MISSION</h3>
+            <p style="font-size: 0.75rem; color: #888; margin-bottom: 15px;">Describe the operational requirement for manual triage.</p>
+            <textarea id="mission-details" rows="5" placeholder="Enter details here..."></textarea>
+            <button class="btn-gold" onclick="alert('Signal Logged. Awaiting Dispatch.')">SUBMIT</button>
             <button class="btn-link" onclick="document.getElementById('request-modal').classList.add('hidden')">CANCEL</button>
         </div>
     </div>
 
+    <footer class="vanguard-footer">
+        <p>&copy; 2026 Vanguard Citizen Services. All Rights Reserved. | <a href="privacy.html" style="color:var(--v-gold); text-decoration:none;">Privacy Policy</a> | <a href="terms.html" style="color:var(--v-gold); text-decoration:none;">Terms of Service</a></p>
+    </footer>
+
     <script src="app.js"></script>
-    <script>
-        function showRequestModal() {
-            document.getElementById('request-modal').classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
