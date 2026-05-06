@@ -4,27 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vanguard Citizen Services | Access</title>
-    <script>
-        if (document.cookie.split('; ').find(row => row.startsWith('vanguard_access='))) {
-            window.location.href = 'directory.html';
-        }
-    </script>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
     <div class="scanlines"></div>
-
     <div class="starfield s1"></div>
     <div class="starfield s2"></div>
-    <div class="starfield s3"></div>
 
     <main class="intro-container">
         <img src="images/vanguardorglogo.png" alt="Vanguard Logo" class="org-logo">
 
         <div class="entry-portal">
-            <button id="enter-btn" class="btn-vanguard" onclick="initializeVanguard()">ENTER</button>
+            <a href="directory.html" class="btn-vanguard">ENTER</a>
         </div>
 
         <p class="motto">Empower. Educate. Elevate.</p>
@@ -39,38 +31,5 @@
         </div>
     </footer>
 
-    <script>
-        // Supabase Initialization (REPLACE WITH YOUR KEYS)
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        async function initializeVanguard() {
-            const btn = document.getElementById('enter-btn');
-            btn.innerText = "INITIALIZING...";
-            btn.disabled = true;
-
-            try {
-                // 1. Assign UDID via Anonymous Login
-                const { data, error } = await supabase.auth.signInAnonymously();
-                
-                if (error) throw error;
-
-                // 2. Set the 30-Day Persistence Cookie
-                const d = new Date();
-                d.setTime(d.getTime() + (30*24*60*60*1000));
-                let expires = "expires="+ d.toUTCString();
-                document.cookie = `vanguard_access=${data.user.id}; ${expires}; path=/`;
-
-                // 3. Shunt to Directory
-                window.location.href = 'directory.html';
-
-            } catch (err) {
-                console.error("Vanguard Access Denied:", err.message);
-                btn.innerText = "ACCESS FAILED";
-                btn.disabled = false;
-            }
-        }
-    </script>
 </body>
 </html>
