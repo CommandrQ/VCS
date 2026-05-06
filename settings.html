@@ -36,7 +36,7 @@
             50% { box-shadow: 0 0 50px var(--v-gold); border-color: var(--v-gold); }
             100% { box-shadow: 20px 20px 40px rgba(0,0,0,1); border-color: #333; }
         }
-        .sync-success { animation: successPulse 0.6s var(--v-curve); }
+        .sync-success { animation: successPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .status-header { margin-bottom: 30px; text-align: center; }
         
@@ -47,6 +47,7 @@
             background: rgba(212, 175, 55, 0.05);
         }
 
+        /* --- FORM STYLING --- */
         .field-group { margin-bottom: 20px; text-align: left; }
         label { display: block; color: var(--v-gold); font-weight: 900; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
         
@@ -64,11 +65,18 @@
             text-transform: uppercase; letter-spacing: 1px;
         }
         .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
+        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3); }
+        
         .btn-inactive { background: transparent !important; border: 1px solid #555 !important; color: #ffffff !important; }
         .btn-logout { background: transparent !important; border: 1px solid #f87171 !important; color: #f87171 !important; }
 
         .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2em; }
         .helper-text { text-align: center; color: #666; font-size: 0.75rem; margin-top: 15px; }
+
+        @media (max-width: 650px) {
+            .header-content { flex-direction: column; gap: 12px; text-align: center; }
+            .identity-card { padding: 25px; }
+        }
     </style>
 </head>
 <body class="fixed-hud">
@@ -123,7 +131,7 @@
                 <button class="btn-pill btn-active" id="submit-btn" onclick="submitUniversalForm()">SUBMIT IDENTITY</button>
                 
                 <div id="auth-aux-btns">
-                    <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()" id="restore-toggle-btn">RESTORE BY NAME & EMAIL</button>
+                    <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()" id="restore-toggle-btn">RESTORE ACCESS BY EMAIL</button>
                 </div>
 
                 <div id="logout-area" style="display: none; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
@@ -133,7 +141,7 @@
 
             <div id="restore-area" style="display: none; border-top: 1px solid #444; margin-top: 20px; padding-top: 20px;">
                 <h3 style="font-size: 0.9rem; color: var(--v-gold); text-align: center; text-transform: uppercase;">Identity Restoration</h3>
-                <p style="font-size: 0.75rem; color: #888; text-align: center; margin-bottom: 20px;">Provide your registered details. If they match the Ledger, we will send a secure Magic Link to log you in instantly.</p>
+                <p style="font-size: 0.75rem; color: #888; text-align: center; margin-bottom: 20px;">Provide your registered details. If they match the Ledger, a secure Magic Link will be transmitted to your terminal.</p>
                 
                 <div class="field-group">
                     <label>Registered Email</label>
@@ -144,7 +152,7 @@
                     <input type="text" id="r-name">
                 </div>
                 
-                <button class="btn-pill btn-active" onclick="initiateRestore()">VERIFY & RESTORE ACCESS</button>
+                <button class="btn-pill btn-active" id="restore-confirm-btn" onclick="initiateRestore()">VERIFY & TRANSMIT SIGNAL</button>
                 <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()">CANCEL</button>
             </div>
 
@@ -152,13 +160,19 @@
         </div>
     </main>
 
+    <footer class="vanguard-footer" style="padding: 20px; text-align: center; border-top: 2px solid #222; background: #000; z-index: 10;">
+        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v4.5 | Identity Protocol Enabled</p>
+    </footer>
+
     <script>
+        // --- CONFIG ---
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         let isReturningUser = false;
 
+        // --- FEEDBACK SYSTEMS ---
         function playSuccessSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -181,6 +195,7 @@
             m.innerText = text; m.style.color = color;
         }
 
+        // --- CORE LOGIC ---
         async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -201,7 +216,7 @@
             const handle = document.getElementById('f-handle').value.trim();
             const discord = document.getElementById('f-discord').value.trim();
 
-            if (!email || !password) return msg("Email and Password required.", "red");
+            if (!email || !password) return msg("Credentials required.", "red");
 
             msg("Checking Ledger...", "#888");
             const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -209,8 +224,8 @@
 
             if (signInError) {
                 if (signInError.message.toLowerCase().includes("invalid login")) {
-                    if (!fullName) return msg("Real Name required to register.", "red");
-                    msg("Creating New Identity...", "#888");
+                    if (!fullName) return msg("Real Name required for registration.", "red");
+                    msg("Creating Identity...", "#888");
                     const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
                         email, password, options: { data: { full_name: fullName } }
                     });
@@ -236,10 +251,10 @@
                 blob_data: { ...(current?.blob_data || {}), last_update: new Date().toISOString() }
             };
             const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
-            if (!error) { triggerSuccessUI(); msg("Profile Updated.", "var(--v-gold)"); }
+            if (!error) { triggerSuccessUI(); msg("Ledger Updated.", "var(--v-gold)"); }
         }
 
-        // --- THE UPDATED RESTORE LOGIC ---
+        // --- RESTORE & MAGIC LINK LOGIC ---
         function toggleRestoreMode() {
             const area = document.getElementById('restore-area');
             const master = document.getElementById('master-form');
@@ -253,37 +268,41 @@
         async function initiateRestore() {
             const email = document.getElementById('r-email').value.trim();
             const name = document.getElementById('r-name').value.trim();
-            if(!email || !name) return msg("Identity details required.", "red");
+            if(!email || !name) return msg("Details required for verification.", "red");
 
-            msg("Verifying Credentials...", "#888");
+            msg("Verifying Identity...", "#888");
             
-            // Step 1: Check the Citizens Table for Name + Email match
+            // Check Citizens table (Case Insensitive)
             const { data, error } = await supabaseClient
                 .from('citizens')
                 .select('email')
-                .eq('email', email)
-                .eq('full_name', name)
+                .ilike('email', email)
+                .ilike('full_name', name)
                 .single();
 
             if (error || !data) {
-                return msg("Verification Failed: No matching identity found.", "red");
+                return msg("Verification Failed: Credentials not found.", "red");
             }
 
-            // Step 2: Trigger Magic Link (Passwordless Login)
-            msg("Identity Verified. Sending Magic Link...", "var(--v-gold)");
+            msg("Transmitting Magic Link...", "var(--v-gold)");
             
             const { error: otpError } = await supabaseClient.auth.signInWithOtp({
                 email: email,
                 options: {
-                    emailRedirectTo: window.location.href // Redirects back to settings
+                    emailRedirectTo: window.location.href 
                 }
             });
 
             if (otpError) {
-                msg("Restoration Error: " + otpError.message, "red");
+                if (otpError.status === 429) {
+                    msg("Cooldown Active: Please wait 60 seconds.", "red");
+                } else {
+                    msg("Transmission Error: " + otpError.message, "red");
+                }
             } else {
-                msg("Check your email! Click the Magic Link to log in instantly.", "var(--v-gold)");
+                msg("Check your email. Click the Magic Link to log in.", "var(--v-gold)");
                 playSuccessSound();
+                document.getElementById('restore-confirm-btn').disabled = true;
             }
         }
 
@@ -300,6 +319,7 @@
                 document.getElementById('f-discord').value = data.discord_id || '';
                 document.getElementById('submit-btn').innerText = "UPDATE SECURE DATA";
                 document.getElementById('logout-area').style.display = 'block';
+                msg("Identity Verified.", "var(--v-gold)");
             }
         }
 
