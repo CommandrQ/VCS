@@ -6,6 +6,7 @@
     <title>Fort Toward | Directory</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* --- CORE OS ARCHITECTURE --- */
         body, html {
             overflow: hidden;
             height: 100%;
@@ -13,9 +14,37 @@
             flex-direction: column;
             background: #000;
             margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* --- THE NAVIGATION TUNER --- */
+        /* Scanlines layer behind text for older eyes */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(255, 255, 255, 0.02) 50%);
+            background-size: 100% 4px;
+            z-index: 1; 
+            pointer-events: none;
+        }
+
+        /* --- HEADER: STACKED ON MOBILE, WIDE ON DESKTOP --- */
+        .hud-header {
+            flex-shrink: 0;
+            background: #000;
+            border-bottom: 2px solid var(--v-gold);
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- THE TUNER (CATEGORY ROW) --- */
         .tuner-wrapper {
             position: relative;
             width: 100%;
@@ -23,59 +52,38 @@
             border-bottom: 1px solid #222;
             display: flex;
             align-items: center;
+            z-index: 10;
         }
 
         .category-nav {
             display: flex;
             gap: 15px;
-            padding: 20px 40px;
+            padding: 15px 40px;
             overflow-x: auto;
             scrollbar-width: none;
             scroll-behavior: smooth;
-            white-space: nowrap;
             width: 100%;
-            justify-content: center; /* Centered for few items */
+            /* Centers buttons if few, allows scroll if many */
+            justify-content: center; 
         }
-        
-        /* Forces scroll start if more than 3 buttons */
-        .category-nav > button {
-            flex: 0 0 auto;
-            min-width: 140px;
-        }
-
         .category-nav::-webkit-scrollbar { display: none; }
 
-        /* --- ANIMATED SCROLL ARROW --- */
-        .scroll-arrow {
-            position: absolute;
-            right: 15px;
-            color: var(--v-gold);
-            font-size: 1.5rem;
-            pointer-events: none;
-            animation: arrowPulse 2s infinite;
-            display: none; /* Only shows via JS if overflow exists */
-        }
-
-        @keyframes arrowPulse {
-            0%, 100% { opacity: 0.3; transform: translateX(0); }
-            50% { opacity: 1; transform: translateX(5px); }
-        }
-
-        /* --- BUTTON STATES: FIXED --- */
         .btn-pill {
+            flex: 0 0 auto;
             font-family: inherit;
             font-weight: 900;
-            padding: 12px 24px;
-            font-size: 0.9rem;
+            padding: 10px 22px;
+            font-size: 0.85rem;
             border-radius: 50px;
             cursor: pointer;
             transition: 0.3s var(--v-curve);
         }
 
+        /* Forced visibility for non-selected buttons */
         .btn-inactive {
             background: transparent !important;
-            border: 1px solid #444 !important;
-            color: #888 !important;
+            border: 1px solid #555 !important;
+            color: #bbb !important;
         }
 
         .btn-active {
@@ -85,7 +93,23 @@
             box-shadow: 0 4px 0 #8a6d0d;
         }
 
-        /* --- CONTENT VIEWPORT --- */
+        /* Pulse Arrow for scrolling awareness */
+        .scroll-arrow {
+            position: absolute;
+            right: 15px;
+            color: var(--v-gold);
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: arrowPulse 2s infinite;
+            display: none; 
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.2; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        /* --- PORTAL FEED --- */
         .os-viewport {
             flex: 1;
             overflow-y: auto;
@@ -93,6 +117,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 5;
         }
 
         .portal-card {
@@ -116,14 +141,21 @@
             border-top: 2px solid #222;
             padding: 20px;
             background: #000;
+            z-index: 10;
         }
 
-        /* MOBILE OVERRIDES */
+        /* --- MOBILE REFINEMENTS --- */
         @media (max-width: 650px) {
-            .category-nav { justify-content: flex-start; padding: 20px; }
-            .scroll-arrow { display: block; } /* Always nudge on mobile */
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+                padding: 15px 10px;
+            }
+            .category-nav { justify-content: flex-start; padding: 15px 20px; }
             .portal-card { flex-direction: column; text-align: left; }
-            .header-content { flex-direction: column; gap: 15px; text-align: center; }
+            .card-btn { width: 100%; text-align: center; }
+            .footer-content { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
@@ -133,13 +165,13 @@
     <div class="starfield s1"></div>
 
     <header class="hud-header">
-        <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;">
+        <div class="header-content">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="images/vanguardorglogo.png" alt="VCS" style="width:35px;">
                 <span class="gold-text-outline" style="font-size: 1.2rem;">Fort Toward Directory</span>
             </div>
             <nav>
-                <button class="btn-pill btn-active" style="padding: 8px 20px; font-size: 0.75rem;" onclick="location.href='support.html'">CUSTOMER SERVICE</button>
+                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='support.html'">CUSTOMER SERVICE</button>
             </nav>
         </div>
     </header>
@@ -153,25 +185,31 @@
     <main class="os-viewport" id="portal-feed"></main>
 
     <footer class="vanguard-footer">
-        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%;">
-            <p style="color: #FFF; font-size: 0.8rem; margin: 0;">&copy; 2026 VANGUARD CITIZEN SERVICES</p>
-            <a href="settings.html" style="color:#FFF; text-decoration:none; font-weight:bold; font-size: 1rem;">⚙️ SYSTEM SETTINGS</a>
+        <div class="footer-content" style="display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%;">
+            <p style="color: #FFF; font-size: 0.75rem; margin: 0;">&copy; 2026 VANGUARD CITIZEN SERVICES</p>
+            <nav style="display: flex; gap: 15px; align-items: center;">
+                <a href="legal.html" style="color: #bbb; text-decoration: none; font-size: 0.8rem;">LEGAL</a>
+                <span style="color: #333;">|</span>
+                <a href="settings.html" style="color: #FFF; text-decoration: none; font-weight: bold; font-size: 1rem;">⚙️ SYSTEM SETTINGS</a>
+            </nav>
         </div>
     </footer>
 
     <script>
+        /* --- EASY ADD DATABASE --- */
         const VANGUARD_DB = {
             "Services": [
-                { title: "Network Triage", tag: "Tech Help", desc: "Expert WiFi and network setup. We ensure your digital perimeter is secure.", link: "support.html", btnText: "REQUEST HELP" }
+                { title: "Network Triage", tag: "VCS Service", desc: "Expert WiFi and network setup. We harden your digital perimeter against intrusion.", link: "support.html", btnText: "REQUEST HELP" },
+                { title: "Sovereign Training", tag: "VCS Service", desc: "Learn to repair your own hardware and manage your own data servers.", link: "support.html", btnText: "JOIN ACADEMY" }
             ],
-            "Partner Alliances": [
-                { title: "Hardin Tech Solutions", tag: "Certified Partner", desc: "Local commercial IT specialists authorized for enterprise deployments.", link: "https://hardintech.com", btnText: "VISIT SITE" }
+            "Partners": [
+                { title: "Hardin Tech Solutions", tag: "Alliance Partner", desc: "Commercial-grade IT management and enterprise server infrastructure.", link: "https://hardintech.com", btnText: "VISIT SITE" }
             ],
             "Academy": [
-                { title: "Sovereign Skills", tag: "Education", desc: "Learn to repair hardware and protect your digital identity.", link: "https://git.vanguard.org/academy", btnText: "START LEARNING" }
+                { title: "Digital Safety 101", tag: "Intel Vault", desc: "High-legibility guide for older citizens to avoid scams and protect identity.", link: "legal.html", btnText: "READ GUIDE" }
             ],
-            "Volunteers": [
-                { title: "Community Hands", tag: "Citizenship", desc: "Request assistance for local physical projects or community events.", link: "support.html", btnText: "REQUEST CREW" }
+            "Volunteer": [
+                { title: "Community Hands", tag: "Citizen Hub", desc: "Request physical help for local community projects or neighborhood events.", link: "support.html", btnText: "SIGNAL CREW" }
             ]
         };
 
@@ -179,7 +217,7 @@
         const feed = document.getElementById('portal-feed');
         const arrow = document.getElementById('nav-arrow');
 
-        // Render Buttons
+        // Create Navigation
         Object.keys(VANGUARD_DB).forEach((cat, index) => {
             const btn = document.createElement('button');
             btn.innerText = cat;
@@ -189,7 +227,7 @@
             if (index === 0) renderCards(cat);
         });
 
-        // Show arrow if content overflows
+        // Check for scrollable overflow for the arrow
         function checkOverflow() {
             if (navRow.scrollWidth > navRow.clientWidth) {
                 arrow.style.display = 'block';
@@ -212,10 +250,10 @@
                 card.innerHTML = `
                     <div style="flex: 1;">
                         <div style="font-size: 0.85rem; color: var(--v-gold); font-weight: 700; margin-bottom: 5px;">${item.tag}</div>
-                        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 12px;">${item.title}</h2>
+                        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 12px; font-weight: 900;">${item.title}</h2>
                         <p style="font-size: 1.15rem; color: #ddd; line-height: 1.6;">${item.desc}</p>
                     </div>
-                    <a href="${item.link}" class="btn-pill btn-active" style="padding: 15px 30px; font-size: 0.9rem; text-decoration: none;">${item.btnText}</a>
+                    <a href="${item.link}" class="btn-pill btn-active card-btn" style="padding: 15px 30px; font-size: 0.9rem; text-decoration: none;">${item.btnText}</a>
                 `;
                 feed.appendChild(card);
             });
