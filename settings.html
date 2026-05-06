@@ -18,7 +18,6 @@
         .hud-header { flex-shrink: 0; background: #000; border-bottom: 2px solid var(--v-gold); z-index: 10; }
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; }
 
-        /* --- IDENTITY TERMINAL CARD --- */
         .os-viewport {
             flex: 1; overflow-y: auto; padding: 40px 20px;
             display: flex; flex-direction: column; align-items: center; z-index: 5;
@@ -32,17 +31,18 @@
         }
 
         .status-header { margin-bottom: 30px; text-align: center; }
+        
         .rank-badge {
-            display: inline-block; padding: 5px 15px; border: 1px solid var(--v-gold);
-            color: var(--v-gold); font-weight: 900; font-size: 0.8rem;
-            text-transform: uppercase; letter-spacing: 2px; margin-top: 10px;
+            display: inline-block; padding: 6px 20px; border: 1px solid var(--v-gold);
+            color: var(--v-gold); font-weight: 900; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 2px; margin-top: 12px;
+            background: rgba(212, 175, 55, 0.05);
         }
 
-        /* --- FORM STYLING --- */
         .field-group { margin-bottom: 20px; text-align: left; }
         label { display: block; color: var(--v-gold); font-weight: 900; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
         
-        input, select {
+        input {
             width: 100%; background: #111; border: 1px solid #333; padding: 12px;
             color: #fff; font-size: 1rem; border-radius: 5px; box-sizing: border-box;
         }
@@ -53,9 +53,18 @@
             border-radius: 50px; cursor: pointer; transition: 0.3s; border: none; margin-top: 10px;
         }
         .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
-        .btn-inactive { background: transparent !important; border: 1px solid #444 !important; color: #888 !important; }
+        
+        /* Updated Restore Button Style */
+        .btn-restore { 
+            background: transparent !important; 
+            border: 1px solid #555 !important; 
+            color: #ffffff !important; /* Forces text to white */
+        }
+        .btn-restore:hover { border-color: var(--v-gold) !important; }
 
-        .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; }
+        .btn-logout { background: transparent !important; border: 1px solid #444 !important; color: #888 !important; }
+
+        .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2em; }
 
         @media (max-width: 650px) {
             .header-content { flex-direction: column; gap: 12px; text-align: center; }
@@ -82,17 +91,17 @@
         <div class="identity-card">
             <div class="status-header">
                 <h2 id="welcome-msg" class="gold-text-outline" style="font-size: 1.8rem; margin: 0;">Identity: Guest</h2>
-                <div id="rank-display" class="rank-badge">Unverified Citizen</div>
+                <div id="rank-display" class="rank-badge">RANK: UNDEFINED</div>
             </div>
 
             <div id="form-area">
                 <div class="field-group">
                     <label>Full Name</label>
-                    <input type="text" id="full_name" placeholder="Quincy Jones">
+                    <input type="text" id="full_name" placeholder="Citizen Name">
                 </div>
                 <div class="field-group">
                     <label>Citizen Handle (Callsign)</label>
-                    <input type="text" id="handle" placeholder="CommanderQ">
+                    <input type="text" id="handle" placeholder="Callsign">
                 </div>
                 <div class="field-group">
                     <label>Email Address (Identity Key)</label>
@@ -100,82 +109,78 @@
                 </div>
                 <div class="field-group">
                     <label>Discord ID</label>
-                    <input type="text" id="discord_id" placeholder="User#1234">
-                </div>
-                <div class="field-group">
-                    <label>Assigned Rank</label>
-                    <select id="rank">
-                        <option value="Citizen">Citizen</option>
-                        <option value="Student">Student</option>
-                        <option value="Volunteer">Volunteer</option>
-                        <option value="Knight Aspirant">Knight Aspirant</option>
-                    </select>
+                    <input type="text" id="discord_id" placeholder="Username#0000">
                 </div>
 
-                <button class="btn-pill btn-active" onclick="saveIdentity()">WRITE TO KERNEL</button>
-                <button class="btn-pill btn-inactive" onclick="restoreIdentity()">RESTORE FROM EMAIL</button>
+                <button class="btn-pill btn-active" onclick="saveIdentity()">SUBMIT CHANGES</button>
+                <button class="btn-pill btn-restore" style="margin-top:20px;" onclick="restoreIdentity()">RESTORE FROM EMAIL</button>
             </div>
 
-            <div id="logout-area" style="display:none; text-align: center;">
-                <p style="color: #bbb; margin-bottom: 20px;">Identity is currently saved to this browser.</p>
-                <button class="btn-pill btn-inactive" onclick="logout()">CLEAR LOCAL MEMORY</button>
+            <div id="logout-area" style="display:none; text-align: center; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
+                <button class="btn-pill btn-logout" onclick="logout()">LOGOUT (CLEAR LOCAL MEMORY)</button>
             </div>
 
             <div id="sys-response" class="sys-msg"></div>
         </div>
     </main>
 
-    <footer class="vanguard-footer" style="padding: 20px; border-top: 1px solid #222; text-align: center;">
-        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v3.0 | Secure Citizen Handshake</p>
+    <footer class="vanguard-footer" style="padding: 20px; text-align: center; z-index: 10;">
+        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v3.2 | Authorized Access Only</p>
     </footer>
 
     <script>
         // --- CONFIGURATION ---
         const SB_URL = 'YOUR_SUPABASE_URL';
         const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = supabase.createClient(SB_URL, SB_KEY);
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         // --- CORE FUNCTIONS ---
         async function saveIdentity() {
-            const data = {
-                full_name: document.getElementById('full_name').value,
-                handle: document.getElementById('handle').value,
-                email: document.getElementById('email').value,
-                discord_id: document.getElementById('discord_id').value,
-                rank: document.getElementById('rank').value
-            };
+            const emailValue = document.getElementById('email').value.trim();
+            const fullNameValue = document.getElementById('full_name').value.trim();
 
-            if(!data.email || !data.full_name) {
-                msg("Name and Email are required for the Kernel.", "red");
+            if(!emailValue || !fullNameValue) {
+                msg("Name and Email are required.", "red");
                 return;
             }
 
-            // Upsert into Supabase (Update if email exists, otherwise Insert)
-            const { error } = await supabase.from('citizens').upsert([data], { onConflict: 'email' });
+            const citizenData = {
+                full_name: fullNameValue,
+                handle: document.getElementById('handle').value.trim(),
+                email: emailValue,
+                discord_id: document.getElementById('discord_id').value.trim()
+            };
+
+            msg("Saving changes...", "#888");
+
+            const { error } = await supabaseClient.from('citizens').upsert([citizenData], { onConflict: 'email' });
 
             if (error) {
-                msg("Kernel Error: " + error.message, "red");
+                msg("Error: " + error.message, "red");
             } else {
-                localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-                msg("Identity Written Successfully.", "var(--v-gold)");
-                syncUI();
+                fetchAndSync(emailValue);
+                msg("Changes submitted successfully.", "var(--v-gold)");
             }
         }
 
         async function restoreIdentity() {
-            const email = document.getElementById('email').value;
-            if(!email) { msg("Please enter your Email Key.", "red"); return; }
+            const emailValue = document.getElementById('email').value.trim();
+            if(!emailValue) { msg("Please enter your email address.", "red"); return; }
 
-            msg("Searching Ledger...", "#888");
-            
-            const { data, error } = await supabase.from('citizens').select('*').eq('email', email).single();
+            msg("Checking records...", "#888");
+            fetchAndSync(emailValue);
+        }
+
+        async function fetchAndSync(email) {
+            const { data, error } = await supabaseClient.from('citizens').select('*').eq('email', email).single();
 
             if (data) {
+                if (!data.rank) data.rank = "UNDEFINED";
                 localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-                msg("Identity Restored.", "var(--v-gold)");
                 syncUI();
+                msg("Identity restored.", "var(--v-gold)");
             } else {
-                msg("No Identity found for this Email.", "red");
+                msg("Email not found in our records.", "red");
             }
         }
 
@@ -188,15 +193,13 @@
             const citizen = JSON.parse(localStorage.getItem('vanguard_citizen'));
             if (citizen) {
                 document.getElementById('welcome-msg').innerText = "Identity: " + citizen.full_name;
-                document.getElementById('rank-display').innerText = citizen.rank;
+                document.getElementById('rank-display').innerText = "RANK: " + (citizen.rank || "UNDEFINED").toUpperCase();
                 document.getElementById('logout-area').style.display = 'block';
                 
-                // Fill inputs
                 document.getElementById('full_name').value = citizen.full_name;
                 document.getElementById('handle').value = citizen.handle;
                 document.getElementById('email').value = citizen.email;
                 document.getElementById('discord_id').value = citizen.discord_id;
-                document.getElementById('rank').value = citizen.rank;
             }
         }
 
