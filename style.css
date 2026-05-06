@@ -1,231 +1,137 @@
-/* VANGUARD COMMAND CENTER: OPERATIONAL STYLESHEET
-    Theme: Sovereign Black & Gold
-    Font: SF Pro Native Stack
-*/
+/* --- VANGUARD COMMAND CORE: RETRO-FUTURE HUD --- */
 
 :root {
     --v-gold: #D4AF37;
     --v-black: #000000;
-    --v-panel: #0a0a0a;
-    --v-text: #EAEAEA;
-    --v-gray: #1a1a1a;
-    --v-border: #222;
+    --v-white: #EAEAEA;
+    --v-shadow: rgba(212, 175, 55, 0.4);
 }
 
-/* --- GLOBAL RESET --- */
-* {
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-}
+* { box-sizing: border-box; }
 
 body, html {
     background-color: var(--v-black);
-    color: var(--v-text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    line-height: 1.5;
+    color: var(--v-white);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    margin: 0; padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.hidden { display: none !important; }
-.gold-text { color: var(--v-gold); letter-spacing: 1.5px; text-transform: uppercase; }
+/* --- SCANLINE EFFECT --- */
+.scanlines {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.1) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 999;
+    pointer-events: none;
+}
 
-/* --- MODE 1: PUBLIC LOBBY --- */
-#lobby-view {
-    height: 100vh;
+/* --- ANIMATED STARFIELD --- */
+.starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 200%; height: 200%;
+    background-image: radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                      radial-gradient(2px 2px at 50px 160px, var(--v-gold), rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    z-index: -1;
+    opacity: 0.5;
+}
+
+.s1 { animation: drift 100s linear infinite; }
+.s2 { animation: drift 150s linear infinite; opacity: 0.3; background-size: 300px 300px; }
+.s3 { animation: drift 200s linear infinite; opacity: 0.2; background-size: 400px 400px; }
+
+@keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-50%, -50%); }
+}
+
+/* --- MAIN INTERFACE --- */
+.intro-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 10;
     text-align: center;
     padding: 20px;
 }
 
-.pulse {
-    animation: pulse-gold 4s infinite ease-in-out;
+.org-logo {
+    width: 320px;
+    max-width: 80vw;
+    height: auto;
+    filter: drop-shadow(0 0 10px var(--v-shadow));
+    margin-bottom: 30px;
+    animation: flicker 5s infinite;
 }
 
-@keyframes pulse-gold {
-    0% { opacity: 0.8; }
-    50% { opacity: 1; text-shadow: 0 0 15px var(--v-gold); }
-    100% { opacity: 0.8; }
-}
+.entry-portal { margin-bottom: 30px; }
 
-/* --- MODE 2: COMMAND HUD --- */
-.view { min-height: 100vh; display: flex; flex-direction: column; }
-
-.hud-header {
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--v-border);
-}
-
-.logo { font-weight: 900; letter-spacing: 3px; font-size: 1.2rem; color: var(--v-gold); }
-
-/* Category Tuner (Horizontal Scroll) */
-.category-tuner {
-    display: flex;
-    overflow-x: auto;
-    padding: 15px 40px;
-    gap: 12px;
-    background: #050505;
-    border-bottom: 1px solid #111;
-    scrollbar-width: none; /* Firefox */
-}
-
-.category-tuner::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
-.cat-btn {
+.btn-vanguard {
     background: transparent;
-    border: 1px solid #333;
-    color: #777;
-    padding: 8px 24px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    transition: 0.2s ease;
-}
-
-.cat-btn.active {
-    border-color: var(--v-gold);
+    border: 1px solid var(--v-gold);
     color: var(--v-gold);
-}
-
-/* Dual Pane Layout */
-.dual-pane {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    flex: 1;
-    overflow: hidden;
-}
-
-.pane {
-    padding: 30px 40px;
-    overflow-y: auto;
-    height: calc(100vh - 200px); /* Adjust based on header/tuner height */
-    border-right: 1px solid var(--v-border);
-}
-
-.pane:last-child { border-right: none; }
-
-.pane-title {
-    font-size: 0.7rem;
-    color: #444;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #111;
-    padding-bottom: 10px;
-}
-
-/* Item Cards */
-.item-card {
-    background: var(--v-panel);
-    border-left: 2px solid var(--v-gold);
-    padding: 20px;
-    margin-bottom: 20px;
-    transition: transform 0.2s ease;
-}
-
-.item-card h3 {
-    margin: 0 0 10px 0;
+    padding: 15px 40px;
     font-size: 1rem;
-    color: var(--v-text);
+    font-weight: 900;
+    letter-spacing: 5px;
+    cursor: pointer;
+    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: 0 0 5px var(--v-shadow);
 }
 
-.item-card p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #999;
-}
-
-.gold-link {
-    color: var(--v-gold);
-    text-decoration: none;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    display: inline-block;
-    margin-top: 15px;
-    transition: 0.2s;
-}
-
-.gold-link:hover { opacity: 0.7; }
-
-/* --- BUTTONS & MODALS --- */
-.btn-gold {
+.btn-vanguard:hover {
     background: var(--v-gold);
     color: var(--v-black);
-    border: none;
-    padding: 14px 28px;
-    font-weight: 800;
+    box-shadow: 0 0 25px var(--v-gold);
+    transform: scale(1.05);
+}
+
+.motto {
+    font-family: "Courier New", Courier, monospace;
+    color: var(--v-gold);
+    letter-spacing: 4px;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.3s;
+    opacity: 0.8;
 }
 
-.btn-gold:hover { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid var(--v-text);
-    color: var(--v-text);
-    padding: 14px 28px;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
+/* --- FOOTER --- */
+.vanguard-footer {
+    padding: 20px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #444;
+    background: rgba(0,0,0,0.8);
+    border-top: 1px solid #111;
+    z-index: 10;
 }
 
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
+.footer-links { margin-top: 8px; }
+.footer-links a {
+    color: var(--v-gold);
+    text-decoration: none;
+    margin: 0 10px;
 }
 
-.modal-box {
-    background: var(--v-panel);
-    border: 1px solid var(--v-gold);
-    padding: 40px;
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-}
+.footer-links a:hover { color: white; }
 
-input, textarea {
-    background: var(--v-gray);
-    border: 1px solid #333;
-    color: #fff;
-    padding: 15px;
-    margin: 10px 0;
-    font-family: inherit;
-    outline: none;
-}
-
-input:focus, textarea:focus { border-color: var(--v-gold); }
-
-.footer-action {
-    padding: 20px 40px;
-    border-top: 1px solid var(--v-border);
-    display: flex;
-    justify-content: center;
-}
-
-/* --- MOBILE OPTIMIZATION --- */
-@media (max-width: 850px) {
-    .dual-pane { grid-template-columns: 1fr; }
-    .pane { height: auto; border-right: none; border-bottom: 1px solid var(--v-border); }
-    .hud-header { padding: 20px; }
-    .category-tuner { padding: 10px 20px; }
+/* --- RETRO ANIMATIONS --- */
+@keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 24%, 55% { opacity: 0.8; }
 }
