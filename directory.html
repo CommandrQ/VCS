@@ -17,7 +17,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Scanlines layer behind text for older eyes */
+        /* Scanlines layer behind text for accessibility */
         .scanlines {
             position: fixed;
             inset: 0;
@@ -44,6 +44,38 @@
             box-sizing: border-box;
         }
 
+        /* --- BUTTONS: HIGH VISIBILITY & SNAPPY --- */
+        .btn-pill {
+            flex: 0 0 auto;
+            font-family: inherit;
+            font-weight: 900;
+            padding: 10px 22px;
+            font-size: 0.85rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s var(--v-curve);
+            border: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-inactive {
+            background: transparent !important;
+            border: 1px solid #555 !important;
+            color: #bbb !important;
+        }
+        .btn-inactive:hover {
+            border-color: var(--v-gold) !important;
+            color: #fff !important;
+        }
+
+        .btn-active {
+            background: var(--v-gold) !important;
+            border: 1px solid var(--v-gold) !important;
+            color: #000 !important;
+            box-shadow: 0 4px 0 #8a6d0d;
+        }
+
         /* --- THE TUNER (CATEGORY ROW) --- */
         .tuner-wrapper {
             position: relative;
@@ -67,30 +99,7 @@
         }
         .category-nav::-webkit-scrollbar { display: none; }
 
-        .btn-pill {
-            flex: 0 0 auto;
-            font-family: inherit;
-            font-weight: 900;
-            padding: 10px 22px;
-            font-size: 0.85rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s var(--v-curve);
-        }
-
-        .btn-inactive {
-            background: transparent !important;
-            border: 1px solid #555 !important;
-            color: #bbb !important;
-        }
-
-        .btn-active {
-            background: var(--v-gold) !important;
-            border: 1px solid var(--v-gold) !important;
-            color: #000 !important;
-            box-shadow: 0 4px 0 #8a6d0d;
-        }
-
+        /* Pulse Arrow for scrolling awareness */
         .scroll-arrow {
             position: absolute;
             right: 15px;
@@ -142,12 +151,17 @@
         }
 
         /* --- MOBILE REFINEMENTS --- */
-        @media (max-width: 650px) {
+        @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 text-align: center;
-                gap: 12px;
+                gap: 15px;
                 padding: 15px 10px;
+            }
+            .header-content nav {
+                flex-direction: row;
+                justify-content: center;
+                width: 100%;
             }
             .category-nav { justify-content: flex-start; padding: 15px 20px; }
             .portal-card { flex-direction: column; text-align: left; }
@@ -167,14 +181,16 @@
                 <img src="images/vanguardorglogo.png" alt="VCS" style="width:35px;">
                 <span class="gold-text-outline" style="font-size: 1.2rem;">Fort Toward Directory</span>
             </div>
-            <nav>
+            <nav style="display: flex; gap: 10px;">
+                <button class="btn-pill btn-inactive" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='vcsinfo.html'">ABOUT VANGUARD</button>
                 <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='support.html'">CUSTOMER SERVICE</button>
             </nav>
         </div>
     </header>
 
     <div class="tuner-wrapper">
-        <nav class="category-nav" id="category-row"></nav>
+        <nav class="category-nav" id="category-row">
+            </nav>
         <div class="scroll-arrow" id="nav-arrow">➔</div>
     </div>
 
@@ -192,18 +208,19 @@
     </footer>
 
     <script>
+        /* --- VANGUARD DATABASE --- */
         const VANGUARD_DB = {
             "Services": [
-                { title: "Vanguard Support & Repair", desc: "Simple tech help and light repair", link: "#.html", btnText: "REQUEST HELP" }
+                { title: "Vanguard Support & Repair", desc: "Simple tech help and light hardware repair for citizens.", link: "support.html", btnText: "REQUEST HELP" }
             ],
             "Guides": [
-                { title: "Technology Guides", desc: "Guidebook", link: "#", btnText: "Read" }
+                { title: "Technology Guides", desc: "A curated library of easy-to-follow digital citizenship resources.", link: "legal.html", btnText: "READ INTEL" }
             ],
             "Academy": [
-                { title: "Computer Basics 101", desc: "Lightweight class", link: "#.html", btnText: "Attend" }
+                { title: "Computer Basics 101", desc: "A lightweight, human-centric class for mastering the digital world.", link: "vcsinfo.html", btnText: "ATTEND" }
             ],
             "Volunteer": [
-                { title: "Community Hands", desc: "Request physical help for local community projects or neighborhood events.", link: "#.html", btnText: "SIGNAL CREW" }
+                { title: "Community Hands", desc: "Request physical assistance for local community projects or neighborhood events.", link: "support.html", btnText: "SIGNAL CREW" }
             ]
         };
 
@@ -211,6 +228,7 @@
         const feed = document.getElementById('portal-feed');
         const arrow = document.getElementById('nav-arrow');
 
+        // Create Navigation Buttons
         Object.keys(VANGUARD_DB).forEach((cat, index) => {
             const btn = document.createElement('button');
             btn.innerText = cat;
@@ -220,6 +238,7 @@
             if (index === 0) renderCards(cat);
         });
 
+        // Check if buttons overflow to show pulse arrow
         function checkOverflow() {
             if (navRow.scrollWidth > navRow.clientWidth) {
                 arrow.style.display = 'block';
