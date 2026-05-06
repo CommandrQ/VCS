@@ -6,7 +6,7 @@
     <title>Vanguard Support | Get in Touch</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* BASE LAYOUT */
+        /* BASE LAYOUT FIX */
         .fixed-hud {
             overflow: hidden;
             height: 100vh;
@@ -14,55 +14,53 @@
             flex-direction: column;
         }
 
-        /* ENTRANCE ANIMATIONS */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes borderPulse {
-            0% { border-color: var(--v-border); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-            50% { border-color: var(--v-gold); box-shadow: 0 0 15px var(--v-shadow); }
-            100% { border-color: var(--v-border); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        }
-
-        /* THE CARDS: Solid Alpha & Subtle Pulse */
+        /* 3D GLASSY CARD (OPAQUE) */
         .support-card {
-            background-color: #000000;
-            border: 2px solid var(--v-border);
-            padding: 40px;
+            /* Solid Black Base - No star bleed */
+            background: linear-gradient(135deg, #050505 0%, #111111 100%); 
+            
+            /* The "Glass Rim" - Bright top/left, dark bottom/right */
+            border-top: 1px solid rgba(212, 175, 55, 0.5);
+            border-left: 1px solid rgba(212, 175, 55, 0.3);
+            border-right: 1px solid #111;
+            border-bottom: 1px solid #000;
+            
+            padding: 50px 40px;
             max-width: 450px;
             text-align: center;
+            position: relative;
             z-index: 10;
-            opacity: 0; /* Starts hidden for the animation */
-            animation: 
-                fadeInUp 0.8s ease forwards,
-                borderPulse 4s infinite ease-in-out;
+            
+            /* The 3D Lift (Deep Shadow) */
+            box-shadow: 
+                20px 20px 50px rgba(0, 0, 0, 0.8), 
+                inset 1px 1px 0px rgba(255, 255, 255, 0.05);
+            
+            border-radius: 4px; /* Slight roundness for a modern "tech" feel */
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
         }
 
-        /* Staggering the cards so they don't appear at the same time */
-        .card-email { animation-delay: 0.2s, 0s; }
-        .card-discord { animation-delay: 0.5s, 1s; }
-
-        .support-card:hover {
-            border-color: var(--v-gold);
-            transform: scale(1.02);
-            transition: 0.3s ease;
+        /* Subtle Sheen Overlay (The "Glass" effect without transparency) */
+        .support-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         /* TEXT OUTLINE */
         .gold-text-outline {
             color: var(--v-gold);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             font-weight: 900;
-            text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000;
+            text-shadow: 
+                -2px -2px 0 #000,  
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000;
         }
 
         .support-desc {
@@ -70,45 +68,50 @@
             line-height: 1.6;
             color: #ffffff;
             margin-bottom: 30px;
-            text-shadow: 1px 1px 2px #000;
+            text-shadow: 1px 1px 3px #000;
         }
 
-        /* BUTTONS */
+        /* BUTTONS (Solid & 3D) */
         .btn-vanguard-solid {
-            background-color: var(--v-gold);
-            color: #000000 !important;
+            background: var(--v-gold);
+            color: #000 !important;
             font-weight: 900;
-            padding: 15px 30px;
+            padding: 18px 35px;
             text-decoration: none;
             display: inline-block;
             border: none;
             letter-spacing: 2px;
-            transition: 0.3s;
+            box-shadow: 0 4px 0 #8a6d0d; /* 3D Button Depth */
+            transition: 0.2s;
         }
 
         .btn-vanguard-solid:hover {
-            box-shadow: 0 0 20px var(--v-gold);
-            letter-spacing: 3px;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--v-shadow);
         }
 
-        /* FLOATING ICONS */
-        .support-icon { 
-            font-size: 3.5rem; 
-            margin-bottom: 15px; 
-            display: inline-block;
-            animation: float 5s infinite ease-in-out;
+        .btn-vanguard-solid:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #8a6d0d;
         }
 
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MOBILE OVERFLOW FIX */
         @media (max-width: 850px) {
+            .fixed-hud { height: auto; min-height: 100vh; overflow-y: auto; }
             .hud-workspace { 
                 grid-template-columns: 1fr !important; 
-                padding: 20px !important;
+                padding: 100px 20px !important; /* Spacing so it doesn't hit header/footer */
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                gap: 20px;
-                overflow-y: auto;
+                gap: 40px;
             }
+            .support-card { max-width: 100%; padding: 40px 20px; }
         }
     </style>
 </head>
@@ -117,7 +120,7 @@
     <div class="scanlines"></div>
     <div class="starfield s1"></div>
 
-    <header class="hud-header" style="background: #000; border-bottom: 2px solid var(--v-gold); z-index: 20; animation: fadeInUp 0.5s ease;">
+    <header class="hud-header" style="background: #000; border-bottom: 2px solid var(--v-gold); z-index: 20;">
         <div class="logo-area">
             <img src="images/vanguardorglogo.png" alt="VCS Logo" class="hud-logo">
             <span class="gold-text-outline">SUPPORT TRIAGE</span>
@@ -130,8 +133,8 @@
 
     <main class="hud-workspace" style="display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; flex: 1;">
         
-        <section class="support-card card-email">
-            <div class="support-icon">✉️</div>
+        <section class="support-card" style="animation-delay: 0.2s;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">✉️</div>
             <h2 class="gold-text-outline">Email Support</h2>
             <p class="support-desc">
                 Best for general questions or if you aren't in a rush. Send us a message and we'll talk soon.
@@ -139,8 +142,8 @@
             <a href="mailto:support@vcscitizen.org" class="btn-vanguard-solid">SEND EMAIL</a>
         </section>
 
-        <section class="support-card card-discord">
-            <div class="support-icon">🛡️</div>
+        <section class="support-card" style="animation-delay: 0.4s;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🛡️</div>
             <h2 class="gold-text-outline">Live Chat</h2>
             <p class="support-desc">
                 Our Discord is a live community. Join here to chat with us directly or jump on a voice call.
@@ -150,13 +153,8 @@
 
     </main>
 
-    <footer class="vanguard-footer" style="background: #000; border-top: 2px solid var(--v-gold); z-index: 20;">
+    <footer class="vanguard-footer" style="background: #000; border-top: 2px solid var(--v-gold); z-index: 20; position: relative;">
         <p>&copy; 2026 Vanguard Citizen Services. All Rights Reserved.</p>
-        <div class="footer-links">
-            <a href="#" style="color:white; text-decoration: none;">Privacy Policy</a>
-            <span class="divider" style="color:white;">|</span>
-            <a href="#" style="color:white; text-decoration: none;">Terms of Service</a>
-        </div>
     </footer>
 
     <script>
