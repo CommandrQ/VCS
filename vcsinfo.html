@@ -56,21 +56,14 @@
             text-align: center;
         }
 
-        .btn-inactive {
-            background: transparent !important;
-            border: 1px solid #555 !important;
-            color: #bbb !important;
-        }
-        .btn-inactive:hover {
-            border-color: var(--v-gold) !important;
-            color: #fff !important;
-        }
-
         .btn-active {
             background: var(--v-gold) !important;
-            border: 1px solid var(--v-gold) !important;
             color: #000 !important;
             box-shadow: 0 4px 0 #8a6d0d;
+        }
+        .btn-active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
         }
 
         /* --- INFO VIEWPORT --- */
@@ -107,7 +100,12 @@
             font-size: 1.15rem;
             color: #ddd;
             line-height: 1.8;
-            margin-bottom: 0;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            color: var(--v-gold);
+            font-weight: 700;
         }
 
         /* --- FOOTER --- */
@@ -121,6 +119,8 @@
         @media (max-width: 768px) {
             .header-content { flex-direction: column; gap: 12px; padding: 15px 10px; }
             .info-card { padding: 25px; }
+            .info-card h2 { font-size: 1.4rem; }
+            .info-card p { font-size: 1rem; }
         }
     </style>
 </head>
@@ -133,11 +133,11 @@
         <div class="header-content">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="images/vanguardorglogo.png" alt="VCS" style="width:35px;">
-                <span class="gold-text-outline" style="font-size: 1.2rem;">Fort Toward Intelligence</span>
+                <span class="gold-text-outline" style="font-size: 1.2rem;">About Vanguard</span>
             </div>
             <nav style="display: flex; gap: 10px;">
-                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;">ABOUT VANGUARD</button>
-                <button class="btn-pill btn-inactive" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='directory.html'">DIRECTORY</button>
+                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='directory.html'">DIRECTORY</button>
+                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='support.html'">CUSTOMER SERVICE</button>
             </nav>
         </div>
     </header>
@@ -157,29 +157,36 @@
     </footer>
 
     <script>
-        /* --- MISSION DATABASE: Update your "About" info here --- */
+        /* --- HUMAN-CENTRIC STORY DATABASE --- */
         const MISSION_DATA = [
             {
-                title: "The Origins of Fort Toward",
-                content: "Fort Toward wasn't built for machines; it was built for people. In an era where technology has become increasingly complex and detached from the human experience, Vanguard OS serves as a bridge. We believe that every citizen deserves to understand and own the tools they use every day."
+                title: "Our Story",
+                content: "Vanguard Citizen Services was started by <span class='highlight'>Quincy Jones</span> and <span class='highlight'>Kona Agpalza</span>. With backgrounds in the military and complex tech systems, we saw how confusing the digital world had become. We built Vanguard to strip away that confusion and put the power back in your hands."
             },
             {
-                title: "Human-Centric Sovereignty",
-                content: "Our mission is simple: to foster digital sovereignty. Whether it's repairing a home router or learning the basics of privacy-first computing, we provide the intelligence and assistance needed to step into the future with confidence, not confusion."
+                title: "Our Vision",
+                content: "We believe technology should make your life easier, not harder. Too often, tech jargon is used to make people feel left out. We act as your personal guide, making sure you can confidently step into the future without feeling overwhelmed."
             },
             {
                 title: "The Vanguard Knights",
-                content: "Vanguard is powered by a community of specialists known as Knights—volunteers and professionals dedicated to neighborhood resilience. We don't just provide 'tech support'; we provide mentorship and local service that stays within the community."
+                content: "The Knights are our dedicated team of helpers. Our promise to you is simple: <span class='highlight'>we make hard things easy.</span> If you have a computer or WiFi problem we haven't seen before, we won't give up—we know exactly where to find the answer to get you back on track."
+            },
+            {
+                title: "How We Help",
+                content: "<strong>1. Friendly Tech Support:</strong> Expert help that stays by your side until it works.<br><strong>2. Easy Learning:</strong> Simple, clear guides to help you master your devices safely.<br><strong>3. Building Community:</strong> Bringing neighbors together to create a secure, informed, and inspired local network."
+            },
+            {
+                title: "Our Founders",
+                content: "<strong>Quincy Jones:</strong> Chief Vision Officer<br><strong>Kona Agpalza:</strong> Chief Operational Officer<br><br>Together, they lead the mission to protect, empower, and elevate our community."
             }
         ];
 
         const feed = document.getElementById('mission-feed');
 
-        // Render the cards automatically
         MISSION_DATA.forEach((item, index) => {
             const card = document.createElement('section');
             card.className = 'info-card';
-            card.style.animationDelay = (index * 0.1) + 's';
+            card.style.animationDelay = (index * 0.15) + 's';
             card.innerHTML = `
                 <h2 class="gold-text-outline">${item.title}</h2>
                 <p>${item.content}</p>
