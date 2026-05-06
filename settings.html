@@ -47,7 +47,6 @@
             background: rgba(212, 175, 55, 0.05);
         }
 
-        /* --- FORM STYLING --- */
         .field-group { margin-bottom: 20px; text-align: left; }
         label { display: block; color: var(--v-gold); font-weight: 900; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
         
@@ -65,18 +64,11 @@
             text-transform: uppercase; letter-spacing: 1px;
         }
         .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
-        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3); }
-        
         .btn-inactive { background: transparent !important; border: 1px solid #555 !important; color: #ffffff !important; }
         .btn-logout { background: transparent !important; border: 1px solid #f87171 !important; color: #f87171 !important; }
 
         .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2em; }
         .helper-text { text-align: center; color: #666; font-size: 0.75rem; margin-top: 15px; }
-
-        @media (max-width: 650px) {
-            .header-content { flex-direction: column; gap: 12px; text-align: center; }
-            .identity-card { padding: 25px; }
-        }
     </style>
 </head>
 <body class="fixed-hud">
@@ -108,12 +100,10 @@
                         <label>Email Address</label>
                         <input type="email" id="f-email" placeholder="name@email.com">
                     </div>
-
                     <div class="field-group" id="pass-group">
                         <label>Security Password</label>
                         <input type="password" id="f-password" placeholder="••••••••">
                     </div>
-
                     <div class="field-group">
                         <label>Real Name</label>
                         <input type="text" id="f-name" placeholder="John Doe">
@@ -131,10 +121,9 @@
                 </div>
 
                 <button class="btn-pill btn-active" id="submit-btn" onclick="submitUniversalForm()">SUBMIT IDENTITY</button>
-                <p class="helper-text" id="helper-note">New users: creates profile. Returning users: logs you in.</p>
                 
                 <div id="auth-aux-btns">
-                    <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()" id="restore-toggle-btn">RESTORE FORGOTTEN ACCOUNT</button>
+                    <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()" id="restore-toggle-btn">RESTORE BY NAME & EMAIL</button>
                 </div>
 
                 <div id="logout-area" style="display: none; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
@@ -143,16 +132,19 @@
             </div>
 
             <div id="restore-area" style="display: none; border-top: 1px solid #444; margin-top: 20px; padding-top: 20px;">
-                <h3 style="font-size: 0.9rem; color: var(--v-gold); text-align: center; text-transform: uppercase;">ACCOUNT RECOVERY</h3>
+                <h3 style="font-size: 0.9rem; color: var(--v-gold); text-align: center; text-transform: uppercase;">Identity Restoration</h3>
+                <p style="font-size: 0.75rem; color: #888; text-align: center; margin-bottom: 20px;">Provide your registered details. If they match the Ledger, we will send a secure Magic Link to log you in instantly.</p>
+                
                 <div class="field-group">
                     <label>Registered Email</label>
                     <input type="email" id="r-email">
                 </div>
                 <div class="field-group">
-                    <label>Full Name on Record</label>
+                    <label>Real Name on Record</label>
                     <input type="text" id="r-name">
                 </div>
-                <button class="btn-pill btn-active" onclick="initiateRestore()">VERIFY & SEND RECOVERY LINK</button>
+                
+                <button class="btn-pill btn-active" onclick="initiateRestore()">VERIFY & RESTORE ACCESS</button>
                 <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()">CANCEL</button>
             </div>
 
@@ -160,19 +152,13 @@
         </div>
     </main>
 
-    <footer class="vanguard-footer" style="padding: 20px; text-align: center; border-top: 2px solid #222; background: #000; z-index: 10;">
-        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v4.3 | Cryptographic Security Enabled</p>
-    </footer>
-
     <script>
-        // --- CONFIGURATION ---
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         let isReturningUser = false;
 
-        // --- AUDIO & VISUAL FEEDBACK ---
         function playSuccessSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -181,7 +167,7 @@
                 osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
                 osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1);
-            } catch(e) { console.log("Audio Context blocked by browser."); }
+            } catch(e) {}
         }
 
         function triggerSuccessUI() {
@@ -195,7 +181,6 @@
             m.innerText = text; m.style.color = color;
         }
 
-        // --- AUTHENTICATION STATE ---
         async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -205,14 +190,10 @@
         }
 
         async function submitUniversalForm() {
-            if (isReturningUser) {
-                await updateExistingProfile();
-            } else {
-                await processLoginOrRegistration();
-            }
+            if (isReturningUser) { await updateExistingProfile(); } 
+            else { await processLoginOrRegistration(); }
         }
 
-        // --- REGISTRATION / LOGIN ---
         async function processLoginOrRegistration() {
             const email = document.getElementById('f-email').value.trim();
             const password = document.getElementById('f-password').value;
@@ -222,8 +203,7 @@
 
             if (!email || !password) return msg("Email and Password required.", "red");
 
-            msg("Authenticating...", "#888");
-
+            msg("Checking Ledger...", "#888");
             const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
             let user = null;
 
@@ -240,49 +220,26 @@
                 } else { return msg("System Error: " + signInError.message, "red"); }
             } else { user = signInData.user; }
 
-            msg("Syncing Data...", "#888");
             const updates = { handle, discord_id: discord };
-            const { error: updateError } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
-
-            if (updateError) return msg("Sync Error: " + updateError.message, "red");
-
-            msg("Identity Secured.", "var(--v-gold)");
+            await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
             triggerSuccessUI();
             isReturningUser = true;
             loadProfileUI(user);
         }
 
-        // --- PROFILE UPDATE (BLOB MERGING) ---
         async function updateExistingProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) return handleLogout();
-
             const { data: current } = await supabaseClient.from('citizens').select('blob_data').eq('auth_id', user.id).single();
-
-            const updatedBlob = { 
-                ...(current?.blob_data || {}), 
-                last_update: new Date().toISOString() 
-            };
-
             const updates = {
                 handle: document.getElementById('f-handle').value.trim(),
                 discord_id: document.getElementById('f-discord').value.trim(),
-                blob_data: updatedBlob
+                blob_data: { ...(current?.blob_data || {}), last_update: new Date().toISOString() }
             };
-
-            msg("Writing to Ledger...", "#888");
             const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
-
-            if (error) { msg("Error: " + error.message, "red"); } 
-            else {
-                triggerSuccessUI();
-                msg("Profile Updated Successfully.", "var(--v-gold)");
-                const { data } = await supabaseClient.from('citizens').select('*').eq('auth_id', user.id).single();
-                if(data) localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-            }
+            if (!error) { triggerSuccessUI(); msg("Profile Updated.", "var(--v-gold)"); }
         }
 
-        // --- ACCOUNT RECOVERY (RESTORE) ---
+        // --- THE UPDATED RESTORE LOGIC ---
         function toggleRestoreMode() {
             const area = document.getElementById('restore-area');
             const master = document.getElementById('master-form');
@@ -296,49 +253,58 @@
         async function initiateRestore() {
             const email = document.getElementById('r-email').value.trim();
             const name = document.getElementById('r-name').value.trim();
-            if(!email || !name) return msg("Credentials required for recovery.", "red");
+            if(!email || !name) return msg("Identity details required.", "red");
 
-            msg("Verifying Ledger...", "#888");
-            const { data, error } = await supabaseClient.from('citizens').select('email').eq('email', email).eq('full_name', name).single();
+            msg("Verifying Credentials...", "#888");
+            
+            // Step 1: Check the Citizens Table for Name + Email match
+            const { data, error } = await supabaseClient
+                .from('citizens')
+                .select('email')
+                .eq('email', email)
+                .eq('full_name', name)
+                .single();
 
-            if (error || !data) { return msg("Verification Failed: Credentials mismatch.", "red"); }
+            if (error || !data) {
+                return msg("Verification Failed: No matching identity found.", "red");
+            }
 
-            const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.href
+            // Step 2: Trigger Magic Link (Passwordless Login)
+            msg("Identity Verified. Sending Magic Link...", "var(--v-gold)");
+            
+            const { error: otpError } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: {
+                    emailRedirectTo: window.location.href // Redirects back to settings
+                }
             });
 
-            if (resetError) { msg("Error: " + resetError.message, "red"); } 
-            else { msg("Recovery Link Sent. Check your email.", "var(--v-gold)"); playSuccessSound(); }
+            if (otpError) {
+                msg("Restoration Error: " + otpError.message, "red");
+            } else {
+                msg("Check your email! Click the Magic Link to log in instantly.", "var(--v-gold)");
+                playSuccessSound();
+            }
         }
 
-        // --- UI LOADING ---
         async function loadProfileUI(user) {
             const { data } = await supabaseClient.from('citizens').select('*').eq('auth_id', user.id).single();
             if (data) {
-                localStorage.setItem('vanguard_citizen', JSON.stringify(data));
                 document.getElementById('welcome-msg').innerText = "Identity: " + data.full_name;
                 document.getElementById('rank-display').innerText = "RANK: " + (data.rank || "CITIZEN").toUpperCase();
-                
-                document.getElementById('f-email').value = data.email;
-                document.getElementById('f-email').disabled = true;
-                document.getElementById('f-name').value = data.full_name;
-                document.getElementById('f-name').disabled = true;
-
+                document.getElementById('f-email').value = data.email; document.getElementById('f-email').disabled = true;
+                document.getElementById('f-name').value = data.full_name; document.getElementById('f-name').disabled = true;
                 document.getElementById('pass-group').style.display = 'none';
                 document.getElementById('restore-toggle-btn').style.display = 'none';
                 document.getElementById('f-handle').value = data.handle || '';
                 document.getElementById('f-discord').value = data.discord_id || '';
-                
                 document.getElementById('submit-btn').innerText = "UPDATE SECURE DATA";
-                document.getElementById('helper-note').style.display = 'none';
                 document.getElementById('logout-area').style.display = 'block';
-                msg("Connection Secure.", "var(--v-gold)");
             }
         }
 
         async function handleLogout() {
             await supabaseClient.auth.signOut();
-            localStorage.removeItem('vanguard_citizen');
             location.reload();
         }
 
