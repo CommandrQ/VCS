@@ -14,12 +14,21 @@
             background: #000;
         }
 
-        /* --- UPDATED HEADER FOR FORT TOWARD --- */
+        /* --- ACCESSIBILITY FIX: Subtle Scanlines behind text --- */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(255, 255, 255, 0.02) 50%);
+            background-size: 100% 4px;
+            z-index: 1; /* Moved behind content */
+            pointer-events: none;
+        }
+
         .hud-header {
             flex-shrink: 0;
             background: #000;
             border-bottom: 2px solid var(--v-gold);
-            z-index: 100;
+            z-index: 10;
             width: 100%;
         }
 
@@ -30,39 +39,30 @@
             padding: 15px 30px;
             width: 100%;
             box-sizing: border-box;
+            z-index: 10;
         }
 
-        /* Slim Button Version */
+        /* --- LARGER, LEGIBLE TEXT --- */
+        .gold-text-outline {
+            color: var(--v-gold);
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-size: 1.1rem; /* Slightly larger for clarity */
+        }
+
         .btn-slim {
             background: var(--v-gold);
             color: #000 !important;
             font-weight: 900;
-            padding: 6px 18px; /* Reduced vertical padding for "slim" look */
+            padding: 8px 20px;
             text-decoration: none;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            border: none;
+            font-size: 0.85rem; /* Larger font for easy clicking */
             border-radius: 50px;
             box-shadow: 0 3px 0 #8a6d0d;
-            transition: 0.2s var(--v-curve);
+            border: none;
             cursor: pointer;
-            white-space: nowrap;
         }
-
-        .btn-slim:hover { transform: translateY(-1px); box-shadow: 0 4px 0 #8a6d0d; }
-        .btn-slim:active { transform: translateY(1px); box-shadow: 0 0px 0 #8a6d0d; }
-
-        /* --- VIEWPORT & FEED --- */
-        .category-nav {
-            flex-shrink: 0;
-            padding: 12px 25px;
-            border-bottom: 1px solid #222;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .category-nav::-webkit-scrollbar { display: none; }
 
         .os-viewport {
             flex: 1;
@@ -71,48 +71,65 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 5;
         }
 
         .portal-card {
-            background: #080808;
-            border: 1px solid #222;
-            border-left: 4px solid var(--v-gold);
+            background: #0a0a0a; /* Solid black */
+            border: 1px solid #333;
+            border-left: 5px solid var(--v-gold);
             width: 100%;
             max-width: 800px;
             padding: 30px;
             margin-bottom: 25px;
-            box-shadow: 15px 15px 40px rgba(0,0,0,0.8);
+            box-shadow: 20px 20px 40px rgba(0,0,0,0.9);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 20px;
-            animation: systemWake 0.6s var(--v-curve) forwards;
+            gap: 25px;
+            z-index: 5;
         }
 
-        /* --- MOBILE STACKING LOGIC --- */
-        @media (max-width: 600px) {
+        .card-desc {
+            font-size: 1.1rem; /* Bumping up for older eyes */
+            color: #ddd; /* Brighter grey for higher contrast */
+            line-height: 1.6;
+        }
+
+        /* --- SYSTEM SETTINGS FOOTER --- */
+        .vanguard-footer {
+            border-top: 2px solid #222;
+            padding: 20px;
+            background: #000;
+            z-index: 10;
+        }
+
+        .settings-link {
+            color: #FFF;
+            text-decoration: none;
+            font-size: 0.9rem; /* Increased size */
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .settings-link:hover { color: var(--v-gold); }
+
+        /* --- MOBILE STACKING --- */
+        @media (max-width: 650px) {
             .header-content {
-                flex-direction: column; /* Stack vertically on mobile */
-                text-align: center;
-                padding: 15px 10px;
-                gap: 12px;
-            }
-
-            .logo-area {
                 flex-direction: column;
-                justify-content: center;
+                text-align: center;
+                gap: 15px;
             }
-
-            .logo-area img {
-                margin: 0 0 8px 0 !important;
-            }
-
-            .portal-card { 
-                flex-direction: column; 
-                align-items: flex-start; 
-            }
-
+            .os-viewport { padding: 20px; }
+            .portal-card { flex-direction: column; padding: 25px; }
             .btn-action { width: 100%; text-align: center; }
+            
+            /* Keep footer items from crowding */
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -123,8 +140,8 @@
 
     <header class="hud-header">
         <div class="header-content">
-            <div class="logo-area" style="display: flex; align-items: center;">
-                <img src="images/vanguardorglogo.png" alt="VCS" style="width:32px; margin-right:12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="images/vanguardorglogo.png" alt="VCS" style="width:35px;">
                 <span class="gold-text-outline">Fort Toward Directory</span>
             </div>
             <nav>
@@ -133,30 +150,26 @@
         </div>
     </header>
 
-    <nav class="category-nav" id="category-row">
+    <nav style="display: flex; gap: 10px; padding: 15px; overflow-x: auto; border-bottom: 1px solid #222; justify-content: center;" id="category-row">
         </nav>
 
     <main class="os-viewport" id="portal-feed">
         </main>
 
     <footer class="vanguard-footer">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-            <p style="color: #FFF; font-size: 0.65rem;">&copy; 2026 VANGUARD CITIZEN SERVICES</p>
-            <a href="settings.html" style="color: #FFF; text-decoration: none; font-size: 0.7rem;">⚙️ SYSTEM SETTINGS</a>
+        <div class="footer-content" style="display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto;">
+            <p style="color: #FFF; font-size: 0.75rem; margin: 0;">&copy; 2026 VANGUARD CITIZEN SERVICES</p>
+            <a href="settings.html" class="settings-link">⚙️ SYSTEM SETTINGS</a>
         </div>
     </footer>
 
     <script>
         const VANGUARD_DB = {
-            "Internal": [
-                { title: "Vanguard Academy", tag: "Education", desc: "Access the curriculum for hardware repair and digital sovereignty.", link: "https://git.vanguard.org/academy", btnText: "ACCESS GIT" },
-                { title: "Knight Onboarding", tag: "Recruitment", desc: "Pathways for Citizens advancing to the rank of Knight.", link: "https://git.vanguard.org/manual", btnText: "VIEW DOCS" }
+            "Services": [
+                { title: "Network Triage", tag: "Tech Help", desc: "Expert WiFi and network setup for your home or business. We ensure your digital perimeter is secure.", link: "support.html", btnText: "REQUEST HELP" }
             ],
-            "Alliances": [
-                { title: "Hardin Tech Solutions", tag: "Alliance Partner", desc: "Commercial IT and server management experts.", link: "https://hardintech.com", btnText: "VISIT SITE" }
-            ],
-            "Fixes": [
-                { title: "WiFi Signal Triage", tag: "Quick Fix", desc: "Diagnostic guide for analyzing and optimizing home networks.", link: "https://git.vanguard.org/fixes/wifi", btnText: "READ INTEL" }
+            "Partner Alliances": [
+                { title: "Hardin Tech Solutions", tag: "Certified Partner", desc: "Local commercial IT specialists authorized for enterprise-level Vanguard deployments.", link: "https://hardintech.com", btnText: "VISIT SITE" }
             ]
         };
 
@@ -168,7 +181,6 @@
             btn.className = 'btn-slim';
             btn.style.background = index === 0 ? 'var(--v-gold)' : '#111';
             btn.style.color = index === 0 ? '#000' : '#888';
-            btn.style.boxShadow = index === 0 ? '0 3px 0 #8a6d0d' : 'none';
             btn.innerText = cat;
             btn.onclick = (e) => switchCategory(cat, e.target);
             navRow.appendChild(btn);
@@ -178,11 +190,9 @@
             document.querySelectorAll('#category-row button').forEach(b => {
                 b.style.background = '#111';
                 b.style.color = '#888';
-                b.style.boxShadow = 'none';
             });
             targetBtn.style.background = 'var(--v-gold)';
             targetBtn.style.color = '#000';
-            targetBtn.style.boxShadow = '0 3px 0 #8a6d0d';
 
             feed.innerHTML = '';
             VANGUARD_DB[cat].forEach(item => {
@@ -190,11 +200,11 @@
                 card.className = 'portal-card';
                 card.innerHTML = `
                     <div class="card-info">
-                        <div style="font-size: 0.7rem; color: var(--v-gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;">${item.tag}</div>
-                        <h2 style="font-size: 1.2rem; font-weight: 900; color: #fff; margin-bottom: 8px;">${item.title}</h2>
-                        <p style="font-size: 0.95rem; color: #bbb; line-height: 1.5;">${item.desc}</p>
+                        <div style="font-size: 0.8rem; color: var(--v-gold); font-weight: 700; margin-bottom: 5px;">${item.tag}</div>
+                        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">${item.title}</h2>
+                        <p class="card-desc">${item.desc}</p>
                     </div>
-                    <a href="${item.link}" target="_blank" class="btn-slim" style="padding: 12px 25px;">${item.btnText}</a>
+                    <a href="${item.link}" class="btn-slim" style="padding: 15px 30px; font-size: 0.9rem;">${item.btnText}</a>
                 `;
                 feed.appendChild(card);
             });
