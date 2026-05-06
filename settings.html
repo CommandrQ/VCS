@@ -1,322 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fort Toward | Identity Terminal</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        /* --- CORE OS ARCHITECTURE --- */
-        body, html {
-            overflow: hidden; height: 100%; display: flex; flex-direction: column;
-            background: #000; margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+<button class="btn-pill btn-inactive" onclick="toggleRestoreMode()" id="restore-toggle-btn">RESTORE FORGOTTEN ACCOUNT</button>
+
+<div id="restore-area" style="display: none; border-top: 1px solid #444; margin-top: 20px; padding-top: 20px;">
+    <h3 class="mono" style="font-size: 0.9rem; color: var(--v-gold);">ACCOUNT RECOVERY</h3>
+    <div class="field-group">
+        <label>Registered Email</label>
+        <input type="email" id="r-email">
+    </div>
+    <div class="field-group">
+        <label>Full Name on Record</label>
+        <input type="text" id="r-name">
+    </div>
+    <button class="btn-pill btn-active" onclick="initiateRestore()">VERIFY & SEND RECOVERY LINK</button>
+    <button class="btn-pill btn-inactive" onclick="toggleRestoreMode()">CANCEL</button>
+</div>
+
+<script>
+    // --- RESTORE LOGIC ---
+    function toggleRestoreMode() {
+        const area = document.getElementById('restore-area');
+        const auth = document.getElementById('auth-area');
+        if(area.style.display === 'none') {
+            area.style.display = 'block';
+            auth.style.display = 'none';
+        } else {
+            area.style.display = 'none';
+            auth.style.display = 'block';
+        }
+    }
+
+    async function initiateRestore() {
+        const email = document.getElementById('r-email').value.trim();
+        const name = document.getElementById('r-name').value.trim();
+
+        if(!email || !name) return msg("Both fields required for recovery.", "red");
+
+        msg("Verifying Identity...", "#888");
+
+        // 1. Check if Name and Email match in the Ledger
+        const { data, error } = await supabaseClient
+            .from('citizens')
+            .select('email')
+            .eq('email', email)
+            .eq('full_name', name)
+            .single();
+
+        if (error || !data) {
+            return msg("Verification Failed: Credentials do not match our records.", "red");
         }
 
-        .scanlines { position: fixed; inset: 0; background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(255, 255, 255, 0.02) 50%); background-size: 100% 4px; z-index: 1; pointer-events: none; }
+        // 2. Trigger Supabase Password Reset
+        const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href // Returns them back to settings to set new pass
+        });
 
-        .hud-header { flex-shrink: 0; background: #000; border-bottom: 2px solid var(--v-gold); z-index: 10; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; }
-
-        .os-viewport {
-            flex: 1; overflow-y: auto; padding: 40px 20px;
-            display: flex; flex-direction: column; align-items: center; z-index: 5;
-        }
-
-        /* --- IDENTITY CARD & SUCCESS ANIMATION --- */
-        .identity-card {
-            background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--v-gold);
-            width: 100%; max-width: 600px; padding: 40px; margin-bottom: 40px;
-            box-shadow: 20px 20px 40px rgba(0,0,0,1); transition: 0.3s ease;
-        }
-
-        @keyframes successPulse {
-            0% { box-shadow: 0 0 0px var(--v-gold); border-color: #333; }
-            50% { box-shadow: 0 0 50px var(--v-gold); border-color: var(--v-gold); }
-            100% { box-shadow: 20px 20px 40px rgba(0,0,0,1); border-color: #333; }
-        }
-        .sync-success { animation: successPulse 0.6s var(--v-curve); }
-
-        .status-header { margin-bottom: 30px; text-align: center; }
-        
-        .rank-badge {
-            display: inline-block; padding: 6px 20px; border: 1px solid var(--v-gold);
-            color: var(--v-gold); font-weight: 900; font-size: 0.85rem;
-            text-transform: uppercase; letter-spacing: 2px; margin-top: 12px;
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        /* --- FORM STYLING --- */
-        .field-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; color: var(--v-gold); font-weight: 900; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
-        
-        input {
-            width: 100%; background: #111; border: 1px solid #333; padding: 12px;
-            color: #fff; font-size: 1rem; border-radius: 5px; box-sizing: border-box;
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--v-gold); outline: none; }
-        input:disabled { background: #050505; color: #555; border-color: #222; cursor: not-allowed; }
-
-        .btn-pill {
-            width: 100%; font-weight: 900; padding: 15px; font-size: 0.9rem;
-            border-radius: 50px; cursor: pointer; transition: 0.3s; border: none; margin-top: 10px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
-        .btn-active:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3); }
-        
-        .btn-logout { background: transparent !important; border: 1px solid #f87171 !important; color: #f87171 !important; }
-        .btn-logout:hover { background: rgba(248, 113, 113, 0.1) !important; }
-
-        .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2em; }
-        .helper-text { text-align: center; color: #666; font-size: 0.75rem; margin-top: 15px; }
-
-        @media (max-width: 650px) {
-            .header-content { flex-direction: column; gap: 12px; text-align: center; }
-            .identity-card { padding: 25px; }
-        }
-    </style>
-</head>
-<body class="fixed-hud">
-
-    <div class="scanlines"></div>
-    <div class="starfield s1"></div>
-
-    <header class="hud-header">
-        <div class="header-content">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="images/vanguardorglogo.png" alt="VCS" style="width:35px;">
-                <span class="gold-text-outline" style="font-size: 1.2rem;">Identity Terminal</span>
-            </div>
-            <button class="btn-pill btn-active" style="padding: 6px 18px; width: auto; font-size: 0.75rem;" onclick="location.href='directory.html'">RETURN TO FORT</button>
-        </div>
-    </header>
-
-    <main class="os-viewport">
-        <div class="identity-card" id="main-card">
-            
-            <div class="status-header">
-                <h2 id="welcome-msg" class="gold-text-outline" style="font-size: 1.8rem; margin: 0;">Establish Identity</h2>
-                <div id="rank-display" class="rank-badge">UNVERIFIED CITIZEN</div>
-            </div>
-
-            <div id="master-form">
-                
-                <div class="field-group">
-                    <label>Email Address</label>
-                    <input type="email" id="f-email" placeholder="name@email.com">
-                </div>
-
-                <div class="field-group" id="pass-group">
-                    <label>Security Password</label>
-                    <input type="password" id="f-password" placeholder="••••••••">
-                </div>
-
-                <div class="field-group">
-                    <label>Real Name</label>
-                    <input type="text" id="f-name" placeholder="John Doe">
-                </div>
-
-                <div class="field-group">
-                    <label>Citizen Handle (Callsign)</label>
-                    <input type="text" id="f-handle" placeholder="Optional Callsign">
-                </div>
-
-                <div class="field-group">
-                    <label>Discord ID</label>
-                    <input type="text" id="f-discord" placeholder="Username#0000">
-                </div>
-
-                <button class="btn-pill btn-active" id="submit-btn" onclick="submitUniversalForm()">SUBMIT IDENTITY</button>
-                <p class="helper-text" id="helper-note">New users: creates profile. Returning users: logs you in.</p>
-                
-                <div id="logout-area" style="display: none; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
-                    <button class="btn-pill btn-logout" onclick="handleLogout()">DISCONNECT (LOG OUT)</button>
-                </div>
-            </div>
-
-            <div id="sys-response" class="sys-msg"></div>
-        </div>
-    </main>
-
-    <footer class="vanguard-footer" style="padding: 20px; text-align: center; border-top: 2px solid #222; background: #000; z-index: 10;">
-        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v4.2 | Cryptographic Security Enabled</p>
-    </footer>
-
-    <script>
-        // --- CONFIGURATION ---
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-        let isReturningUser = false;
-
-        // --- AUDIO & VISUAL FEEDBACK ---
-        function playSuccessSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1);
-            } catch(e) { console.log("Audio Context blocked by browser policy."); }
-        }
-
-        function triggerSuccessUI() {
-            const card = document.getElementById('main-card');
-            card.classList.remove('sync-success'); void card.offsetWidth; card.classList.add('sync-success');
+        if (resetError) {
+            msg("Recovery Error: " + resetError.message, "red");
+        } else {
+            msg("Recovery Link Sent! Check your email to reset your password.", "var(--v-gold)");
             playSuccessSound();
         }
-
-        function msg(text, color) {
-            const m = document.getElementById('sys-response');
-            m.innerText = text; m.style.color = color;
-        }
-
-        // --- AUTHENTICATION STATE ---
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                isReturningUser = true;
-                loadProfileUI(session.user);
-            }
-        }
-
-        async function submitUniversalForm() {
-            if (isReturningUser) {
-                await updateExistingProfile();
-            } else {
-                await processLoginOrRegistration();
-            }
-        }
-
-        // --- REGISTRATION / LOGIN LOGIC ---
-        async function processLoginOrRegistration() {
-            const email = document.getElementById('f-email').value.trim();
-            const password = document.getElementById('f-password').value;
-            const fullName = document.getElementById('f-name').value.trim();
-            const handle = document.getElementById('f-handle').value.trim();
-            const discord = document.getElementById('f-discord').value.trim();
-
-            if (!email || !password) return msg("Email and Password required.", "red");
-
-            msg("Authenticating...", "#888");
-
-            // 1. Attempt Sign In
-            const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-            let user = null;
-
-            if (signInError) {
-                // 2. If login fails, try to Sign Up (New User)
-                if (signInError.message.toLowerCase().includes("invalid login")) {
-                    if (!fullName) return msg("Real Name required to register.", "red");
-                    msg("Creating New Identity...", "#888");
-                    
-                    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-                        email, password, options: { data: { full_name: fullName } }
-                    });
-
-                    if (signUpError) return msg("Registry Error: " + signUpError.message, "red");
-                    user = signUpData.user;
-                    // Wait for the SQL trigger to finish row creation
-                    await new Promise(res => setTimeout(res, 1200));
-                } else {
-                    return msg("System Error: " + signInError.message, "red");
-                }
-            } else {
-                user = signInData.user;
-            }
-
-            // 3. Sync additional fields to the profile row
-            msg("Syncing Data...", "#888");
-            const updates = { handle, discord_id: discord };
-            const { error: updateError } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
-
-            if (updateError) return msg("Sync Error: " + updateError.message, "red");
-
-            msg("Identity Secured.", "var(--v-gold)");
-            triggerSuccessUI();
-            isReturningUser = true;
-            loadProfileUI(user);
-        }
-
-        // --- HYBRID DATA UPDATE (MERGE BLOB) ---
-        async function updateExistingProfile() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) return handleLogout();
-
-            // Fetch current blob to merge
-            const { data: current } = await supabaseClient.from('citizens').select('blob_data').eq('auth_id', user.id).single();
-
-            const updatedBlob = { 
-                ...(current?.blob_data || {}), 
-                last_update: new Date().toISOString()
-                // TODO: Add badges, progress, or flags here
-            };
-
-            const updates = {
-                handle: document.getElementById('f-handle').value.trim(),
-                discord_id: document.getElementById('f-discord').value.trim(),
-                blob_data: updatedBlob
-            };
-
-            msg("Writing to Ledger...", "#888");
-
-            const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
-
-            if (error) {
-                msg("Error: " + error.message, "red");
-            } else {
-                triggerSuccessUI();
-                msg("Profile Updated Successfully.", "var(--v-gold)");
-                
-                // Refresh cache
-                const { data } = await supabaseClient.from('citizens').select('*').eq('auth_id', user.id).single();
-                if(data) localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-            }
-        }
-
-        // --- UI LOADING ---
-        async function loadProfileUI(user) {
-            msg("Decrypting profile...", "#888");
-            const { data, error } = await supabaseClient.from('citizens').select('*').eq('auth_id', user.id).single();
-
-            if (data) {
-                localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-                
-                document.getElementById('welcome-msg').innerText = "Identity: " + data.full_name;
-                document.getElementById('rank-display').innerText = "RANK: " + (data.rank || "CITIZEN").toUpperCase();
-                
-                // Lock down Identity Anchors
-                document.getElementById('f-email').value = data.email;
-                document.getElementById('f-email').disabled = true;
-                document.getElementById('f-name').value = data.full_name;
-                document.getElementById('f-name').disabled = true;
-
-                document.getElementById('pass-group').style.display = 'none';
-                document.getElementById('f-handle').value = data.handle || '';
-                document.getElementById('f-discord').value = data.discord_id || '';
-                
-                document.getElementById('submit-btn').innerText = "UPDATE SECURE DATA";
-                document.getElementById('helper-note').style.display = 'none';
-                document.getElementById('logout-area').style.display = 'block';
-
-                msg("Connection Secure.", "var(--v-gold)");
-            } else {
-                msg("Profile sync error. Check internet connection.", "red");
-            }
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            localStorage.removeItem('vanguard_citizen');
-            location.reload();
-        }
-
-        window.onload = checkSession;
-    </script>
-</body>
-</html>
+    }
+</script>
