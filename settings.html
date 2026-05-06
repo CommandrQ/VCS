@@ -23,13 +23,10 @@
             display: flex; flex-direction: column; align-items: center; z-index: 5;
         }
 
-        /* --- IDENTITY CARD & SUCCESS ANIMATION --- */
         .identity-card {
             background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--v-gold);
-            width: 100%; max-width: 600px; padding: 40px;
-            box-shadow: 20px 20px 40px rgba(0,0,0,1);
-            position: relative;
-            transition: 0.3s ease;
+            width: 100%; max-width: 600px; padding: 40px; margin-bottom: 40px;
+            box-shadow: 20px 20px 40px rgba(0,0,0,1); transition: 0.3s ease;
         }
 
         @keyframes successPulse {
@@ -37,10 +34,7 @@
             50% { box-shadow: 0 0 50px var(--v-gold); border-color: var(--v-gold); }
             100% { box-shadow: 20px 20px 40px rgba(0,0,0,1); border-color: #333; }
         }
-
-        .sync-success {
-            animation: successPulse 0.6s var(--v-curve);
-        }
+        .sync-success { animation: successPulse 0.6s var(--v-curve); }
 
         .status-header { margin-bottom: 30px; text-align: center; }
         
@@ -59,22 +53,20 @@
             color: #fff; font-size: 1rem; border-radius: 5px; box-sizing: border-box;
         }
         input:focus { border-color: var(--v-gold); outline: none; }
+        input:disabled { background: #050505; color: #555; border-color: #222; cursor: not-allowed; }
 
         .btn-pill {
             width: 100%; font-weight: 900; padding: 15px; font-size: 0.9rem;
             border-radius: 50px; cursor: pointer; transition: 0.3s; border: none; margin-top: 10px;
         }
         .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
-        
-        .btn-restore { 
-            background: transparent !important; 
-            border: 1px solid #555 !important; 
-            color: #ffffff !important; 
-        }
-
-        .btn-logout { background: transparent !important; border: 1px solid #444 !important; color: #888 !important; }
+        .btn-inactive { background: transparent !important; border: 1px solid #555 !important; color: #ffffff !important; }
+        .btn-logout { background: transparent !important; border: 1px solid #f87171 !important; color: #f87171 !important; }
 
         .sys-msg { font-size: 0.85rem; margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2em; }
+
+        /* Hide areas by default to handle toggle */
+        #profile-area, #auth-area { display: none; }
 
         @media (max-width: 650px) {
             .header-content { flex-direction: column; gap: 12px; text-align: center; }
@@ -100,145 +92,70 @@
     <main class="os-viewport">
         <div class="identity-card" id="main-card">
             <div class="status-header">
-                <h2 id="welcome-msg" class="gold-text-outline" style="font-size: 1.8rem; margin: 0;">Identity: Guest</h2>
-                <div id="rank-display" class="rank-badge">RANK: UNDEFINED</div>
+                <h2 id="welcome-msg" class="gold-text-outline" style="font-size: 1.8rem; margin: 0;">System Locked</h2>
+                <div id="rank-display" class="rank-badge">UNVERIFIED</div>
             </div>
 
-            <div id="form-area">
+            <div id="auth-area">
                 <div class="field-group">
-                    <label>Full Name</label>
-                    <input type="text" id="full_name" placeholder="Citizen Name">
+                    <label>Email Address</label>
+                    <input type="email" id="auth-email" placeholder="name@email.com">
+                </div>
+                <div class="field-group">
+                    <label>Security Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••">
+                </div>
+                <button class="btn-pill btn-active" onclick="handleLogin()">AUTHENTICATE (LOG IN)</button>
+                <div style="text-align: center; margin: 20px 0; color: #555; font-size: 0.8rem; font-weight: bold;">OR</div>
+                <div class="field-group" id="signup-name-group">
+                    <label>Real Name (Required for New Citizens)</label>
+                    <input type="text" id="auth-name" placeholder="John Doe">
+                </div>
+                <button class="btn-pill btn-inactive" onclick="handleRegister()">REGISTER NEW IDENTITY</button>
+            </div>
+
+            <div id="profile-area">
+                <div class="field-group">
+                    <label>Full Name (Locked by Command)</label>
+                    <input type="text" id="profile-name" disabled title="Contact an admin to change your legal name">
                 </div>
                 <div class="field-group">
                     <label>Citizen Handle (Callsign)</label>
-                    <input type="text" id="handle" placeholder="Callsign">
-                </div>
-                <div class="field-group">
-                    <label>Email Address (Identity Key)</label>
-                    <input type="email" id="email" placeholder="name@email.com">
+                    <input type="text" id="profile-handle" placeholder="Callsign">
                 </div>
                 <div class="field-group">
                     <label>Discord ID</label>
-                    <input type="text" id="discord_id" placeholder="Username#0000">
+                    <input type="text" id="profile-discord" placeholder="User#0000">
                 </div>
 
-                <button class="btn-pill btn-active" onclick="saveIdentity()">SUBMIT CHANGES</button>
-                <button class="btn-pill btn-restore" style="margin-top:20px;" onclick="restoreIdentity()">RESTORE FROM EMAIL</button>
-            </div>
-
-            <div id="logout-area" style="display:none; text-align: center; margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
-                <button class="btn-pill btn-logout" onclick="logout()">LOGOUT (CLEAR LOCAL MEMORY)</button>
+                <button class="btn-pill btn-active" onclick="updateProfile()">SUBMIT CHANGES</button>
+                <div style="margin-top: 30px; border-top: 1px solid #222; padding-top: 20px;">
+                    <button class="btn-pill btn-logout" onclick="handleLogout()">DISCONNECT (LOG OUT)</button>
+                </div>
             </div>
 
             <div id="sys-response" class="sys-msg"></div>
         </div>
     </main>
 
-    <footer class="vanguard-footer" style="padding: 20px; text-align: center; z-index: 10;">
-        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v3.3 | Authorized Access Only</p>
+    <footer class="vanguard-footer" style="padding: 20px; text-align: center; border-top: 2px solid #222;">
+        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v4.0 | Cryptographic Security Enabled</p>
     </footer>
 
     <script>
-        // --- SUPABASE CONFIGURATION ---
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+        const SB_URL = 'YOUR_SUPABASE_URL';
+        const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- THE AUDIO KERNEL ---
+        // --- AUDIO ENGINE ---
         function playSuccessSound() {
-            const context = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = context.createOscillator();
-            const gain = context.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(880, context.currentTime); 
-            oscillator.frequency.exponentialRampToValueAtTime(440, context.currentTime + 0.1); 
-            
-            gain.gain.setValueAtTime(0.1, context.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
-
-            oscillator.connect(gain);
-            gain.connect(context.destination);
-
-            oscillator.start();
-            oscillator.stop(context.currentTime + 0.1);
-        }
-
-        function triggerSuccessUI() {
-            const card = document.getElementById('main-card');
-            card.classList.remove('sync-success');
-            void card.offsetWidth; 
-            card.classList.add('sync-success');
-            playSuccessSound();
-        }
-
-        async function saveIdentity() {
-            const emailValue = document.getElementById('email').value.trim();
-            const fullNameValue = document.getElementById('full_name').value.trim();
-
-            if(!emailValue || !fullNameValue) {
-                msg("Name and Email are required.", "red");
-                return;
-            }
-
-            const citizenData = {
-                full_name: fullNameValue,
-                handle: document.getElementById('handle').value.trim(),
-                email: emailValue,
-                discord_id: document.getElementById('discord_id').value.trim()
-            };
-
-            msg("Saving changes...", "#888");
-
-            const { error } = await supabaseClient.from('citizens').upsert([citizenData], { onConflict: 'email' });
-
-            if (error) {
-                msg("Error: " + error.message, "red");
-            } else {
-                fetchAndSync(emailValue);
-                triggerSuccessUI(); 
-                msg("Changes submitted successfully.", "var(--v-gold)");
-            }
-        }
-
-        async function restoreIdentity() {
-            const emailValue = document.getElementById('email').value.trim();
-            if(!emailValue) { msg("Please enter your email address.", "red"); return; }
-
-            msg("Checking records...", "#888");
-            fetchAndSync(emailValue);
-        }
-
-        async function fetchAndSync(email) {
-            const { data, error } = await supabaseClient.from('citizens').select('*').eq('email', email).single();
-
-            if (data) {
-                if (!data.rank) data.rank = "UNDEFINED";
-                localStorage.setItem('vanguard_citizen', JSON.stringify(data));
-                syncUI();
-                msg("Identity restored.", "var(--v-gold)");
-            } else {
-                msg("Email not found in our records.", "red");
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('vanguard_citizen');
-            location.reload();
-        }
-
-        function syncUI() {
-            const citizen = JSON.parse(localStorage.getItem('vanguard_citizen'));
-            if (citizen) {
-                document.getElementById('welcome-msg').innerText = "Identity: " + citizen.full_name;
-                document.getElementById('rank-display').innerText = "RANK: " + (citizen.rank || "UNDEFINED").toUpperCase();
-                document.getElementById('logout-area').style.display = 'block';
-                
-                document.getElementById('full_name').value = citizen.full_name;
-                document.getElementById('handle').value = citizen.handle;
-                document.getElementById('email').value = citizen.email;
-                document.getElementById('discord_id').value = citizen.discord_id;
-            }
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.1);
         }
 
         function msg(text, color) {
@@ -246,7 +163,137 @@
             m.innerText = text; m.style.color = color;
         }
 
-        window.onload = syncUI;
+        // --- AUTHENTICATION LOGIC ---
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                loadProfile(session.user);
+            } else {
+                document.getElementById('auth-area').style.display = 'block';
+                document.getElementById('profile-area').style.display = 'none';
+                document.getElementById('welcome-msg').innerText = "System Locked";
+                document.getElementById('rank-display').innerText = "AWAITING CREDENTIALS";
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            if(!email || !password) return msg("Email and Password required.", "red");
+
+            msg("Authenticating...", "#888");
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                msg("Access Denied: " + error.message, "red");
+            } else {
+                msg("Authentication Successful.", "var(--v-gold)");
+                loadProfile(data.user);
+            }
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const fullName = document.getElementById('auth-name').value.trim();
+            
+            if(!email || !password || !fullName) return msg("Email, Password, and Real Name required to register.", "red");
+
+            msg("Generating encrypted credentials...", "#888");
+            
+            // 1. Create the Auth User
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            
+            if (error) {
+                return msg("Registry Error: " + error.message, "red");
+            }
+
+            // 2. Create their public profile row
+            if (data.user) {
+                const newCitizen = {
+                    auth_id: data.user.id,
+                    email: email,
+                    full_name: fullName
+                };
+                
+                const { error: dbError } = await supabase.from('citizens').insert([newCitizen]);
+                
+                if (dbError) {
+                    msg("Database Error: " + dbError.message, "red");
+                } else {
+                    msg("Identity Created. Welcome to Vanguard.", "var(--v-gold)");
+                    loadProfile(data.user);
+                }
+            }
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            localStorage.removeItem('vanguard_citizen'); // Clear local cache
+            location.reload();
+        }
+
+        // --- PROFILE LOGIC ---
+        async function loadProfile(user) {
+            document.getElementById('auth-area').style.display = 'none';
+            document.getElementById('profile-area').style.display = 'block';
+            
+            msg("Decrypting profile...", "#888");
+
+            // Pull profile securely using RLS
+            const { data, error } = await supabase.from('citizens').select('*').eq('auth_id', user.id).single();
+
+            if (data) {
+                // Cache for Directory page to use
+                localStorage.setItem('vanguard_citizen', JSON.stringify(data));
+                
+                // Update UI
+                document.getElementById('welcome-msg').innerText = "Identity: " + data.full_name;
+                document.getElementById('rank-display').innerText = "RANK: " + (data.rank || "CITIZEN").toUpperCase();
+                
+                document.getElementById('profile-name').value = data.full_name;
+                document.getElementById('profile-handle').value = data.handle || '';
+                document.getElementById('profile-discord').value = data.discord_id || '';
+                
+                msg("Connection Secure.", "var(--v-gold)");
+            } else if (error) {
+                msg("Profile sync error: " + error.message, "red");
+            }
+        }
+
+        async function updateProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return msg("Session expired. Please log in again.", "red");
+
+            const updates = {
+                handle: document.getElementById('profile-handle').value.trim(),
+                discord_id: document.getElementById('profile-discord').value.trim()
+                // Notice: full_name and rank are INTENTIONALLY excluded here.
+            };
+
+            msg("Saving changes...", "#888");
+
+            // The UPDATE query. RLS prevents them from updating anyone else's row.
+            const { error } = await supabase.from('citizens').update(updates).eq('auth_id', user.id);
+
+            if (error) {
+                msg("Error: " + error.message, "red");
+            } else {
+                // Trigger visual feedback and refresh local cache
+                const card = document.getElementById('main-card');
+                card.classList.remove('sync-success'); void card.offsetWidth; card.classList.add('sync-success');
+                playSuccessSound();
+                
+                // Refresh local storage silently
+                const { data } = await supabase.from('citizens').select('*').eq('auth_id', user.id).single();
+                if(data) localStorage.setItem('vanguard_citizen', JSON.stringify(data));
+
+                msg("Changes submitted successfully.", "var(--v-gold)");
+            }
+        }
+
+        // Initialize
+        window.onload = checkSession;
     </script>
 </body>
 </html>
