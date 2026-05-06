@@ -3,45 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard Support | Get in Touch</title>
+    <title>Vanguard Support | Triage</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* BASE LAYOUT FIX */
-        .fixed-hud {
-            overflow: hidden;
-            height: 100vh;
+        /* --- HUD ARCHITECTURE --- */
+        body, html {
+            overflow: hidden; /* Locks the main page */
+            height: 100%;
             display: flex;
             flex-direction: column;
+            background: #000;
         }
 
-        /* 3D GLASSY CARD (OPAQUE) */
+        .hud-header, .vanguard-footer {
+            flex-shrink: 0; /* Keeps them pinned at the top/bottom */
+            background: #000;
+            z-index: 20;
+        }
+
+        .hud-workspace {
+            flex: 1; /* Takes up all available space between header and footer */
+            overflow-y: auto; /* This is the ONLY part that scrolls */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            justify-items: center;
+            padding: 40px;
+            gap: 40px;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
+        }
+
+        /* --- 3D GLASSY CARDS (OPAQUE) --- */
         .support-card {
-            /* Solid Black Base - No star bleed */
-            background: linear-gradient(135deg, #050505 0%, #111111 100%); 
-            
-            /* The "Glass Rim" - Bright top/left, dark bottom/right */
+            background: linear-gradient(135deg, #050505 0%, #111 100%);
             border-top: 1px solid rgba(212, 175, 55, 0.5);
             border-left: 1px solid rgba(212, 175, 55, 0.3);
             border-right: 1px solid #111;
             border-bottom: 1px solid #000;
-            
-            padding: 50px 40px;
-            max-width: 450px;
+            padding: 50px 30px;
+            max-width: 420px;
             text-align: center;
             position: relative;
-            z-index: 10;
-            
-            /* The 3D Lift (Deep Shadow) */
-            box-shadow: 
-                20px 20px 50px rgba(0, 0, 0, 0.8), 
-                inset 1px 1px 0px rgba(255, 255, 255, 0.05);
-            
-            border-radius: 4px; /* Slight roundness for a modern "tech" feel */
+            box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.9);
+            border-radius: 4px;
             opacity: 0;
             animation: fadeInUp 0.8s ease forwards;
         }
 
-        /* Subtle Sheen Overlay (The "Glass" effect without transparency) */
+        /* Subtle Sheen */
         .support-card::after {
             content: '';
             position: absolute;
@@ -50,68 +59,50 @@
             pointer-events: none;
         }
 
-        /* TEXT OUTLINE */
+        /* TEXT OUTLINE (BLACK) */
         .gold-text-outline {
             color: var(--v-gold);
             text-transform: uppercase;
             letter-spacing: 3px;
             font-weight: 900;
-            text-shadow: 
-                -2px -2px 0 #000,  
-                 2px -2px 0 #000,
-                -2px  2px 0 #000,
-                 2px  2px 0 #000;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
         }
 
         .support-desc {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #ffffff;
-            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #eee;
+            margin: 20px 0 30px 0;
             text-shadow: 1px 1px 3px #000;
         }
 
-        /* BUTTONS (Solid & 3D) */
+        /* 3D BUTTONS */
         .btn-vanguard-solid {
             background: var(--v-gold);
             color: #000 !important;
             font-weight: 900;
-            padding: 18px 35px;
+            padding: 15px 30px;
             text-decoration: none;
             display: inline-block;
-            border: none;
-            letter-spacing: 2px;
-            box-shadow: 0 4px 0 #8a6d0d; /* 3D Button Depth */
+            box-shadow: 0 4px 0 #8a6d0d;
             transition: 0.2s;
         }
 
-        .btn-vanguard-solid:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px var(--v-shadow);
-        }
+        .btn-vanguard-solid:hover { transform: translateY(-2px); }
+        .btn-vanguard-solid:active { transform: translateY(2px); box-shadow: 0 1px 0 #8a6d0d; }
 
-        .btn-vanguard-solid:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #8a6d0d;
-        }
-
-        /* ANIMATIONS */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* MOBILE OVERFLOW FIX */
+        /* --- MOBILE SCROLLING FIX --- */
         @media (max-width: 850px) {
-            .fixed-hud { height: auto; min-height: 100vh; overflow-y: auto; }
-            .hud-workspace { 
-                grid-template-columns: 1fr !important; 
-                padding: 100px 20px !important; /* Spacing so it doesn't hit header/footer */
-                display: flex;
-                flex-direction: column;
-                gap: 40px;
+            .hud-workspace {
+                grid-template-columns: 1fr;
+                padding: 60px 20px; /* Space for items inside scroll area */
             }
-            .support-card { max-width: 100%; padding: 40px 20px; }
+            .support-card { width: 100%; }
         }
     </style>
 </head>
@@ -120,48 +111,43 @@
     <div class="scanlines"></div>
     <div class="starfield s1"></div>
 
-    <header class="hud-header" style="background: #000; border-bottom: 2px solid var(--v-gold); z-index: 20;">
-        <div class="logo-area">
-            <img src="images/vanguardorglogo.png" alt="VCS Logo" class="hud-logo">
-            <span class="gold-text-outline">SUPPORT TRIAGE</span>
+    <header class="hud-header" style="border-bottom: 2px solid var(--v-gold); padding: 15px 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <img src="images/vanguardorglogo.png" alt="VCS" class="hud-logo" style="width:30px; margin-right:10px;">
+                <span class="gold-text-outline" style="font-size: 0.9rem;">SUPPORT TRIAGE</span>
+            </div>
+            <nav>
+                <button class="btn-outline" onclick="location.href='index.html'" style="font-size: 0.7rem; padding: 5px 10px;">LOBBY</button>
+            </nav>
         </div>
-        <nav class="hud-nav">
-            <button class="btn-outline" onclick="location.href='index.html'">LOBBY</button>
-            <button class="btn-outline" onclick="location.href='directory.html'">DIRECTORY</button>
-        </nav>
     </header>
 
-    <main class="hud-workspace" style="display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; flex: 1;">
+    <main class="hud-workspace">
         
-        <section class="support-card" style="animation-delay: 0.2s;">
-            <div style="font-size: 3rem; margin-bottom: 15px;">✉️</div>
+        <section class="support-card" style="animation-delay: 0.1s;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">✉️</div>
             <h2 class="gold-text-outline">Email Support</h2>
             <p class="support-desc">
-                Best for general questions or if you aren't in a rush. Send us a message and we'll talk soon.
+                Good for general questions. We'll reply as soon as we're back at the desk.
             </p>
             <a href="mailto:support@vcscitizen.org" class="btn-vanguard-solid">SEND EMAIL</a>
         </section>
 
-        <section class="support-card" style="animation-delay: 0.4s;">
-            <div style="font-size: 3rem; margin-bottom: 15px;">🛡️</div>
+        <section class="support-card" style="animation-delay: 0.3s;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">🛡️</div>
             <h2 class="gold-text-outline">Live Chat</h2>
             <p class="support-desc">
-                Our Discord is a live community. Join here to chat with us directly or jump on a voice call.
+                Join our Discord community. Best for quick help or voice calls.
             </p>
-            <button class="btn-vanguard-solid" onclick="joinDiscord()">JOIN DISCORD</button>
+            <button class="btn-vanguard-solid" onclick="window.open('https://discord.gg/YOUR_CODE', '_blank')">JOIN DISCORD</button>
         </section>
 
     </main>
 
-    <footer class="vanguard-footer" style="background: #000; border-top: 2px solid var(--v-gold); z-index: 20; position: relative;">
-        <p>&copy; 2026 Vanguard Citizen Services. All Rights Reserved.</p>
+    <footer class="vanguard-footer" style="border-top: 2px solid var(--v-gold); padding: 10px;">
+        <p style="font-size: 0.6rem; color: #fff; text-align: center; margin: 0;">&copy; 2026 Vanguard Citizen Services. All Rights Reserved.</p>
     </footer>
 
-    <script>
-        const DISCORD_INVITE = "https://discord.gg/YOUR_INVITE_CODE";
-        function joinDiscord() {
-            window.open(DISCORD_INVITE, '_blank');
-        }
-    </script>
 </body>
 </html>
