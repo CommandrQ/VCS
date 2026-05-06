@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Command | Support Triage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="fixed-hud">
+
+    <div class="scanlines"></div>
+    <div class="starfield s1"></div>
+
+    <header class="hud-header">
+        <div class="logo-area">
+            <img src="images/vanguardorglogo.png" alt="VCS Logo" class="hud-logo">
+            <span class="gold-text">SUPPORT TRIAGE</span>
+        </div>
+        <nav class="hud-nav">
+            <button class="btn-outline" onclick="location.href='index.html'">LOBBY</button>
+            <button class="btn-outline" onclick="location.href='directory.html'">DIRECTORY</button>
+        </nav>
+    </header>
+
+    <main class="hud-workspace" style="grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; padding: 40px;">
+        
+        <section class="support-card">
+            <div class="support-icon">✉️</div>
+            <h2 class="gold-text">Vanguard Notification System (VNS)</h2>
+            <p class="support-desc">
+                The VNS is our **email-based communication channel**. Use this for non-urgent triage, long-form intelligence reporting, or formal service inquiries.
+            </p>
+            <p class="status-indicator"><span class="pulse-amber">●</span> ASYNCHRONOUS RESPONSE</p>
+            <a href="mailto:support@vcscitizen.org" class="btn-vanguard" style="width: 100%; text-align: center;">INITIATE VNS CHAT</a>
+        </section>
+
+        <section class="support-card">
+            <div class="support-icon">🛡️</div>
+            <h2 class="gold-text">Direct Operational Support</h2>
+            <p class="support-desc">
+                Our **Discord server** is the heart of Vanguard operations. Connect here for instant interaction, live calls, and the 1-on-1 support ticket system.
+            </p>
+            <p class="status-indicator"><span class="pulse-green">●</span> LIVE OPERATIONAL THEATER</p>
+            <button id="discord-btn" class="btn-gold" style="width: 100%;" onclick="joinDiscord()">JOIN DISCORD COMMAND</button>
+        </section>
+
+    </main>
+
+    <footer class="vanguard-footer">
+        <p>&copy; 2026 Vanguard Citizen Services. All Rights Reserved.</p>
+        <div class="footer-links">
+            <a href="#" onclick="openModal('privacy-modal')">Privacy Policy</a>
+            <span class="divider">|</span>
+            <a href="#" onclick="openModal('terms-modal')">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        // CHANGE THIS LINK WHENEVER YOU NEED TO ROTATE THE INVITE
+        const DISCORD_INVITE = "https://discord.gg/YOUR_INVITE_CODE";
+
+        function joinDiscord() {
+            window.open(DISCORD_INVITE, '_blank');
+        }
+
+        // Dummy modal functions for footer consistency
+        function openModal(id) { alert("Please view policies on the Main Lobby page."); }
+    </script>
+
+    <style>
+        .support-card {
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--v-border);
+            padding: 40px;
+            max-width: 450px;
+            text-align: center;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .support-card:hover {
+            border-color: var(--v-gold);
+            transform: translateY(-5px);
+        }
+        .support-icon { font-size: 3rem; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--v-gold)); }
+        .support-desc { font-size: 0.9rem; line-height: 1.6; color: #aaa; margin-bottom: 30px; min-height: 80px; }
+        
+        .status-indicator { font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 20px; color: #666; }
+        .pulse-green { color: #00ff00; animation: blink 2s infinite; margin-right: 5px; }
+        .pulse-amber { color: #ffaa00; animation: blink 3s infinite; margin-right: 5px; }
+        
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Responsive Mobile Stack */
+        @media (max-width: 850px) {
+            .hud-workspace { 
+                grid-template-columns: 1fr !important; 
+                gap: 20px; 
+                padding: 20px !important;
+                overflow-y: auto !important;
+            }
+            .support-card { max-width: 100%; }
+        }
+    </style>
+</body>
+</html>
