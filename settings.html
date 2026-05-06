@@ -23,11 +23,24 @@
             display: flex; flex-direction: column; align-items: center; z-index: 5;
         }
 
+        /* --- IDENTITY CARD & SUCCESS ANIMATION --- */
         .identity-card {
             background: #0a0a0a; border: 1px solid #333; border-top: 4px solid var(--v-gold);
             width: 100%; max-width: 600px; padding: 40px;
             box-shadow: 20px 20px 40px rgba(0,0,0,1);
-            animation: systemWake 0.6s var(--v-curve) forwards;
+            position: relative;
+            transition: 0.3s ease;
+        }
+
+        /* Success Pulse Keyframe */
+        @keyframes successPulse {
+            0% { box-shadow: 0 0 0px var(--v-gold); border-color: #333; }
+            50% { box-shadow: 0 0 50px var(--v-gold); border-color: var(--v-gold); }
+            100% { box-shadow: 20px 20px 40px rgba(0,0,0,1); border-color: #333; }
+        }
+
+        .sync-success {
+            animation: successPulse 0.6s var(--v-curve);
         }
 
         .status-header { margin-bottom: 30px; text-align: center; }
@@ -54,13 +67,11 @@
         }
         .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
         
-        /* Updated Restore Button Style */
         .btn-restore { 
             background: transparent !important; 
             border: 1px solid #555 !important; 
-            color: #ffffff !important; /* Forces text to white */
+            color: #ffffff !important; 
         }
-        .btn-restore:hover { border-color: var(--v-gold) !important; }
 
         .btn-logout { background: transparent !important; border: 1px solid #444 !important; color: #888 !important; }
 
@@ -88,7 +99,7 @@
     </header>
 
     <main class="os-viewport">
-        <div class="identity-card">
+        <div class="identity-card" id="main-card">
             <div class="status-header">
                 <h2 id="welcome-msg" class="gold-text-outline" style="font-size: 1.8rem; margin: 0;">Identity: Guest</h2>
                 <div id="rank-display" class="rank-badge">RANK: UNDEFINED</div>
@@ -125,16 +136,42 @@
     </main>
 
     <footer class="vanguard-footer" style="padding: 20px; text-align: center; z-index: 10;">
-        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v3.2 | Authorized Access Only</p>
+        <p style="color: #555; font-size: 0.7rem; margin: 0;">Vanguard OS v3.3 | Authorized Access Only</p>
     </footer>
 
     <script>
-        // --- CONFIGURATION ---
         const SB_URL = 'YOUR_SUPABASE_URL';
         const SB_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- CORE FUNCTIONS ---
+        // --- THE AUDIO KERNEL (Synthesized Success Sound) ---
+        function playSuccessSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, context.currentTime); // High 'A' note
+            oscillator.frequency.exponentialRampToValueAtTime(440, context.currentTime + 0.1); // Slide down
+            
+            gain.gain.setValueAtTime(0.1, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+
+            oscillator.start();
+            oscillator.stop(context.currentTime + 0.1);
+        }
+
+        function triggerSuccessUI() {
+            const card = document.getElementById('main-card');
+            card.classList.remove('sync-success');
+            void card.offsetWidth; // Trigger reflow to restart animation
+            card.classList.add('sync-success');
+            playSuccessSound();
+        }
+
         async function saveIdentity() {
             const emailValue = document.getElementById('email').value.trim();
             const fullNameValue = document.getElementById('full_name').value.trim();
@@ -159,6 +196,7 @@
                 msg("Error: " + error.message, "red");
             } else {
                 fetchAndSync(emailValue);
+                triggerSuccessUI(); // Visual & Audio Feedback
                 msg("Changes submitted successfully.", "var(--v-gold)");
             }
         }
