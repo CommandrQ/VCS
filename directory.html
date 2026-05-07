@@ -6,20 +6,48 @@
     <title>Vanguard | Citizen Directory</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Specific tweaks for the 2-column layout and scrollable grid */
+        .resource-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%;
+            overflow-y: auto; max-height: 35vh; padding: 5px; -webkit-overflow-scrolling: touch;
+        }
+        .category-btn {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; padding: 15px; border-radius: 15px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .category-btn:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+        /* MODAL (ROLLING LIST) */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px);
+            display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
+        }
+        .modal-content {
+            background: #050505; border: 1px solid var(--gold); border-radius: 24px;
+            width: 100%; max-width: 450px; max-height: 80vh; padding: 30px;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        #modal-body { overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        @media (max-width: 480px) { .resource-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
 
     <div class="universe"><div class="star-layer"></div></div>
 
-    <header class="vanguard-header" style="padding: 20px; text-align: center;">
+    <header class="vanguard-header">
         <h1 id="welcome-text" class="gold-text-outline" style="text-transform: uppercase; font-size: 1.2rem; letter-spacing: 1px;">Welcome, Citizen</h1>
     </header>
 
     <main>
-        <div class="glass-card">
+        <div class="glass-card animate-wake" id="main-hub" style="opacity: 0;">
+            
             <div style="text-align: center;">
                 <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Active Population</h3>
-                <h1 id="pop-count" style="font-size: 3rem; font-weight: 900;">--</h1>
+                <h1 id="pop-count" class="loading-state" style="font-size: 3rem; font-weight: 900;">--</h1>
             </div>
 
             <div class="resource-grid">
@@ -29,9 +57,9 @@
 
             <hr class="white-divider">
 
-            <div class="resource-grid" style="overflow-y: auto; max-height: 30vh; padding: 5px;">
+            <h3 style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px;">Network Resources</h3>
+            <div class="resource-grid">
                 <button class="category-btn" onclick="openResourceModal('Tech Help')">Tech Help</button>
-                <button class="category-btn" onclick="openResourceModal('Network Intel')">Network Intel</button>
                 </div>
         </div>
     </main>
@@ -44,7 +72,7 @@
         <div class="modal-content">
             <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase;"></h2>
             <div id="modal-body"></div>
-            <button class="gold-pill" onclick="closeModal()" style="border-color: #333; color: #666; font-size: 0.7rem;">CLOSE WINDOW</button>
+            <button class="gold-pill" onclick="closeModal()" style="border-color: #333; color: #666; font-size: 0.7rem; width: 100%;">CLOSE WINDOW</button>
         </div>
     </div>
 
@@ -55,20 +83,51 @@
 
         const DATABASE = {
             "Tech Help": [
-                { title: "Vanguard Support & Repair", desc: "Hardware repair and software support.", url: "https://vsr.vcscitizen.org" }
-            ],
-            "Network Intel": [
-                { title: "Node Status", desc: "Real-time view of network uptime.", url: "#" }
+                { title: "Vanguard Support & Repair", desc: "Simple tech help and support for local citizens.", url: "https://vsr.vcscitizen.org" }
             ]
         };
 
-        // --- DATA SYNC & AUTO-REFRESH ---
-        async function syncData() {
-            // 1. Population Count
-            const { count, error } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
-            if (!error) document.getElementById('pop-count').innerText = count;
+        // --- 1. GLOBAL GATEKEEPER ---
+        async function enforceSecurity() {
+            try {
+                const [{ data: config }, { data: { session } }] = await Promise.all([
+                    supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
+                    supabaseClient.auth.getSession()
+                ]);
 
-            // 2. Auth Greeting
+                // Kick to login if no session
+                if (!session) { window.location.href = 'index.html'; return; }
+
+                const { data: citizen } = await supabaseClient.from('citizens').select('role').eq('auth_id', session.user.id).single();
+                
+                const isSiteOnline = config ? config.value_bool : true;
+                const userRole = citizen ? citizen.role : 'Citizen';
+
+                // THE LOCKDOWN: Bounce non-Command users if site is offline
+                if (!isSiteOnline && userRole !== 'Command') {
+                    window.location.href = 'https://vcscitizen.org/uc.html';
+                } else {
+                    // Access Granted: Reveal the hub
+                    document.getElementById('main-hub').style.opacity = '1';
+                    syncData(); 
+                }
+            } catch (err) {
+                console.error("Security Handshake Failed:", err);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // --- 2. DATA SYNC ---
+        async function syncData() {
+            // Fetch Population
+            const { count } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
+            if (count !== null) {
+                const popEl = document.getElementById('pop-count');
+                popEl.classList.remove('loading-state');
+                popEl.innerText = count;
+            }
+
+            // Fetch Identity for Greeting
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
@@ -76,15 +135,7 @@
             }
         }
 
-        // Auto-refresh data every 30 seconds
-        setInterval(syncData, 30000);
-
-        // Auto-refresh when user comes back to the tab
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') syncData();
-        });
-
-        // --- MODAL LOGIC ---
+        // --- 3. UI LOGIC ---
         function openResourceModal(cat) {
             const modal = document.getElementById('modal-overlay');
             const body = document.getElementById('modal-body');
@@ -94,6 +145,7 @@
             if (DATABASE[cat]) {
                 DATABASE[cat].forEach(item => {
                     const div = document.createElement('div');
+                    div.className = 'resource-item';
                     div.style.background = 'rgba(255,255,255,0.03)';
                     div.style.padding = '15px';
                     div.style.borderRadius = '12px';
@@ -104,15 +156,21 @@
                 });
             }
             modal.style.display = 'flex';
+            setTimeout(() => modal.style.opacity = '1', 10);
         }
 
-        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+        function closeModal() {
+            const modal = document.getElementById('modal-overlay');
+            modal.style.opacity = '0';
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
 
-        // --- FOOTER ---
+        // --- 4. FOOTER & REFRESH ---
         function runFooter() {
             const el = document.getElementById('footer-text');
             const original = "Powered Vanguard Citizen Services © 2026";
             const motto = "Empower . Educate . Elevate";
+
             const cycle = () => {
                 el.classList.add('footer-active');
                 setTimeout(() => {
@@ -124,10 +182,18 @@
                     }, 600);
                 }, 2000);
             };
-            setInterval(cycle, 6000);
+            setInterval(cycle, 8000);
         }
 
-        window.onload = () => { syncData(); runFooter(); };
+        window.onload = () => {
+            enforceSecurity();
+            runFooter();
+        };
+
+        // Auto-refresh data when returning to tab
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') syncData();
+        });
     </script>
 </body>
 </html>
