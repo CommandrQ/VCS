@@ -4,29 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | VSR Support</title>
+    
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="techhelp.css"> <style>
+    <link rel="stylesheet" href="techhelp.css"> 
+    
+    <style>
+        /* Specific tweaks to ensure the support card is centered and solid */
+        .viewport-wrapper {
+            justify-content: center; /* Center the card vertically */
+        }
+
         .support-card {
-            background: #121212; /* Solid background */
+            background: var(--solid-bg);
             border: 1px solid var(--v-gold);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 24px;
+            padding: clamp(25px, 5vw, 40px);
             width: 100%;
             max-width: 550px;
             box-sizing: border-box;
+            text-align: center;
         }
+
+        /* Ensure form labels and inputs are centered to match the modal style */
+        .form-group label {
+            text-align: center;
+        }
+
+        .form-input {
+            text-align: center;
+            background: #0a0a0a;
+        }
+
         .instruction-text {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(212, 175, 55, 0.05);
+            padding: 18px;
+            border-radius: 12px;
             font-size: 0.85rem;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             line-height: 1.5;
-            border-left: 3px solid var(--v-gold);
+            border: 1px dashed var(--v-gold);
+            text-align: center;
+            color: #fff;
+        }
+
+        /* Ensure the Review Draft button is a perfect pill and matches exactly */
+        .btn-full-width {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
-<body class="state-copyright">
+<body>
     <div class="universe-bg">
         <div class="star-layer stars-1"></div>
         <div class="star-layer stars-2"></div>
@@ -42,12 +72,12 @@
 
         <article class="support-card">
             <div class="instruction-text">
-                <strong>How to request help:</strong> Fill out the fields below. When you click "Review Draft," your email app will open with a formatted message. You can check everything one last time before hitting send.
+                <strong>PROTOCOL:</strong> Fill out the data fields below. When you click <strong>Review Draft</strong>, your local email app will open. Please verify the transmission details before sending.
             </div>
 
             <div class="form-group">
                 <label>Inquiry Category</label>
-                <select id="s-category" class="form-input" style="background: #000;">
+                <select id="s-category" class="form-input">
                     <option value="General Question">General Question</option>
                     <option value="Work Order Issue">Work Order Issue</option>
                     <option value="Business Request">Business Request</option>
@@ -56,54 +86,68 @@
 
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="s-name" class="form-input" placeholder="Your Name">
+                <input type="text" id="s-name" class="form-input" placeholder="Enter Full Name">
             </div>
 
             <div class="form-group">
-                <label>Message / Details</label>
-                <textarea id="s-msg" class="form-input" placeholder="Tell us how we can assist you..."></textarea>
+                <label>Return Email</label>
+                <input type="email" id="s-email" class="form-input" placeholder="Where should we reply?">
             </div>
 
-            <button class="btn-request" style="width: 100%; margin-top: 10px;" onclick="compileSupportDraft()">Review Draft</button>
-            <div id="support-msg" style="text-align: center; margin-top: 15px; font-size: 0.8rem;"></div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="s-msg" class="form-input" placeholder="How can we assist you today?"></textarea>
+            </div>
+
+            <button class="btn-request btn-full-width" onclick="compileSupportDraft()">Review Draft</button>
+            
+            <div id="support-status" style="text-align: center; margin-top: 15px; font-size: 0.8rem; font-weight: bold; min-height: 1.2em;"></div>
         </article>
     </div>
 
     <footer class="vanguard-footer">
-        Powered by Vanguard Citizen Services &copy; <span id="footer-year"></span>
+        Powered by Vanguard Citizen Services &copy; <span id="current-year"></span>
     </footer>
 
     <script>
-        document.getElementById('footer-year').innerText = new Date().getFullYear();
+        // Set copyright year
+        document.getElementById('current-year').innerText = new Date().getFullYear();
 
         function compileSupportDraft() {
             const category = document.getElementById('s-category').value;
             const name = document.getElementById('s-name').value.trim();
+            const email = document.getElementById('s-email').value.trim();
             const message = document.getElementById('s-msg').value.trim();
-            const status = document.getElementById('support-msg');
+            const status = document.getElementById('support-status');
 
             if (!name || !message) {
-                status.innerText = "Error: Please provide your name and message details.";
-                status.style.color = "#f87171";
+                status.innerText = "Error: Name and Message are required.";
+                status.style.color = "#f87171"; // Red
                 return;
             }
 
+            status.innerText = "Opening mail client...";
+            status.style.color = "#D4AF37"; // Gold
+
             const subject = `VSR Support Request: ${category}`;
-            const body = `--- VANGUARD CUSTOMER SERVICE DRAFT ---
+            const body = `--- VANGUARD CUSTOMER SERVICE DISPATCH ---
 Category: ${category}
 Name: ${name}
+Reply Email: ${email || "Not provided"}
 
-DETAILS:
+MESSAGE DETAILS:
 ${message}
 
---- END OF DISPATCH ---`;
+--- END OF TRANSMISSION ---`;
 
             const mailto = `mailto:commandrq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
-            status.innerText = "Opening mail client...";
-            status.style.color = "#D4AF37";
-            
-            window.location.href = mailto;
+            // Execute mailto
+            setTimeout(() => {
+                window.location.href = mailto;
+                status.innerText = "Draft compiled successfully.";
+                status.style.color = "#4ade80"; // Green
+            }, 500);
         }
     </script>
 </body>
