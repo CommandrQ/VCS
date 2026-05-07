@@ -1,191 +1,49 @@
-/* --- CORE VARIABLES & DEFAULTS --- */
-:root {
-    --v-gold: #d4af37;
-    --solid-bg: #121212;
-    --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
-}
+:root { --v-gold: #d4af37; --solid-bg: #121212; }
+html, body { margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
 
-html, body {
-    margin: 0; padding: 0;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    width: 100vw;
-    overflow: hidden; 
-    background: #000;
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* --- ANIMATED STARFIELD --- */
-.universe-bg {
-    position: fixed; inset: 0; z-index: -1;
-    background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-}
-.star-layer {
-    position: absolute; inset: -500px;
-    background-repeat: repeat;
-    animation: starDrift linear infinite;
-}
+/* STARFIELD */
+.universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
+.star-layer { position: absolute; inset: -500px; background-repeat: repeat; animation: starDrift linear infinite; }
 .stars-1 { background-image: radial-gradient(3px 3px at 25px 50px, #fff, transparent); background-size: 350px 350px; animation-duration: 150s; opacity: 0.5; }
-.stars-2 { background-image: radial-gradient(4px 4px at 200px 100px, var(--v-gold), transparent); background-size: 550px 550px; animation-duration: 100s; opacity: 0.3; }
 @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
 
-/* --- MAIN VIEWPORT WRAPPER --- */
-.viewport-wrapper {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 15px 50px; /* Room for persistent footer */
-    box-sizing: border-box;
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-.viewport-wrapper::-webkit-scrollbar { display: none; }
+/* LAYOUT */
+.viewport-wrapper { height: 100dvh; display: flex; flex-direction: column; align-items: center; padding: 20px 15px 50px; box-sizing: border-box; overflow-y: auto; }
+.page-header { display: flex; flex-direction: column; align-items: center; gap: 25px; margin-bottom: 30px; }
+.header-actions { display: flex; gap: 10px; }
+.btn-return { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--v-gold); color: var(--v-gold); padding: 8px 15px; border-radius: 50px; text-decoration: none; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
 
-/* --- HEADER & NAVIGATION --- */
-.page-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px; /* Reduced gap for mobile */
-    margin-bottom: 25px;
-    width: 100%;
-}
+/* SERVICE RANGE */
+.range-box { background: var(--solid-bg); border: 1px solid var(--v-gold); border-radius: 12px; padding: 15px; margin-bottom: 25px; width: 100%; max-width: 600px; text-align: center; box-sizing: border-box; }
+.range-box h3 { color: var(--v-gold); margin: 0; font-size: 0.8rem; text-transform: uppercase; }
+.range-box p { font-size: 0.8rem; margin: 5px 0 0; }
 
-.page-header h1 {
-    margin: 0;
-    font-size: clamp(1.8rem, 8vw, 2.5rem); /* Responsive font size */
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
+/* CARDS */
+.services-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; }
+.solid-card { background: var(--solid-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 25px; width: 280px; flex: 0 0 auto; position: relative; transition: 0.3s; }
+.solid-card:hover { border-color: var(--v-gold); transform: translateY(-5px); }
 
-.header-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    width: 100%;
-}
+/* BADGE */
+.student-badge { position: absolute; top: -10px; right: 10px; background: var(--v-gold); color: #000; font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; }
+.student-rate { display: block; font-size: 0.8rem; color: #fff; margin-top: 5px; font-weight: 400; }
 
-.btn-return {
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid var(--v-gold);
-    color: var(--v-gold);
-    padding: 8px 15px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    transition: 0.3s;
-    white-space: nowrap;
-}
-
-/* --- INTRO & SERVICE RANGE FAQ --- */
-.intro-section {
-    text-align: center;
-    margin-bottom: 20px;
-    max-width: 600px;
-}
-.intro-section h2 { color: var(--v-gold); font-size: 1.2rem; margin: 0 0 5px 0; }
-.intro-section p { font-size: 0.9rem; line-height: 1.4; margin: 0; opacity: 0.8; }
-
-.range-box {
-    background: var(--solid-bg);
-    border: 1px solid var(--v-gold);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 25px;
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    box-sizing: border-box;
-}
-.range-box h3 { color: var(--v-gold); margin: 0 0 5px 0; font-size: 0.8rem; text-transform: uppercase; }
-.range-box p { font-size: 0.8rem; line-height: 1.4; margin: 0; }
-
-/* --- SERVICE TIERS CONTAINER --- */
-.services-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1100px;
-}
-
-.solid-card {
-    background: var(--solid-bg);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    width: 280px;
-    flex: 0 0 auto;
-    box-sizing: border-box;
-}
-
-.tier-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-.tier-price { font-size: 1.3rem; font-weight: 900; color: var(--v-gold); margin-bottom: 12px; }
-.tier-features { list-style: none; padding: 0; margin: 0 0 15px 0; flex-grow: 1; }
-.tier-features li { font-size: 0.8rem; margin-bottom: 6px; padding-left: 15px; position: relative; }
+.tier-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+.tier-price { font-size: 1.4rem; color: var(--v-gold); margin: 10px 0; font-weight: 900; }
+.tier-features { list-style: none; padding: 0; margin: 0 0 20px 0; font-size: 0.85rem; }
+.tier-features li { margin-bottom: 8px; padding-left: 15px; position: relative; }
 .tier-features li::before { content: "•"; color: var(--v-gold); position: absolute; left: 0; }
-.tier-footnote { font-size: 0.7rem; font-style: italic; margin-bottom: 15px; }
+.tier-footnote { color: #fff; font-size: 0.75rem; font-style: italic; margin-bottom: 15px; }
 
-.btn-request {
-    background: var(--v-gold); color: #000; border: none;
-    padding: 12px; border-radius: 8px; font-weight: 800;
-    text-transform: uppercase; cursor: pointer;
-}
+.btn-request { background: var(--v-gold); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 800; text-transform: uppercase; width: 100%; cursor: pointer; }
 
-/* --- MOBILE SPECIFIC FIXES --- */
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-content { background: #000; border: 1px solid var(--v-gold); border-radius: 20px; width: 100%; max-width: 450px; }
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.check-label { display: flex; align-items: center; gap: 10px; color: var(--v-gold); font-size: 0.8rem; font-weight: bold; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; cursor: pointer; }
+.vanguard-footer { position: fixed; bottom: 0; width: 100%; height: 40px; background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+
 @media (max-width: 600px) {
-    .viewport-wrapper { padding-top: 30px; }
-    
-    .page-header { gap: 20px; }
-    
-    .services-container {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding: 10px 0 30px;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        gap: 15px;
-    }
-    
-    .solid-card {
-        width: 85%; /* Shows a peek of the next card */
-        scroll-snap-align: center;
-    }
-
-    .modal-content {
-        max-height: 85vh;
-        width: 95%;
-    }
-}
-
-/* --- MODAL --- */
-.modal-overlay {
-    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
-    display: none; align-items: center; justify-content: center; z-index: 1000;
-}
-.modal-content {
-    background: #000; border: 1px solid var(--v-gold); border-radius: 20px;
-    width: 100%; max-width: 450px; display: flex; flex-direction: column;
-}
-.modal-body { padding: 20px; overflow-y: auto; }
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; font-size: 0.65rem; color: var(--v-gold); margin-bottom: 4px; text-transform: uppercase; }
-.form-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-.modal-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #222; }
-
-/* --- PERSISTENT FOOTER --- */
-.vanguard-footer {
-    position: fixed; bottom: 0; width: 100%;
-    height: 40px; background: #000; border-top: 1px solid #222;
-    display: flex; align-items: center; justify-content: center;
-    color: #ffffff; font-size: 0.7rem; font-weight: 700;
-    text-transform: uppercase; z-index: 100; pointer-events: none;
+    .services-container { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .solid-card { width: 85%; scroll-snap-align: center; }
 }
