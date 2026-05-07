@@ -188,7 +188,7 @@
         
         <div class="announcement-ticker">
             <div class="ticker-content">
-                ::: SYSTEM NOTICE: NETWORK UPGRADE PENDING FOR 2026.05.15 ::: REQUIRED CITIZEN DATA RESYNC SCHEDULED ::: MONITOR TERMINAL FOR UPDATES ::: END NOTICE :::
+                ::: - ::: - ::: MONITOR TERMINAL FOR UPDATES ::: END NOTICE :::
             </div>
         </div>
 
@@ -226,19 +226,11 @@
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         const directoryData = {
-            "Core Nodes": [
-                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "settings.html" },
-                { title: "Network Status", desc: "Live uptime monitor for all Vanguard infrastructure nodes.", url: "#" },
-                { title: "Central Ledger", desc: "Public record of verified network transmissions.", url: "#" }
+            "Tech Help": [
+                { title: "Vanguard Support & Repair", desc: "Simple tech help and education.", url: "https://vsr.vcscitizen.org/" }
             ],
-            "Resources": [
-                { title: "Knowledge Base", desc: "Documentation on Vanguard OS protocols and citizen rights.", url: "#" },
-                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "support.html" },
-                { title: "Asset Repository", desc: "Download official Vanguard media packages and templates.", url: "#" }
-            ],
-            "Directives": [
-                { title: "Current Mandates", desc: "Active operational directives issued by Command.", url: "#" },
-                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" }
+            "System Menu": [
+                { title: "Settings", desc: "Sync your account and contact cutomer service", url: "settings.html" }
             ]
         };
 
