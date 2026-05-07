@@ -15,34 +15,37 @@
         /* --- LOCKED VIEWPORT LOGIC --- */
         html, body {
             margin: 0; padding: 0;
-            height: 100dvh; /* Locked to screen height */
+            height: 100dvh;
             width: 100vw;
-            overflow: hidden; /* No page scrolling */
+            overflow: hidden;
             background: #000;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* --- SUBTLE ANIMATED STARFIELD --- */
+        /* --- BIG STARFIELD ANIMATION --- */
         .universe-bg {
             position: fixed; inset: 0; z-index: -1;
             background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
         }
-
         .star-layer {
             position: absolute; inset: -500px;
             background-repeat: repeat;
             animation: starDrift linear infinite;
         }
-        .stars-1 { background-image: radial-gradient(1px 1px at 10px 20px, #fff, transparent); background-size: 200px 200px; animation-duration: 150s; opacity: 0.3; }
-        .stars-2 { background-image: radial-gradient(1.5px 1.5px at 100px 150px, var(--gold), transparent); background-size: 400px 400px; animation-duration: 100s; opacity: 0.15; }
-        
-        @keyframes starDrift {
-            from { transform: translateY(0); }
-            to { transform: translateY(500px); }
+        .stars-1 { 
+            background-image: radial-gradient(3px 3px at 25px 50px, #fff, transparent),
+                              radial-gradient(2px 2px at 150px 150px, #fff, transparent); 
+            background-size: 350px 350px; animation-duration: 150s; opacity: 0.4; 
         }
+        .stars-2 { 
+            background-image: radial-gradient(4px 4px at 200px 100px, var(--gold), transparent),
+                              radial-gradient(2.5px 2.5px at 350px 350px, var(--gold), transparent); 
+            background-size: 550px 550px; animation-duration: 100s; opacity: 0.2; 
+        }
+        @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
 
-        /* --- CENTERING ENGINE --- */
+        /* --- CENTERING ENGINE (Anti-Overlap) --- */
         .viewport-wrapper {
             display: flex;
             flex-direction: column;
@@ -50,14 +53,15 @@
             width: 100%;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 20px 20px 60px; /* Large bottom padding to protect footer */
             box-sizing: border-box;
         }
 
         .identity-terminal {
             width: 100%;
             max-width: 420px;
-            max-height: 85vh; /* Card will never be taller than 85% of screen */
+            /* Card height adjusts to leave room for footer and header */
+            max-height: calc(100vh - 160px); 
             display: flex;
             flex-direction: column;
             padding: 30px;
@@ -69,7 +73,7 @@
         /* --- INTERNAL SCROLLING --- */
         .terminal-body {
             flex: 1;
-            overflow-y: auto; /* Only the form content scrolls if needed */
+            overflow-y: auto;
             padding-right: 5px;
             width: 100%;
         }
@@ -77,17 +81,18 @@
         .terminal-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
         /* --- IDENTITY UI --- */
-        .identity-header { text-align: center; margin-bottom: 10px; }
+        .identity-header { text-align: center; margin-bottom: 5px; }
         .rank-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #888;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; /* Changed from grey */
             font-size: 0.65rem;
             font-weight: 800;
             padding: 4px 14px;
             border-radius: 50px;
             text-transform: uppercase;
             margin-bottom: 5px;
+            display: inline-block;
         }
         .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
@@ -104,10 +109,11 @@
         }
         .form-group input {
             width: 100%; background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px; padding: 12px; color: #fff;
             font-size: 0.95rem; box-sizing: border-box;
         }
+        .form-group input::placeholder { color: rgba(255,255,255,0.5); }
 
         .helper-link {
             background: none; border: none; color: #fff;
@@ -115,9 +121,21 @@
             cursor: pointer; margin: 10px auto; display: block;
         }
 
+        /* --- COMPACT FOOTER --- */
         .vanguard-footer {
-            position: absolute; bottom: 20px; width: 100%; text-align: center;
-            font-size: 0.8rem; opacity: 0.7; pointer-events: none;
+            position: absolute;
+            bottom: 10px; /* Reduced distance from bottom */
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .vanguard-footer p {
+            font-size: 0.75rem;
+            color: #fff; /* Changed from grey */
+            margin: 0;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -129,11 +147,11 @@
     </div>
 
     <div class="viewport-wrapper">
-        <article class="glass-card identity-terminal" id="identity-card">
+        <article class="glass-card identity-terminal animate-wake" id="identity-card">
             
             <div class="identity-header">
                 <div id="auth-tag" class="rank-tag">Unauthenticated</div>
-                <h2 id="citizen-name" style="margin: 0; font-size: 1.6rem; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
+                <h2 id="citizen-name" style="margin: 0; font-size: 1.6rem; font-weight: 900; text-transform: uppercase; color: #fff;">Guest Mode</h2>
             </div>
 
             <div style="display: flex; justify-content: center;">
@@ -143,7 +161,7 @@
             <hr class="white-divider">
 
             <div class="terminal-body">
-                <div id="state-loading" style="text-align: center; color: #888; padding: 20px;">Initialising Ledger...</div>
+                <div id="state-loading" style="text-align: center; color: #fff; padding: 20px;">Initialising Ledger...</div>
 
                 <div id="state-unauth" style="display: none; flex-direction: column;">
                     <div class="form-group">
@@ -189,7 +207,7 @@
                 </div>
             </div>
             
-            <div id="sys-msg" style="text-align: center; font-size: 0.75rem; margin-top: 5px; min-height: 1.2em;"></div>
+            <div id="sys-msg" style="text-align: center; font-size: 0.75rem; margin-top: 5px; min-height: 1.2em; color: #fff;"></div>
         </article>
     </div>
 
@@ -221,10 +239,8 @@
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                localStorage.setItem('v_login', 'true');
                 loadAuth(session.user);
             } else {
-                localStorage.removeItem('v_login');
                 setView('unauth');
             }
         }
@@ -252,14 +268,14 @@
             const password = document.getElementById('reg-password').value;
             notify("Processing...", "var(--gold)");
             const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
-            error ? notify(error.message, "#f87171") : notify("Verification sent to email.", "#4ade80");
+            error ? notify(error.message, "#f87171") : notify("Check email for link.", "#4ade80");
         }
 
         async function handleRestoreAccess() {
             const email = document.getElementById('res-email').value;
-            notify("Transmitting Magic Link...", "var(--gold)");
+            notify("Transmitting...", "var(--gold)");
             const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-            error ? notify(error.message, "#f87171") : notify("Link sent! Check your inbox.", "#4ade80");
+            error ? notify(error.message, "#f87171") : notify("Link sent.", "#4ade80");
         }
 
         async function handleUpdateProfile() {
