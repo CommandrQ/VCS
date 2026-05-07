@@ -1,0 +1,42 @@
+[
+    {
+        "title": "Essential Guidance",
+        "price": "Free",
+        "features": [
+            "Remote Based",
+            "30 min consultation",
+            "Quick troubleshooting"
+        ]
+    },
+    {
+        "title": "Enhanced Care",
+        "price": "$25",
+        "features": [
+            "Hands-on Support",
+            "System updates",
+            "Router setup",
+            "7-day warranty"
+        ]
+    },
+    {
+        "title": "Extended Resolution",
+        "price": "$55",
+        "features": [
+            "Up to 90 Minutes",
+            "Whole-home Wi-Fi",
+            "PC upgrades",
+            "14-day warranty"
+        ]
+    },
+    {
+        "title": "Concierge Experience",
+        "price": "$75",
+        "features": [
+            "2 Hours In-Home",
+            "Shopping advice & home delivery",
+            "Full setup",
+            "14-day warranty"
+        ],
+        "footnote": "*When available"
+    }
+]
