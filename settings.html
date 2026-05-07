@@ -2,64 +2,195 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vanguard | Identity Terminal</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .glass-card { display: flex; flex-direction: column; align-items: center; gap: 25px; padding: 40px; }
-        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .white-divider { width: 100%; height: 1px; background: #fff; box-shadow: 0 0 10px #fff, 0 0 5px #fff; border: none; }
-        .scroll-area { width: 100%; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; max-height: 350px; padding-right: 10px; }
-        input { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; color: white; }
+        /* --- Viewport Logic --- */
+        html, body {
+            height: 100dvh;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Main Layout --- */
+        .settings-container {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            padding: 20px;
+        }
+
+        .identity-terminal {
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        /* --- Header Logic --- */
+        .identity-header { width: 100%; margin-bottom: 5px; }
+        .rank-tag {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* --- White Glowing Divider --- */
+        .white-divider {
+            width: 100%; height: 1px; background: #fff; border: none;
+            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0; opacity: 0.9;
+        }
+
+        /* --- Scrollable Content Area --- */
+        .form-scroll-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            max-height: 300px;
+            padding-right: 8px;
+            text-align: left;
+        }
+        .form-scroll-area::-webkit-scrollbar { width: 3px; }
+        .form-scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        .form-group label {
+            display: block; font-size: 0.65rem; font-weight: 700;
+            text-transform: uppercase; color: var(--gold);
+            margin-bottom: 6px; letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%; background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; padding: 12px; color: #ffffff;
+            font-size: 1rem; transition: 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: var(--gold); background: rgba(0, 0, 0, 0.6); }
+
+        /* --- Success/Notice Flash --- */
+        .status-msg { font-size: 0.8rem; font-weight: 600; min-height: 1.2em; transition: 0.3s; }
+        .success-flash { animation: pulseSuccess 1s ease-in-out; }
+        @keyframes pulseSuccess {
+            0%, 100% { border-color: rgba(255,255,255,0.1); }
+            50% { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+        }
     </style>
 </head>
 <body>
-    <div class="universe"><div class="star-layer"></div></div>
-    <header style="text-align:center; padding: 20px;"><h1 class="gold-text-outline">Identity Settings</h1></header>
-    <main>
-        <div class="glass-card animate-wake" id="settings-card">
-            <div style="text-align: center;">
-                <h3 id="display-role" style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase;">---</h3>
-                <h1 id="display-name">---</h1>
-            </div>
-            <div class="button-row">
-                <a href="directory.html" class="gold-pill">Directory</a>
-                <a href="support.html" class="gold-pill">Support</a>
-            </div>
-            <hr class="white-divider">
-            <div class="scroll-area">
-                <input type="text" id="f-handle" placeholder="Callsign">
-                <input type="text" id="f-discord" placeholder="Discord ID">
-                <button class="gold-pill" onclick="updateProfile()">Save Changes</button>
-                <button class="gold-pill" onclick="handleLogout()" style="border-color:#f87171; color:#f87171;">Logout</button>
-            </div>
-        </div>
-    </main>
-    <script>
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        async function syncSettings() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = 'index.html'; return; }
-            const { data } = await supabaseClient.from('citizens').select('*').eq('auth_id', session.user.id).single();
-            if (data) {
-                document.getElementById('display-name').innerText = data.full_name;
-                document.getElementById('display-role').innerText = data.role || "Citizen";
-                document.getElementById('f-handle').value = data.handle || "";
-                document.getElementById('f-discord').value = data.discord_id || "";
-            }
+    <div class="universe">
+        <div class="star-layer layer-distant"></div>
+        <div class="star-layer layer-mid"></div>
+        <div class="star-layer layer-near"></div>
+    </div>
+
+    <header class="vanguard-header" style="padding-top: 40px; text-align: center;">
+        <h1 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Identity Terminal</h1>
+    </header>
+
+    <main class="settings-container">
+        <article class="glass-card identity-terminal" id="identity-card">
+            
+            <div class="identity-header">
+                <div class="rank-tag">Public Access</div>
+                <h2 style="margin: 0; font-size: 1.8rem; color: #fff; font-weight: 900;">GUEST CITIZEN</h2>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+                <a href="index.html" class="gold-pill">Return Home</a>
+                <a href="directory.html" class="gold-pill">Directory</a>
+            </div>
+
+            <hr class="white-divider">
+
+            <div class="form-scroll-area">
+                <div class="form-group">
+                    <label>Assigned Callsign</label>
+                    <input type="text" id="f-handle" placeholder="Enter Guest Handle...">
+                </div>
+                
+                <div class="form-group">
+                    <label>Discord Identity</label>
+                    <input type="text" id="f-discord" placeholder="Username#0000">
+                </div>
+
+                <div style="background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3);">
+                    <p style="color: #888; font-size: 0.75rem; margin: 0; line-height: 1.4;">
+                        <strong>SYSTEM NOTE:</strong> Authentication is currently bypassed. Local changes to callsigns will not be saved to the permanent ledger until Identity Protocols are re-enabled.
+                    </p>
+                </div>
+
+                <button class="gold-pill" style="margin-top: 5px;" onclick="simulateSync()">Apply Local Changes</button>
+            </div>
+            
+            <div id="sys-msg" class="status-msg"></div>
+            
+        </article>
+    </main>
+
+    <footer class="vanguard-footer">
+        <p id="footer-text">Vanguard OS v6.0 | Identity Protocol Enabled</p>
+    </footer>
+
+    <script>
+        // Footer animation logic
+        function runFooter() {
+            const el = document.getElementById('footer-text');
+            const motto = "Empower . Elevate . Educate";
+            const original = "Vanguard OS v6.0 | Identity Protocol Enabled";
+            setInterval(() => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.innerText = (el.innerText === original) ? motto : original;
+                    el.style.opacity = '1';
+                }, 600);
+            }, 6000);
         }
-        async function updateProfile() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const updates = { handle: document.getElementById('f-handle').value, discord_id: document.getElementById('f-discord').value };
-            await supabaseClient.from('citizens').update(updates).eq('auth_id', session.user.id);
-            alert("Updated.");
+
+        // Feedback simulation
+        function simulateSync() {
+            const el = document.getElementById('sys-msg');
+            const card = document.getElementById('identity-card');
+            
+            el.innerText = "Synchronizing Local Identity...";
+            el.style.color = "var(--gold)";
+            card.classList.add('success-flash');
+
+            setTimeout(() => {
+                el.innerText = "Identity Applied Locally.";
+                el.style.color = "#4ade80";
+                setTimeout(() => { 
+                    el.innerText = "";
+                    card.classList.remove('success-flash');
+                }, 2000);
+            }, 1200);
         }
-        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
-        window.onload = syncSettings;
+
+        window.onload = runFooter;
     </script>
 </body>
 </html>
