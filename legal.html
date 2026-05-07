@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vanguard | Legal Protocols</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- CORE OS VARIABLES & ENGINE --- */
+        :root {
+            --v-gold: #d4af37;
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            margin: 0; padding: 0;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden; /* Strict viewport lock */
+            background: #000; color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- ANIMATED STARFIELD --- */
+        .universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
+        .star-layer { position: absolute; inset: -500px; background-repeat: repeat; animation: starDrift linear infinite; }
+        .stars-1 { background-image: radial-gradient(3.5px 3.5px at 25px 50px, #fff, transparent), radial-gradient(2.5px 2.5px at 150px 150px, #fff, transparent); background-size: 400px 400px; animation-duration: 160s; opacity: 0.4; }
+        .stars-2 { background-image: radial-gradient(5px 5px at 200px 100px, var(--v-gold), transparent), radial-gradient(3px 3px at 350px 350px, var(--v-gold), transparent); background-size: 600px 600px; animation-duration: 110s; opacity: 0.25; }
+        @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
+
+        /* --- LAYOUT & CENTERING --- */
+        .viewport-wrapper {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100%; width: 100%;
+            padding: 20px 20px 60px 20px; /* Safe space for footer */
+            box-sizing: border-box;
+        }
+
+        /* --- TERMINAL CARD --- */
+        .legal-terminal {
+            width: 100%; max-width: 800px;
+            flex: 1 1 auto; min-height: 0;
+            display: flex; flex-direction: column;
+            padding: 30px 40px; gap: 20px;
+            box-sizing: border-box; position: relative;
+            background: rgba(15, 15, 15, 0.75);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        .header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            flex: 0 0 auto; width: 100%; padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .header-title { margin: 0; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--v-gold); }
+        
+        .btn-return {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 8px 20px; border-radius: 50px; text-decoration: none;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-return:hover { background: var(--v-gold); color: #000; border-color: var(--v-gold); }
+
+        /* --- SCROLLABLE DOCUMENT AREA --- */
+        .document-body {
+            flex: 1 1 auto; overflow-y: auto;
+            padding-right: 15px; width: 100%;
+            text-align: left;
+        }
+        .document-body::-webkit-scrollbar { width: 4px; }
+        .document-body::-webkit-scrollbar-thumb { background: var(--v-gold); border-radius: 10px; }
+
+        /* --- TYPOGRAPHY --- */
+        .doc-section { margin-bottom: 30px; }
+        .doc-h2 { color: #fff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 10px 0; }
+        .doc-h3 { color: var(--v-gold); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 5px 0; }
+        .doc-p { color: #ddd; font-size: 0.9rem; line-height: 1.6; margin: 0 0 15px 0; }
+        .doc-ul { color: #ddd; font-size: 0.9rem; line-height: 1.6; margin: 0 0 15px 0; padding-left: 20px; }
+        .doc-ul li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 600px) {
+            .legal-terminal { padding: 25px 20px; border-radius: 16px; }
+            .header-row { flex-direction: column; gap: 15px; text-align: center; }
+            .header-title { font-size: 1.2rem; }
+        }
+
+        /* --- ANIMATED FOOTER --- */
+        .vanguard-footer {
+            position: fixed; bottom: 0; width: 100%;
+            height: 40px; background: #000; border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; overflow: hidden; pointer-events: none;
+        }
+        .footer-text-container { position: relative; width: 100%; text-align: center; }
+        .footer-text {
+            position: absolute; width: 100%; left: 0; top: 50%;
+            transform: translateY(-50%); margin: 0; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase; color: #fff;
+            transition: opacity 1s, filter 1s;
+        }
+        .motto-text { clip-path: inset(0 100% 0 0); transition: clip-path 1.5s var(--v-curve), opacity 1s; color: var(--v-gold); }
+
+        .state-copyright .copyright-text { opacity: 1; filter: blur(0); }
+        .state-copyright .motto-text { opacity: 0; filter: blur(5px); clip-path: inset(0 100% 0 0); }
+        .state-motto .copyright-text { opacity: 0; filter: blur(5px); }
+        .state-motto .motto-text { opacity: 1; filter: blur(0); clip-path: inset(0 0 0 0); }
+    </style>
+</head>
+<body class="state-copyright">
+
+    <div class="universe-bg">
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
+    </div>
+
+    <div class="viewport-wrapper">
+        <article class="legal-terminal">
+            
+            <div class="header-row">
+                <h1 class="header-title">Legal & Privacy Protocols</h1>
+                <a href="javascript:history.back()" class="btn-return">Return</a>
+            </div>
+
+            <div class="document-body">
+                
+                <div class="doc-section">
+                    <p class="doc-p" style="font-style: italic; color: #aaa;">Last Synchronized: May 2026</p>
+                    <p class="doc-p">Welcome to Vanguard Citizen Services. By accessing our terminal nodes, systems, and networks, you agree to abide by the following operational protocols and privacy standards. Our philosophy is simple: we respect your data, and we expect you to respect the network.</p>
+                </div>
+
+                <div class="doc-section">
+                    <h2 class="doc-h2">I. Privacy Policy</h2>
+                    
+                    <h3 class="doc-h3">Data Minimization</h3>
+                    <p class="doc-p">Vanguard operates on a strict principle of data minimization. We do not track, scrape, or store unnecessary information. To maintain your Identity Profile, we collect only:</p>
+                    <ul class="doc-ul">
+                        <li>Your provided email address (for secure, passwordless authentication).</li>
+                        <li>Your chosen full name or callsign.</li>
+                        <li>Your Discord ID (if voluntarily provided for communication sync).</li>
+                        <li>Your assigned Citizen Rank and role authorizations.</li>
+                    </ul>
+
+                    <h3 class="doc-h3">Zero Third-Party Sharing</h3>
+                    <p class="doc-p">Your data belongs to you. Vanguard Citizen Services <strong>does not and will never</strong> sell, rent, trade, or otherwise share your personal information with third-party marketers, corporations, or external entities. Your data remains strictly secured within our encrypted ledger.</p>
+
+                    <h3 class="doc-h3">No Intrusive Tracking</h3>
+                    <p class="doc-p">We do not employ background tracking. We do not log your physical GPS coordinates, hardware MAC addresses, or cross-site browsing history. The network exists solely to facilitate Vanguard operations.</p>
+                </div>
+
+                <div class="doc-section">
+                    <h2 class="doc-h2">II. Terms of Use</h2>
+                    
+                    <h3 class="doc-h3">Network Authorization</h3>
+                    <p class="doc-p">Access to the Vanguard Command Center and restricted terminal nodes is granted based on verified Citizen Rank. Attempting to bypass security protocols, impersonate Command personnel, or artificially inflate your rank will result in immediate network expulsion.</p>
+
+                    <h3 class="doc-h3">Operational Conduct</h3>
+                    <p class="doc-p">Citizens are expected to act with integrity. You are solely responsible for all actions executed under your Identity Profile. Do not deploy malicious code, disrupt service stability, or transmit harmful materials through Vanguard communication channels.</p>
+
+                    <h3 class="doc-h3">System Maintenance & Availability</h3>
+                    <p class="doc-p">While we strive for 100% network uptime, Command reserves the right to initiate Maintenance Protocols (system lockdowns) at any time to upgrade infrastructure or secure the ledger. During these periods, only authorized Command personnel may access the network.</p>
+                </div>
+
+                <div class="doc-section">
+                    <h2 class="doc-h2">III. Data Rights & Inquiries</h2>
+                    <p class="doc-p">You maintain total sovereignty over your data. If you wish to permanently erase your Identity Profile from the Vanguard Ledger, or if you have inquiries regarding these protocols, please submit a direct request via the <a href="support.html" style="color: var(--v-gold); text-decoration: none; font-weight: bold;">Support Terminal</a>.</p>
+                </div>
+
+            </div>
+        </article>
+    </div>
+
+    <footer class="vanguard-footer">
+        <div class="footer-text-container">
+            <p class="footer-text copyright-text">Powered by Vanguard Citizen Services &copy; <span id="current-year"></span></p>
+            <p class="footer-text motto-text">Empower . Educate . Elevate</p>
+        </div>
+    </footer>
+
+    <script>
+        // Footer animation and year insertion
+        window.onload = () => {
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+            
+            setInterval(() => {
+                const body = document.body;
+                if (body.classList.contains('state-copyright')) {
+                    body.classList.remove('state-copyright');
+                    body.classList.add('state-motto');
+                } else {
+                    body.classList.remove('state-motto');
+                    body.classList.add('state-copyright');
+                }
+            }, 6000);
+        };
+    </script>
+</body>
+</html>
