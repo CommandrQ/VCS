@@ -3,206 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | Identity Settings</title>
+    <title>Vanguard | Settings</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- LAYOUT REFINEMENTS --- */
-        .glass-card {
-            display: flex; flex-direction: column; align-items: center; gap: 25px;
-            padding: 40px; max-height: 90vh;
-        }
-
-        /* 1. Identity Header */
-        .identity-display { text-align: center; width: 100%; }
-        #display-role { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
-        #display-name { font-size: 2rem; font-weight: 800; line-height: 1.1; }
-
-        /* 2. Direct Buttons */
+        .glass-card { display: flex; flex-direction: column; align-items: center; gap: 25px; padding: 40px; }
         .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-
-        /* 3. White Glowing Divider */
-        .white-divider {
-            width: 100%; height: 1px; background: #fff; border: none;
-            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0; opacity: 0.9;
-        }
-
-        /* 4. Scrollable Settings Content */
-        .scroll-area {
-            width: 100%; display: flex; flex-direction: column; gap: 20px;
-            overflow-y: auto; padding-right: 10px; max-height: 350px;
-            text-align: left;
-        }
-        .scroll-area::-webkit-scrollbar { width: 3px; }
-        .scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
-        /* Form Styling */
-        .field-group { width: 100%; }
-        label { 
-            display: block; font-size: 0.65rem; color: var(--gold); 
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 800;
-        }
-        input {
-            width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 14px; color: white; font-size: 0.9rem; transition: 0.3s;
-        }
-        input:focus { outline: none; border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
-        input:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        .btn-danger { border-color: #f87171 !important; color: #f87171 !important; margin-top: 10px; }
-        .btn-danger:hover { background: #f87171 !important; color: #000 !important; }
-
-        @media (max-width: 480px) { .button-row { grid-template-columns: 1fr; } }
+        .white-divider { width: 100%; height: 1px; background: #fff; box-shadow: 0 0 10px #fff, 0 0 5px #fff; border: none; }
+        .scroll-area { width: 100%; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; max-height: 350px; padding-right: 10px; }
+        input { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; color: white; }
     </style>
 </head>
 <body>
-
     <div class="universe"><div class="star-layer"></div></div>
-
-    <header class="vanguard-header" style="text-align:center; padding: 20px;">
-        <h1 class="gold-text-outline" style="text-transform: uppercase; font-size: 1.1rem; letter-spacing: 2px;">Identity Management</h1>
-    </header>
-
+    <header style="text-align:center; padding: 20px;"><h1 class="gold-text-outline">Identity Settings</h1></header>
     <main>
-        <div class="glass-card animate-wake" id="settings-card" style="opacity: 0;">
-            
-            <div class="identity-display">
-                <h3 id="display-role">---</h3>
-                <h1 id="display-name">Loading...</h1>
+        <div class="glass-card animate-wake" id="settings-card">
+            <div style="text-align: center;">
+                <h3 id="display-role" style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase;">---</h3>
+                <h1 id="display-name">---</h1>
             </div>
-
             <div class="button-row">
                 <a href="directory.html" class="gold-pill">Directory</a>
                 <a href="support.html" class="gold-pill">Support</a>
             </div>
-
             <hr class="white-divider">
-
             <div class="scroll-area">
-                <div class="field-group">
-                    <label>Registered Email</label>
-                    <input type="email" id="f-email" disabled>
-                </div>
-
-                <div class="field-group">
-                    <label>Citizen Handle</label>
-                    <input type="text" id="f-handle" placeholder="Assign Callsign...">
-                </div>
-
-                <div class="field-group">
-                    <label>Discord ID</label>
-                    <input type="text" id="f-discord" placeholder="Username#0000">
-                </div>
-
-                <button class="gold-pill" onclick="updateProfile()" style="margin-top: 10px;">Save Profile Changes</button>
-                
-                <button class="gold-pill btn-danger" onclick="handleLogout()">Disconnect Session</button>
-                
-                <p id="sys-msg" style="font-size: 0.7rem; text-align: center; min-height: 1.2em; font-weight: bold;"></p>
+                <input type="text" id="f-handle" placeholder="Callsign">
+                <input type="text" id="f-discord" placeholder="Discord ID">
+                <button class="gold-pill" onclick="updateProfile()">Save Changes</button>
+                <button class="gold-pill" onclick="handleLogout()" style="border-color:#f87171; color:#f87171;">Logout</button>
             </div>
-
         </div>
     </main>
-
-    <footer class="vanguard-footer">
-        <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
-    </footer>
-
     <script>
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- 1. OPTIMIZED SECURITY GATE ---
-        async function runGatekeeper() {
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (!session) { window.location.href = 'index.html'; return; }
-
-                const { data: config } = await supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single();
-                const isOnline = config ? config.value_bool : true;
-
-                if (isOnline) {
-                    revealSettings();
-                } else {
-                    // Only check role if site is offline
-                    const { data: citizen } = await supabaseClient.from('citizens').select('role').eq('auth_id', session.user.id).single();
-                    if (citizen && citizen.role === 'Command') {
-                        revealSettings();
-                    } else {
-                        window.location.href = 'https://vcscitizen.org/uc.html';
-                    }
-                }
-            } catch (e) {
-                window.location.href = 'index.html';
-            }
-        }
-
-        function revealSettings() {
-            document.getElementById('settings-card').style.opacity = '1';
-            syncSettings();
-            runFooter();
-        }
-
-        // --- 2. DATA SYNC ---
         async function syncSettings() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return;
-
+            if (!session) { window.location.href = 'index.html'; return; }
             const { data } = await supabaseClient.from('citizens').select('*').eq('auth_id', session.user.id).single();
             if (data) {
                 document.getElementById('display-name').innerText = data.full_name;
                 document.getElementById('display-role').innerText = data.role || "Citizen";
-                document.getElementById('f-email').value = data.email;
                 document.getElementById('f-handle').value = data.handle || "";
                 document.getElementById('f-discord').value = data.discord_id || "";
             }
         }
-
-        // --- 3. UPDATE LOGIC ---
         async function updateProfile() {
-            const msg = document.getElementById('sys-msg');
-            msg.innerText = "Transmitting Updates...";
-            msg.style.color = "var(--gold)";
-
             const { data: { session } } = await supabaseClient.auth.getSession();
-            const updates = {
-                handle: document.getElementById('f-handle').value.trim(),
-                discord_id: document.getElementById('f-discord').value.trim()
-            };
-
-            const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', session.user.id);
-            
-            if (error) {
-                msg.innerText = "Error: " + error.message;
-                msg.style.color = "#f87171";
-            } else {
-                msg.innerText = "Profile Synchronized Successfully.";
-                msg.style.color = "#4ade80";
-                setTimeout(() => { msg.innerText = ""; }, 3000);
-            }
+            const updates = { handle: document.getElementById('f-handle').value, discord_id: document.getElementById('f-discord').value };
+            await supabaseClient.from('citizens').update(updates).eq('auth_id', session.user.id);
+            alert("Updated.");
         }
-
-        // --- 4. EXTRAS ---
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
-        }
-
-        function runFooter() {
-            const el = document.getElementById('footer-text');
-            const motto = "Empower . Elevate . Educate";
-            const original = "Powered Vanguard Citizen Services © 2026";
-            setInterval(() => {
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.innerText = (el.innerText === original) ? motto : original;
-                    el.style.opacity = '1';
-                }, 600);
-            }, 6000);
-        }
-
-        window.onload = runGatekeeper;
+        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
+        window.onload = syncSettings;
     </script>
 </body>
 </html>
