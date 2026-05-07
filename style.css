@@ -1,19 +1,24 @@
-/* --- VANGUARD OS CORE VARIABLES --- */
+/* --- VANGUARD OS CORE VARIABLES (v4.7 Prime) --- */
 :root {
     --gold: #d4af37;
-    --gold-glow: rgba(212, 175, 55, 0.3);
-    --glass-bg: rgba(15, 15, 15, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --gold-glow: rgba(212, 175, 55, 0.4);
+    --gold-border: rgba(212, 175, 55, 0.6);
+    
+    /* DESIGN CONSTRAINT: SOLID BACKS */
+    --card-bg: #0a0a0a; 
+    --card-border: rgba(255, 255, 255, 0.1);
+    
     --bg-black: #000000;
     --text-main: #ffffff;
     --text-dim: #a1a1a6;
     --error-red: #f87171;
+    
     --font-ui: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
     --font-mono: "SF Mono", "Fira Code", monospace;
     --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- SYSTEM RESET --- */
+/* --- SYSTEM RESET & VIEWPORT LOCK --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -25,19 +30,23 @@ body, html {
     color: var(--text-main);
     font-family: var(--font-ui);
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
+    
+    /* DESIGN CONSTRAINT: Page doesn't scroll */
+    height: 100vh;
+    overflow: hidden; 
+    
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
 }
 
-/* --- THE UNIVERSE (GLOBAL BACKGROUND) --- */
+/* --- THE UNIVERSE (SUBTLE MOVING STARFIELD) --- */
 .universe {
     position: fixed;
     inset: 0;
-    z-index: -2;
+    z-index: -1; /* Behind content, in front of radial black */
     background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
     overflow: hidden;
+    pointer-events: none;
 }
 
 .star-layer {
@@ -51,94 +60,128 @@ body, html {
         radial-gradient(1.5px 1.5px at 20% 50%, var(--gold) 100%, transparent),
         radial-gradient(1px 1px at 90% 90%, #fff 100%, transparent);
     background-size: 350px 350px;
-    pointer-events: none;
 }
 
-.layer-distant { animation: drift 180s linear infinite; opacity: 0.3; }
-.layer-mid { animation: drift 110s linear infinite reverse; opacity: 0.2; background-size: 250px 250px; }
-.layer-near { animation: drift 60s linear infinite; opacity: 0.1; background-size: 500px 500px; }
+/* Subtlety settings: Distant stars only */
+.layer-distant { 
+    animation: drift 180s linear infinite; 
+    opacity: 0.15; /* Subtly moving */
+}
 
 @keyframes drift {
     from { transform: translate3d(0, 0, 0); }
     to { transform: translate3d(200px, 200px, 0); }
 }
 
-/* --- REUSABLE GLASS COMPONENTS --- */
+/* --- THE CONTENT VIEWPORT --- */
+main {
+    flex: 1; /* Take all space between header/footer */
+    overflow: hidden; /* No page scroll */
+    
+    /* Centering Strategy */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+/* For pages with a grid (index.html) */
+.content-grid {
+    display: flex;
+    gap: 30px;
+    max-width: 900px;
+    max-height: 100%; /* within main limits */
+    overflow: hidden; /* Viewport centers the grid */
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* --- TACTICAL WINDOWS (THE CARDS) --- */
 .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
+    /* DESIGN CONSTRAINT: SOLID BACKS, Window behavior */
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 24px;
     padding: 30px;
+    
+    /* OPTIONAL GLOW on edges */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    transition: transform 0.4s var(--v-curve), border-color 0.4s;
+    
+    /* DESIGN CONSTRAINT: Auto Flex, Reduced Dead Space */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0; /* autoflex to accommodate text */
+    flex-shrink: 1; /* shrink if viewport small */
+    gap: 15px; /* auto space elements, reduce dead space */
+
+    transition: border-color 0.4s var(--v-curve);
+    
+    /* DESIGN CONSTRAINT: Internal Scrolling */
+    overflow-y: auto; 
+    max-height: calc(100vh - 150px); /* Max height relative to viewport */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 
+/* Standard single card width (like settings) */
+main > .glass-card {
+    max-width: 600px;
+    width: 100%;
+}
+
+/* Cards in a grid (index.html) */
+.content-grid > .glass-card {
+    flex: 1 1 350px; /* grow, shrink, baseline */
+    max-width: 400px;
+    max-height: 100%; /* within grid limits */
+}
+
+/* Hover glow */
 .glass-card:hover {
-    border-color: var(--gold);
+    border-color: var(--gold-border);
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,1), 0 0 15px -5px var(--gold-glow);
 }
 
-.glass-card.interactive:hover {
-    transform: translateY(-5px);
-}
-
-/* --- NAVIGATION & HEADERS --- */
-.vanguard-header {
-    padding: 40px 20px;
+/* --- CENTERING TEXT & BUTTONS --- */
+/* DESIGN CONSTRAINT: Center headers, body, buttons */
+.glass-card h1,
+.glass-card h2,
+.glass-card h3,
+.glass-card p {
     text-align: center;
-    z-index: 10;
+    width: 100%;
+    margin: 0; /* controlled by gap */
 }
 
 .gold-text-outline {
     color: var(--gold);
     text-shadow: 0 0 10px var(--gold-glow);
-    font-weight: 700;
 }
 
-/* --- TACTICAL FORM ELEMENTS --- */
-.field-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
+.glass-card h2 {
     color: var(--gold);
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 1.4rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 8px;
 }
 
-input, select, textarea {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 12px 15px;
-    color: white;
-    font-family: var(--font-ui);
-    transition: 0.3s;
+.glass-card p {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
-input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--gold);
-    background: rgba(255, 255, 255, 0.08);
-}
-
-input:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* --- BUTTONS --- */
-.gold-btn {
+/* --- THE PILL BUTTON (CENTERED) --- */
+.btn-pill-centered {
+    /* DESIGN CONSTRAINT: PILL & CENTERED */
     display: inline-block;
     padding: 12px 28px;
     background: transparent;
     border: 1px solid var(--gold);
-    border-radius: 12px;
+    border-radius: 50px; /* PILL */
     color: var(--gold);
     font-weight: 700;
     text-transform: uppercase;
@@ -146,80 +189,45 @@ input:disabled {
     text-decoration: none;
     cursor: pointer;
     transition: 0.3s var(--v-curve);
-    text-align: center;
+    
+    /* Manual centering within flex flow if necessary */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto; /* Push to bottom of auto-flex card if needed */
 }
 
-.gold-btn:hover {
+.btn-pill-centered:hover {
     background: var(--gold);
     color: #000;
     box-shadow: 0 0 20px var(--gold-glow);
-    transform: scale(1.02);
 }
 
-.btn-pill {
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-}
+/* Custom Scrollbar for centered windows */
+.glass-card::-webkit-scrollbar { width: 6px; }
+.glass-card::-webkit-scrollbar-track { background: transparent; }
+.glass-card::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 6px; }
+.glass-card::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* --- DIRECTORY & TABLES --- */
-.tactical-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tactical-table th {
-    text-align: left;
-    color: var(--gold);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 15px;
+/* --- HEADER & FOOTER --- */
+.vanguard-header {
+    flex-shrink: 0;
+    padding: 20px 30px;
+    text-align: center;
     border-bottom: 1px solid var(--glass-border);
 }
 
-.tactical-table td {
-    padding: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 0.9rem;
-}
-
-.rank-pill {
-    padding: 3px 10px;
-    border: 1px solid var(--gold);
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 900;
-    color: var(--gold);
-}
-
-/* --- FOOTER --- */
 .vanguard-footer {
-    margin-top: auto;
-    padding: 40px 20px;
+    flex-shrink: 0;
+    padding: 15px;
     text-align: center;
     border-top: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
 }
 
-.vanguard-footer p {
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-}
+.vanguard-footer p { color: var(--text-dim); font-size: 0.75rem; }
 
-/* --- ANIMATIONS --- */
-@keyframes systemWake {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-wake {
-    animation: systemWake 0.6s var(--v-curve) forwards;
-}
-
-/* --- MOBILE OPTIMIZATION --- */
+/* Mobile Optimization for fixed viewports */
 @media (max-width: 768px) {
-    .glass-card { padding: 20px; }
-    .vanguard-header { padding: 40px 15px; }
+    main { padding: 15px; }
+    .content-grid { gap: 15px; }
+    .glass-card { padding: 20px; border-radius: 16px; }
 }
