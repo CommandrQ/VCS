@@ -101,14 +101,25 @@ html, body {
 
 /* --- MOBILE LAYOUT (HORIZONTAL SCROLL) --- */
 @media (max-width: 1000px) {
-    .viewport-wrapper { justify-content: flex-start; padding: 20px 10px; } /* Allows natural scroll on small screens */
+    .viewport-wrapper { 
+        justify-content: flex-start; 
+        padding: 20px 10px; 
+    }
+    
     .services-container {
         display: flex; flex-wrap: nowrap; justify-content: flex-start;
-        overflow-x: auto; padding: 5px 5px 15px; scroll-snap-type: x mandatory;
-        gap: 15px; -webkit-overflow-scrolling: touch; width: 100vw; box-sizing: border-box; margin-left: -10px; 
+        overflow-x: auto; 
+        
+        /* FIX: Increased padding-top from 5px to 25px to give the badge room to breathe */
+        padding: 25px 10px 20px; 
+        
+        scroll-snap-type: x mandatory;
+        gap: 15px; -webkit-overflow-scrolling: touch; 
+        width: 100vw; box-sizing: border-box; margin-left: -10px; 
     }
+    
     .solid-card { 
-        flex: 0 0 85%; /* Keeps cards slightly larger as requested */
+        flex: 0 0 85%; 
         scroll-snap-align: center;
         margin: 0; 
     }
