@@ -15,79 +15,87 @@
         /* --- LOCKED VIEWPORT ENGINE --- */
         html, body {
             margin: 0; padding: 0;
-            height: 100vh; width: 100vw;
-            overflow: hidden; /* No page scrolling */
+            height: 100dvh; /* Dynamic Viewport Height for mobile browsers */
+            width: 100vw;
+            overflow: hidden; /* Strict lock on the body */
             background: #000; color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex; flex-direction: column;
         }
 
-        /* --- LARGE ANIMATED STARFIELD --- */
+        /* --- ANIMATED STARFIELD --- */
         .universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
         .star-layer { position: absolute; inset: -500px; background-repeat: repeat; animation: starDrift linear infinite; }
         .stars-1 { background-image: radial-gradient(3.5px 3.5px at 25px 50px, #fff, transparent), radial-gradient(2.5px 2.5px at 150px 150px, #fff, transparent); background-size: 400px 400px; animation-duration: 160s; opacity: 0.4; }
         .stars-2 { background-image: radial-gradient(5px 5px at 200px 100px, var(--gold), transparent), radial-gradient(3px 3px at 350px 350px, var(--gold), transparent); background-size: 600px 600px; animation-duration: 110s; opacity: 0.25; }
         @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
 
-        /* --- MAIN LAYOUT --- */
+        /* --- FLEXBOX CENTERING & MOBILE SAFE-ZONE --- */
         .viewport-wrapper {
-            flex: 1; display: flex; flex-direction: column;
+            display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            padding: 20px 20px 50px; /* Safe space for footer */
-            box-sizing: border-box; width: 100%;
+            height: 100%; width: 100%;
+            padding: 15px 15px 55px 15px; /* 55px bottom padding protects the footer */
+            box-sizing: border-box;
         }
 
-        /* --- ANNOUNCEMENT TICKER --- */
+        /* --- SLOW ANNOUNCEMENT TICKER (1s Pause) --- */
         .announcement-ticker {
             width: 100%; max-width: 850px;
+            flex: 0 0 auto; /* Prevent from shrinking */
             background: rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
             border-bottom: 2px solid var(--gold);
-            border-radius: 8px 8px 0 0;
-            padding: 8px 15px; box-sizing: border-box;
+            border-radius: 12px 12px 0 0;
+            padding: 10px 15px; box-sizing: border-box;
             overflow: hidden; white-space: nowrap;
-            margin-bottom: -1px; /* Overlap border */
-            z-index: 2;
+            margin-bottom: -1px; z-index: 2;
         }
         .ticker-content {
             display: inline-block;
             color: #fff; font-size: 0.8rem; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 1px;
-            animation: tickerScroll 25s linear infinite;
-            padding-right: 100%; /* Ensure gap */
+            text-transform: uppercase; letter-spacing: 1.5px;
+            padding-left: 100%; /* Pushes text to start from the far right edge */
+            /* 30s total animation. 96.6% = ~29s moving, 3.4% = ~1s pause */
+            animation: tickerScroll 30s linear infinite;
         }
-        @keyframes tickerScroll { from { transform: translateX(0%); } to { transform: translateX(-100%); } }
+        @keyframes tickerScroll { 
+            0% { transform: translateX(0); } 
+            96.6% { transform: translateX(-100%); } /* Text exits far left */
+            100% { transform: translateX(-100%); } /* 1 second pause */
+        }
 
-        /* --- DIRECTORY TERMINAL CARD --- */
+        /* --- BIG DIRECTORY CARD --- */
         .directory-terminal {
-            width: 100%;
-            max-width: 850px; /* Widened for desktop */
-            height: 80vh; max-height: 650px;
+            width: 100%; max-width: 850px;
+            flex: 1 1 auto; /* Allows the card to take remaining screen space */
+            min-height: 0; /* CRITICAL FIX: Allows internal scrolling on mobile */
             display: flex; flex-direction: column;
-            padding: 30px; gap: 20px;
+            padding: 25px 25px 15px; gap: 20px;
             box-sizing: border-box; position: relative;
-            overflow: hidden; /* Card doesn't scroll, contents do */
-            border-radius: 0 0 24px 24px; /* Matches ticker top */
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0 0 24px 24px;
         }
 
-        /* --- POPULATION COUNTER --- */
-        .pop-container { text-align: center; width: 100%; }
+        /* --- DYNAMIC POPULATION COUNTER --- */
+        .pop-container { flex: 0 0 auto; text-align: center; width: 100%; }
         .pop-label { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-        .pop-count { font-size: 3.2rem; font-weight: 900; color: #fff; margin: 5px 0 0; line-height: 1; transition: 0.5s; }
+        /* Font size uses 'min' to auto-shrink on small screens when numbers get huge */
+        .pop-count { font-size: min(4rem, 12vw); font-weight: 900; color: #fff; margin: 5px 0 0; line-height: 1; transition: 0.5s; word-wrap: break-word; }
         .loading-count { opacity: 0.5; font-size: 2rem; }
 
-        .white-divider { width: 100%; height: 1px; background: #fff; border: none; box-shadow: 0 0 10px #fff; margin: 5px 0; }
+        .white-divider { flex: 0 0 auto; width: 100%; height: 1px; background: #fff; border: none; box-shadow: 0 0 10px #fff; margin: 0; }
 
-        /* --- CATEGORY SELECTOR (Horizontal Scroll) --- */
+        /* --- CATEGORY SELECTOR --- */
         .category-menu {
-            width: 100%; display: flex; gap: 10px;
-            overflow-x: auto; padding-bottom: 5px; /* space for bar */
+            flex: 0 0 auto; width: 100%; display: flex; gap: 10px;
+            overflow-x: auto; padding-bottom: 5px;
             -webkit-overflow-scrolling: touch;
-            justify-content: flex-start; /* Default for mobile */
+            justify-content: flex-start;
         }
-        /* Center on desktop if total width is small */
-        @media (min-width: 750px) { .category-menu { justify-content: center; overflow-x: hidden; } }
-        
+        @media (min-width: 750px) { .category-menu { justify-content: center; } }
         .category-menu::-webkit-scrollbar { height: 3px; }
         .category-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 
@@ -98,44 +106,41 @@
             font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
             letter-spacing: 1px; cursor: pointer; transition: 0.3s;
         }
-        .cat-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: #fff; }
+        .cat-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; }
         .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
 
-        /* --- CARD GRID (Vertical Scroll) --- */
+        /* --- MINI CARDS CONTAINER (Scrolls perfectly now) --- */
         .directory-content {
-            flex: 1; width: 100%;
-            overflow-y: auto; padding-right: 8px;
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
-            align-content: start; /* prevents stretching items when few */
+            flex: 1 1 auto; /* Takes leftover space inside the big card */
+            min-height: 0; /* CRITICAL FIX for mobile scroll */
+            overflow-y: auto;
+            width: 100%; padding-right: 5px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 15px; align-content: start;
         }
-        .directory-content::-webkit-scrollbar { width: 3px; }
+        .directory-content::-webkit-scrollbar { width: 4px; }
         .directory-content::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
-        /* RESOURCE CARDS */
+        /* --- MINI CARDS (Centered Layout) --- */
         .link-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; padding: 20px;
-            transition: 0.3s; text-align: left;
-            display: flex; flex-direction: column; gap: 8px;
+            border-radius: 16px; padding: 25px 20px;
+            transition: 0.3s;
+            display: flex; flex-direction: column; 
+            align-items: center; /* Centers items horizontally */
+            text-align: center; /* Centers text */
+            gap: 12px;
         }
-        .link-card:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .link-card:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.3); transform: translateY(-3px); }
         
-        .card-title { color: #fff; font-size: 1rem; font-weight: 800; margin: 0; text-transform: uppercase; }
-        .card-desc { color: #fff; font-size: 0.8rem; margin: 0; opacity: 0.8; line-height: 1.4; flex-grow: 1; }
+        .card-title { color: #fff; font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
+        .card-desc { color: #aaa; font-size: 0.8rem; margin: 0; line-height: 1.5; flex-grow: 1; }
         
         .card-btn {
-            margin-top: 10px; align-self: flex-start;
-            padding: 8px 18px; font-size: 0.7rem;
-        }
-
-        /* --- RESPONSIVE ADJUSTMENTS --- */
-        @media (max-width: 750px) {
-            .identity-header h1 { font-size: 1.8rem; }
-            .directory-terminal { padding: 20px; height: 85vh; max-height: none; }
-            .directory-content { grid-template-columns: 1fr; } /* Stack on mobile */
-            .pop-count { font-size: 2.5rem; }
-            .category-menu { justify-content: flex-start; overflow-x: auto; } /* Ensure scrolling on mobile */
+            margin-top: auto; /* Pushes button to bottom, keeps it centered */
+            padding: 10px 25px; font-size: 0.75rem; width: auto;
         }
 
         /* --- ANIMATED FOOTER ENGINE --- */
@@ -144,7 +149,7 @@
             height: 40px; background: #000;
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: center;
-            z-index: 100; overflow: hidden;
+            z-index: 100; overflow: hidden; pointer-events: none;
         }
         
         .footer-text-container { position: relative; width: 100%; text-align: center; }
@@ -159,7 +164,7 @@
 
         /* Slice Animation for Motto */
         .motto-text {
-            clip-path: inset(0 100% 0 0); /* initially sliced off */
+            clip-path: inset(0 100% 0 0);
             transition: clip-path 1.5s var(--v-curve), opacity 1s;
             color: var(--gold);
         }
@@ -169,11 +174,12 @@
         .state-copyright .motto-text { opacity: 0; filter: blur(5px); clip-path: inset(0 100% 0 0); }
 
         .state-motto .copyright-text { opacity: 0; filter: blur(5px); }
-        .state-motto .motto-text { opacity: 1; filter: blur(0); clip-path: inset(0 0 0 0); } /* reveals */
-
+        .state-motto .motto-text { opacity: 1; filter: blur(0); clip-path: inset(0 0 0 0); }
     </style>
 </head>
-<body class="state-copyright"> <div class="universe-bg">
+<body class="state-copyright">
+
+    <div class="universe-bg">
         <div class="star-layer stars-1"></div>
         <div class="star-layer stars-2"></div>
     </div>
@@ -186,7 +192,7 @@
             </div>
         </div>
 
-        <article class="glass-card directory-terminal animate-wake" id="main-terminal">
+        <article class="directory-terminal animate-wake" id="main-terminal">
             
             <div class="pop-container">
                 <div class="pop-label">Active Population</div>
@@ -213,8 +219,7 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION & DATA
-        // Easily add/remove categories and links here
+        // DIRECTORY CONFIGURATION
         // ==========================================
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
@@ -222,23 +227,21 @@
 
         const directoryData = {
             "Core Nodes": [
-                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "index.html" },
+                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "settings.html" },
                 { title: "Network Status", desc: "Live uptime monitor for all Vanguard infrastructure nodes.", url: "#" },
-                { title: "Central Ledger", desc: "Public record of verified network transmissions and allocations.", url: "#" }
+                { title: "Central Ledger", desc: "Public record of verified network transmissions.", url: "#" }
             ],
             "Resources": [
                 { title: "Knowledge Base", desc: "Documentation on Vanguard OS protocols and citizen rights.", url: "#" },
-                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "#" },
+                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "support.html" },
                 { title: "Asset Repository", desc: "Download official Vanguard media packages and templates.", url: "#" }
             ],
             "Directives": [
                 { title: "Current Mandates", desc: "Active operational directives issued by Command.", url: "#" },
-                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" },
-                { title: "Community Forum", desc: "Secure channel for citizen synchronization and discussion.", url: "#" }
+                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" }
             ]
         };
 
-        // UI References
         const ui = {
             popCount: document.getElementById('population-count'),
             catBar: document.getElementById('category-bar'),
@@ -246,48 +249,34 @@
             body: document.body
         };
 
-        // ==========================================
-        // SYSTEM INITIALIZATION
-        // ==========================================
         async function initSystem() {
-            // 1. Set Year
             document.getElementById('current-year').innerText = new Date().getFullYear();
-
-            // 2. Start Population Sync
             fetchPopulation();
-            setInterval(fetchPopulation, 10000); // Polling every 10s
-
-            // 3. Initialize Directory
+            setInterval(fetchPopulation, 15000); // Polling every 15s to save DB reads
             renderCategories();
-            
-            // 4. Start Footer Animation Loop
             startFooterLoop();
         }
 
         // ==========================================
-        // SUPABASE POPULATION SYNC
+        // AUTO-ADJUSTING POPULATION SYNC
         // ==========================================
         async function fetchPopulation() {
             try {
-                // Read exact count from 'citizens' table
-                const { count, error } = await supabaseClient
-                    .from('citizens')
-                    .select('*', { count: 'exact', head: true });
-
+                const { count, error } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
                 if (error) throw error;
-
-                // Update UI, remove loading style
+                
+                // Formats the number (e.g. 1,000,000). The CSS clamp() handles the visual shrinking automatically
                 ui.popCount.innerText = count.toLocaleString();
                 ui.popCount.classList.remove('loading-count');
             } catch (err) {
                 console.error("Ledger Sync Error:", err);
                 ui.popCount.innerText = "OFFLINE";
-                ui.popCount.style.color = "#f87171"; // Red Error
+                ui.popCount.style.color = "#f87171";
             }
         }
 
         // ==========================================
-        // DIRECTORY ENGINE
+        // MINI CARDS ENGINE
         // ==========================================
         function renderCategories() {
             ui.catBar.innerHTML = '';
@@ -301,28 +290,20 @@
                 ui.catBar.appendChild(btn);
             });
 
-            // Load first category by default
-            if (categories.length > 0) {
-                renderCards(categories[0]);
-            }
+            if (categories.length > 0) renderCards(categories[0]);
         }
 
         function selectCategory(catName, btnEl) {
-            // Update Active button style
             document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
 
-            // Scroll standard categories into view on mobile
             if(window.innerWidth < 750) {
                 btnEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
-
-            // Render Cards
             renderCards(catName);
         }
 
         function renderCards(catName) {
-            // Animate out previous content
             ui.dirList.style.opacity = 0;
             
             setTimeout(() => {
@@ -330,11 +311,11 @@
                 const resources = directoryData[catName];
 
                 if (!resources || resources.length === 0) {
-                    ui.dirList.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No resources in this node.</p>';
+                    ui.dirList.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; padding: 20px;">Node empty.</p>';
                 } else {
                     resources.forEach(res => {
                         const card = document.createElement('div');
-                        card.className = 'link-card animate-wake';
+                        card.className = 'link-card';
                         card.innerHTML = `
                             <h3 class="card-title">${res.title}</h3>
                             <p class="card-desc">${res.desc}</p>
@@ -343,38 +324,26 @@
                         ui.dirList.appendChild(card);
                     });
                 }
-                // Animate in new content
                 ui.dirList.style.opacity = 1;
-            }, 200); // matching CSS transition
+            }, 200); 
         }
 
         // ==========================================
-        // ANIMATED FOOTER LOOP
+        // ANIMATED FOOTER LOOP (3s Text + 3s Transition)
         // ==========================================
         function startFooterLoop() {
-            const CYCLE_TIME = 6000; // Total cycle per text (3s static + 3s transition)
-
-            // Step 1: Initial state is copyright (set in body class)
-            
-            // Step 2: Loop logic
             setInterval(() => {
-                // If currently copyright, switch to motto
                 if (ui.body.classList.contains('state-copyright')) {
                     ui.body.classList.remove('state-copyright');
                     ui.body.classList.add('state-motto');
-                    // CSS handles the slice animation in
-                } 
-                // If currently motto, switch to copyright (dissolve happens via CSS transition)
-                else {
+                } else {
                     ui.body.classList.remove('state-motto');
                     ui.body.classList.add('state-copyright');
                 }
-            }, CYCLE_TIME);
+            }, 6000); // 6s cycle gives roughly 3s of reading time per text
         }
 
-        // System Start
         window.onload = initSystem;
-
     </script>
 </body>
 </html>
