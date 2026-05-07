@@ -63,15 +63,6 @@ body, html {
     to { transform: translate3d(200px, 200px, 0); }
 }
 
-.scanlines {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(255, 255, 255, 0.02) 50%);
-    background-size: 100% 4px;
-    pointer-events: none;
-}
-
 /* --- REUSABLE GLASS COMPONENTS --- */
 .glass-card {
     background: var(--glass-bg);
@@ -169,16 +160,6 @@ input:disabled {
     padding: 8px 20px;
     border-radius: 50px;
     font-size: 0.8rem;
-}
-
-.btn-danger {
-    border-color: var(--error-red);
-    color: var(--error-red);
-}
-
-.btn-danger:hover {
-    background: var(--error-red);
-    color: white;
 }
 
 /* --- DIRECTORY & TABLES --- */
