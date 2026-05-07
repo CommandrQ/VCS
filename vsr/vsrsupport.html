@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vanguard | VSR Support</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="techhelp.css"> <style>
+        .support-card {
+            background: #121212; /* Solid background */
+            border: 1px solid var(--v-gold);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+        .instruction-text {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            border-left: 3px solid var(--v-gold);
+        }
+    </style>
+</head>
+<body class="state-copyright">
+    <div class="universe-bg">
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
+    </div>
+
+    <div class="viewport-wrapper">
+        <header class="page-header">
+            <h1>Customer Service</h1>
+            <div class="header-actions">
+                <a href="techhelp.html" class="btn-return">Back to Support</a>
+            </div>
+        </header>
+
+        <article class="support-card">
+            <div class="instruction-text">
+                <strong>How to request help:</strong> Fill out the fields below. When you click "Review Draft," your email app will open with a formatted message. You can check everything one last time before hitting send.
+            </div>
+
+            <div class="form-group">
+                <label>Inquiry Category</label>
+                <select id="s-category" class="form-input" style="background: #000;">
+                    <option value="General Question">General Question</option>
+                    <option value="Work Order Issue">Work Order Issue</option>
+                    <option value="Business Request">Business Request</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="s-name" class="form-input" placeholder="Your Name">
+            </div>
+
+            <div class="form-group">
+                <label>Message / Details</label>
+                <textarea id="s-msg" class="form-input" placeholder="Tell us how we can assist you..."></textarea>
+            </div>
+
+            <button class="btn-request" style="width: 100%; margin-top: 10px;" onclick="compileSupportDraft()">Review Draft</button>
+            <div id="support-msg" style="text-align: center; margin-top: 15px; font-size: 0.8rem;"></div>
+        </article>
+    </div>
+
+    <footer class="vanguard-footer">
+        Powered by Vanguard Citizen Services &copy; <span id="footer-year"></span>
+    </footer>
+
+    <script>
+        document.getElementById('footer-year').innerText = new Date().getFullYear();
+
+        function compileSupportDraft() {
+            const category = document.getElementById('s-category').value;
+            const name = document.getElementById('s-name').value.trim();
+            const message = document.getElementById('s-msg').value.trim();
+            const status = document.getElementById('support-msg');
+
+            if (!name || !message) {
+                status.innerText = "Error: Please provide your name and message details.";
+                status.style.color = "#f87171";
+                return;
+            }
+
+            const subject = `VSR Support Request: ${category}`;
+            const body = `--- VANGUARD CUSTOMER SERVICE DRAFT ---
+Category: ${category}
+Name: ${name}
+
+DETAILS:
+${message}
+
+--- END OF DISPATCH ---`;
+
+            const mailto = `mailto:commandrq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            status.innerText = "Opening mail client...";
+            status.style.color = "#D4AF37";
+            
+            window.location.href = mailto;
+        }
+    </script>
+</body>
+</html>
