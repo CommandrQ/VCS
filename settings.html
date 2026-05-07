@@ -12,23 +12,73 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- Viewport Logic --- */
+        /* --- VIEWPORT & DYNAMIC LAYOUT --- */
         html, body {
-            height: 100dvh;
-            overflow: hidden;
-            margin: 0;
+            margin: 0; padding: 0;
+            min-height: 100%;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal jitter */
         }
 
-        /* --- Main Layout --- */
+        /* --- SUBTLE ANIMATED STARFIELD --- */
+        .universe-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+            overflow: hidden;
+        }
+
+        .star-layer {
+            position: absolute; inset: -500px;
+            background-repeat: repeat;
+            animation: starDrift linear infinite;
+        }
+
+        /* Three layers for parallax depth */
+        .stars-distant {
+            background-image: radial-gradient(1px 1px at 10px 20px, #fff, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 50px 70px, rgba(255,255,255,0.5), rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation-duration: 120s;
+            opacity: 0.3;
+        }
+
+        .stars-mid {
+            background-image: radial-gradient(1.5px 1.5px at 100px 150px, #fff, rgba(0,0,0,0)),
+                              radial-gradient(1.5px 1.5px at 300px 400px, var(--gold), rgba(0,0,0,0));
+            background-size: 400px 400px;
+            animation-duration: 80s;
+            opacity: 0.2;
+        }
+
+        .stars-near {
+            background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0));
+            background-size: 600px 600px;
+            animation-duration: 40s;
+            opacity: 0.1;
+        }
+
+        @keyframes starDrift {
+            from { transform: translateY(0); }
+            to { transform: translateY(500px); }
+        }
+
+        /* --- MAIN CONTENT SCROLLING --- */
+        .vanguard-header {
+            padding: 50px 20px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
         .settings-container {
-            flex: 1 1 auto;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; 
-            padding: 20px;
+            padding: 20px 20px 100px; /* Extra bottom padding to see everything */
         }
 
         .identity-terminal {
@@ -38,13 +88,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
             gap: 20px;
-            transition: 0.3s var(--v-curve);
         }
 
-        /* --- Header Logic --- */
-        .identity-header { width: 100%; margin-bottom: 5px; }
+        /* --- IDENTITY UI --- */
         .rank-tag {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -54,166 +101,116 @@
             padding: 4px 14px;
             border-radius: 50px;
             text-transform: uppercase;
+            margin-bottom: 8px;
             display: inline-block;
-            margin-bottom: 10px;
-            transition: 0.3s;
         }
-        /* Authenticated State for Tag */
-        .tag-verified {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
+        .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
-        /* --- White Glowing Divider --- */
         .white-divider {
             width: 100%; height: 1px; background: #fff; border: none;
-            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0; opacity: 0.9;
+            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0;
         }
 
-        /* --- Scrollable Content Area --- */
-        .form-scroll-area {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            overflow-y: auto;
-            max-height: 350px;
-            padding: 5px 8px 5px 0;
-            text-align: left;
-        }
-        .form-scroll-area::-webkit-scrollbar { width: 3px; }
-        .form-scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
+        .form-area { width: 100%; text-align: left; }
+        .form-group { margin-bottom: 15px; }
         .form-group label {
             display: block; font-size: 0.65rem; font-weight: 700;
             text-transform: uppercase; color: var(--gold);
             margin-bottom: 6px; letter-spacing: 1px;
         }
-
         .form-group input {
-            width: 100%; background: rgba(0, 0, 0, 0.4);
+            width: 100%; background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px; padding: 12px; color: #ffffff;
-            font-size: 1rem; transition: 0.3s; box-sizing: border-box;
+            border-radius: 10px; padding: 12px; color: #fff;
+            font-size: 1rem; box-sizing: border-box;
         }
-        .form-group input:focus { outline: none; border-color: var(--gold); background: rgba(0, 0, 0, 0.6); }
-        .form-group input:disabled { opacity: 0.4; cursor: not-allowed; }
+        .form-group input:focus { outline: none; border-color: var(--gold); }
 
-        /* --- Helper Links --- */
         .helper-link {
-            background: transparent; border: none;
-            color: #fff; /* White text as requested */
-            font-size: 0.8rem; cursor: pointer;
-            padding: 0; transition: 0.3s;
-            text-decoration: underline;
+            background: none; border: none; color: #fff;
+            font-size: 0.8rem; text-decoration: underline;
+            cursor: pointer; transition: 0.3s;
         }
         .helper-link:hover { color: var(--gold); }
 
-        /* --- Success/Error Flash --- */
-        .status-msg { font-size: 0.8rem; font-weight: 600; min-height: 1.2em; transition: 0.3s; margin-top: 10px;}
-        
-        .error-flash { animation: pulseError 1s ease-in-out; }
-        @keyframes pulseError {
-            0%, 100% { border-color: rgba(255,255,255,0.1); }
-            50% { border-color: #f87171; box-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
-        }
+        .status-msg { font-size: 0.8rem; margin-top: 10px; min-height: 1.2em; text-align: center; }
 
-        @media (max-width: 480px) { .identity-terminal { padding: 25px; } }
+        .vanguard-footer {
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(to top, #000, transparent);
+        }
     </style>
 </head>
 <body>
 
-    <div class="universe">
-        <div class="star-layer layer-distant"></div>
-        <div class="star-layer layer-mid"></div>
-        <div class="star-layer layer-near"></div>
+    <div class="universe-bg">
+        <div class="star-layer stars-distant"></div>
+        <div class="star-layer stars-mid"></div>
+        <div class="star-layer stars-near"></div>
     </div>
 
-    <header class="vanguard-header" style="padding-top: 40px; text-align: center;">
-        <h1 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">Identity Terminal</h1>
+    <header class="vanguard-header">
+        <h1 style="text-transform: uppercase; letter-spacing: 3px; font-size: 1.3rem;">Identity Terminal</h1>
     </header>
 
     <main class="settings-container">
         <article class="glass-card identity-terminal" id="identity-card">
             
-            <div class="identity-header">
+            <div class="identity-header" style="text-align: center; width: 100%;">
                 <div id="auth-tag" class="rank-tag">Unauthenticated</div>
-                <h2 id="citizen-name" style="margin: 0; font-size: 1.8rem; color: #fff; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
+                <h2 id="citizen-name" style="margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
             </div>
 
-            <div style="width: 100%; display: flex; justify-content: center;">
-                <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 30px;">Return Home</a>
-            </div>
+            <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 35px;">Return Home</a>
 
             <hr class="white-divider">
 
-            <div class="form-scroll-area" id="form-content">
+            <div class="form-area" id="form-content">
                 
-                <div id="state-loading" style="text-align: center; color: #888; padding: 20px;">
-                    Synchronizing with Ledger...
-                </div>
+                <div id="state-loading" style="text-align: center; color: #888;">Synchronizing Ledger...</div>
 
                 <div id="state-unauth" style="display: none; flex-direction: column; gap: 15px;">
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input type="text" id="reg-name" placeholder="First Last">
+                        <input type="text" id="reg-name" placeholder="John Doe">
                     </div>
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" id="reg-email" placeholder="citizen@email.com">
+                        <input type="email" id="reg-email" placeholder="name@email.com">
                     </div>
                     <div class="form-group">
                         <label>Security Password</label>
                         <input type="password" id="reg-password" placeholder="••••••••">
                     </div>
-                    
-                    <div style="text-align: center; margin-top: 10px;">
-                        <button class="gold-pill" style="width: 100%;" onclick="handleSignUp()">Sync Identity</button>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 10px;">
-                        <button class="helper-link" onclick="toggleRestoreMode(true)">lost access? Restore via email</button>
-                    </div>
+                    <button class="gold-pill" style="width: 100%;" onclick="handleSignUp()">Sync Identity</button>
+                    <button class="helper-link" style="display: block; margin: 10px auto;" onclick="toggleRestore(true)">lost access? Restore via email</button>
                 </div>
 
                 <div id="state-restore" style="display: none; flex-direction: column; gap: 15px;">
-                    <p style="color: #888; font-size: 0.8rem; text-align: center; margin-bottom: 10px;">Enter details to transmit a recovery signal.</p>
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input type="text" id="res-name" placeholder="First Last">
+                        <input type="text" id="res-name" placeholder="John Doe">
                     </div>
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" id="res-email" placeholder="citizen@email.com">
+                        <input type="email" id="res-email" placeholder="name@email.com">
                     </div>
-                    
-                    <div style="text-align: center; margin-top: 10px;">
-                        <button class="gold-pill" style="width: 100%;" onclick="handleRestoreAccess()">Restore Access</button>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 10px;">
-                        <button class="helper-link" onclick="toggleRestoreMode(false)">return to log in</button>
-                    </div>
+                    <button class="gold-pill" style="width: 100%;" onclick="handleRestoreAccess()">Restore Access</button>
+                    <button class="helper-link" style="display: block; margin: 10px auto;" onclick="toggleRestore(false)">return to log in</button>
                 </div>
 
                 <div id="state-auth" style="display: none; flex-direction: column; gap: 15px;">
                     <div class="form-group">
-                        <label>Email Address (Primary)</label>
+                        <label>Email (Locked)</label>
                         <input type="email" id="auth-email" disabled>
                     </div>
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input type="text" id="auth-name" placeholder="First Last">
+                        <input type="text" id="auth-name">
                     </div>
-                    
-                    <div style="text-align: center; margin-top: 10px;">
-                        <button class="gold-pill" style="width: 100%;" onclick="handleUpdateProfile()">Update Profile</button>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 15px;">
-                        <button class="gold-pill" style="width: auto; border-color: #f87171; color: #f87171; background: transparent;" onclick="handleLogout()">Disconnect Identity</button>
-                    </div>
+                    <button class="gold-pill" style="width: 100%;" onclick="handleUpdateProfile()">Update Profile</button>
+                    <button class="gold-pill" style="margin-top: 15px; background: transparent; color: #f87171; border-color: #f87171;" onclick="handleLogout()">Disconnect Identity</button>
                 </div>
 
             </div>
@@ -224,7 +221,7 @@
     </main>
 
     <footer class="vanguard-footer">
-        <p id="footer-text">Vanguard OS v7.0 | Identity Protocol Enabled</p>
+        <p id="footer-text">Vanguard OS v7.1 | Identity Protocol Enabled</p>
     </footer>
 
     <script>
@@ -232,203 +229,88 @@
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // UI Elements
         const ui = {
-            card: document.getElementById('identity-card'),
             tag: document.getElementById('auth-tag'),
             nameDisplay: document.getElementById('citizen-name'),
             msg: document.getElementById('sys-msg'),
-            // States
             loading: document.getElementById('state-loading'),
             unauth: document.getElementById('state-unauth'),
             restore: document.getElementById('state-restore'),
             auth: document.getElementById('state-auth'),
-            // Inputs
             authEmail: document.getElementById('auth-email'),
             authName: document.getElementById('auth-name')
         };
 
-        // --- 1. SESSION INITIALIZATION ---
-        async function initTerminal() {
-            setUiState('loading');
-            
-            // Check current session
+        async function init() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            
             if (session) {
-                // USER IS LOGGED IN
-                localStorage.setItem('vanguard_auth_active', 'true'); // Create local cookie replacement
-                loadAuthenticatedState(session.user);
+                localStorage.setItem('vanguard_logged_in', 'true');
+                loadAuthView(session.user);
             } else {
-                // USER IS NOT LOGGED IN
-                localStorage.removeItem('vanguard_auth_active');
-                loadUnauthenticatedState();
+                localStorage.removeItem('vanguard_logged_in');
+                loadUnauthView();
             }
-            runFooter();
         }
 
-        // --- 2. STATE MANAGEMENT ---
-        function setUiState(activeState) {
-            // Hide all
-            ui.loading.style.display = 'none';
-            ui.unauth.style.display = 'none';
-            ui.restore.style.display = 'none';
-            ui.auth.style.display = 'none';
-            // Show active
-            ui[activeState].style.display = 'flex';
-            if(activeState === 'loading') ui.loading.style.display = 'block';
+        function setView(state) {
+            [ui.loading, ui.unauth, ui.restore, ui.auth].forEach(el => el.style.display = 'none');
+            ui[state].style.display = 'flex';
+            if(state === 'loading') ui.loading.style.display = 'block';
         }
 
-        function loadUnauthenticatedState() {
+        function loadUnauthView() {
             ui.tag.innerText = "Unauthenticated";
             ui.tag.classList.remove('tag-verified');
             ui.nameDisplay.innerText = "Guest Mode";
-            setUiState('unauth');
+            setView('unauth');
         }
 
-        function toggleRestoreMode(showRestore) {
-            setUiState(showRestore ? 'restore' : 'unauth');
-            ui.msg.innerText = ""; // Clear messages
-        }
-
-        async function loadAuthenticatedState(authUser) {
+        async function loadAuthView(user) {
             ui.tag.innerText = "Authenticated";
             ui.tag.classList.add('tag-verified');
-            
-            // Fetch public profile data
-            const { data, error } = await supabaseClient
-                .from('citizens')
-                .select('full_name')
-                .eq('auth_id', authUser.id)
-                .single();
-
-            const fullName = (data && data.full_name) ? data.full_name : authUser.email.split('@')[0];
-            
-            ui.nameDisplay.innerText = fullName;
-            ui.authEmail.value = authUser.email;
-            ui.authName.value = fullName;
-            
-            setUiState('auth');
+            const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', user.id).single();
+            const displayName = data ? data.full_name : user.email.split('@')[0];
+            ui.nameDisplay.innerText = displayName;
+            ui.authEmail.value = user.email;
+            ui.authName.value = displayName;
+            setView('auth');
         }
 
-        // --- 3. AUTHENTICATION ACTIONS ---
-        
-        // A: Sign Up (Sync Identity)
         async function handleSignUp() {
-            const name = document.getElementById('reg-name').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-
-            if (!name || !email || !password) { notify("All fields required.", "#f87171"); return; }
-            if (password.length < 6) { notify("Password must be 6+ chars.", "#f87171"); return; }
-
-            notify("Transmitting to Ledger...", "var(--gold)");
-
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: { full_name: name } // Store name in metadata temporarily
-                }
-            });
-
-            if (error) {
-                notify("Sync Failed: " + error.message, "#f87171");
-            } else {
-                notify("Verification Email Sent. Check inbox.", "#4ade80");
-                // Note: Users must confirm email usually before login works completely
-            }
+            notify("Syncing...", "var(--gold)");
+            const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
+            error ? notify(error.message, "#f87171") : notify("Check email to confirm sync.", "#4ade80");
         }
 
-        // B: Restore Access (Magic Link)
         async function handleRestoreAccess() {
-            const name = document.getElementById('res-name').value.trim();
-            const email = document.getElementById('res-email').value.trim();
-
-            if (!name || !email) { notify("Name and Email required.", "#f87171"); return; }
-
-            notify("Transmitting Signal...", "var(--gold)");
-
-            // Note: In a real app, you'd verify the name matches the email in your 'citizens' table first.
-            // For this implementation, we proceed to send link.
-
-            const { error } = await supabaseClient.auth.signInWithOtp({
-                email: email,
-                options: {
-                    emailRedirectTo: window.location.href // Redirect back here
-                }
-            });
-
-            if (error) {
-                notify("Restore Failed: " + error.message, "#f87171");
-            } else {
-                notify("Magic Link transmitted. Check email.", "#4ade80");
-            }
+            const email = document.getElementById('res-email').value;
+            notify("Transmitting...", "var(--gold)");
+            const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
+            error ? notify(error.message, "#f87171") : notify("Magic Link Sent.", "#4ade80");
         }
 
-        // C: Update Profile
         async function handleUpdateProfile() {
-            const newName = ui.authName.value.trim();
-            if (!newName) { notify("Name cannot be empty.", "#f87171"); return; }
-
+            const newName = ui.authName.value;
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return;
-
-            notify("Updating Ledger...", "var(--gold)");
-
-            const { error } = await supabaseClient
-                .from('citizens')
-                .update({ full_name: newName })
-                .eq('auth_id', session.user.id);
-
-            if (error) {
-                notify("Update Failed: " + error.message, "#f87171");
-            } else {
-                ui.nameDisplay.innerText = newName;
-                notify("Profile Synchronized.", "#4ade80");
-            }
+            const { error } = await supabaseClient.from('citizens').update({ full_name: newName }).eq('auth_id', session.user.id);
+            if (!error) { ui.nameDisplay.innerText = newName; notify("Ledger Updated.", "#4ade80"); }
         }
 
-        // D: Logout
         async function handleLogout() {
             await supabaseClient.auth.signOut();
-            localStorage.removeItem('vanguard_auth_active');
-            location.reload(); // Reload to reset state to Guest
+            location.reload();
         }
 
-        // --- 4. HELPERS ---
-        function notify(msg, color) {
-            ui.msg.innerText = msg;
-            ui.msg.style.color = color;
-            if (color === "#f87171") {
-                ui.card.classList.add('error-flash');
-                setTimeout(() => ui.card.classList.remove('error-flash'), 1000);
-            }
-        }
+        function toggleRestore(show) { setView(show ? 'restore' : 'unauth'); }
 
-        function runFooter() {
-            const el = document.getElementById('footer-text');
-            const motto = "Empower . Elevate . Educate";
-            const original = "Vanguard OS v7.0 | Identity Protocol Enabled";
-            setInterval(() => {
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.innerText = (el.innerText === original) ? motto : original;
-                    el.style.opacity = '1';
-                }, 600);
-            }, 6000);
-        }
+        function notify(text, color) { ui.msg.innerText = text; ui.msg.style.color = color; }
 
-        // Listen for auth state changes (e.g., magic link clicked)
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                localStorage.setItem('vanguard_auth_active', 'true');
-                loadAuthenticatedState(session.user);
-                notify("Identity Verified.", "#4ade80");
-            }
-        });
+        supabaseClient.auth.onAuthStateChange((event) => { if (event === 'SIGNED_IN') init(); });
 
-        window.onload = initTerminal;
+        window.onload = init;
     </script>
 </body>
 </html>
