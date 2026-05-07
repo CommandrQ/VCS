@@ -24,7 +24,7 @@ html, body {
 .stars-2 { background-image: radial-gradient(3.5px 3.5px at 100px 100px, var(--v-gold), transparent); background-size: 450px 450px; animation-duration: 110s; opacity: 0.2; }
 @keyframes starDrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(0,500px,0); } }
 
-/* --- ANIMATED DISPATCH TICKER (Slowed down to 50s for smoothness) --- */
+/* --- ANIMATED DISPATCH TICKER --- */
 .announcement-ticker {
     width: 100%; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--v-gold);
     padding: 10px 0; overflow: hidden; white-space: nowrap; position: relative; z-index: 100;
@@ -32,7 +32,7 @@ html, body {
 .ticker-content {
     display: inline-block; color: #fff; font-size: 0.8rem; font-weight: 800;
     text-transform: uppercase; letter-spacing: 2px; padding-left: 100%;
-    animation: tickerScroll 50s linear infinite; /* SLOWED DOWN HERE */
+    animation: tickerScroll 50s linear infinite; 
     will-change: transform;
 }
 @keyframes tickerScroll { from { transform: translate3d(0,0,0); } to { transform: translate3d(-100%,0,0); } }
@@ -68,16 +68,19 @@ html, body {
 }
 .intro-section p { font-size: 0.9rem; line-height: 1.6; margin: 0; opacity: 0.9; text-align: center; word-wrap: break-word; }
 
-/* --- SERVICE TIERS (TALLER CARDS) --- */
-.services-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1100px; }
+/* --- SERVICE TIERS (COMPACT CARDS) --- */
+.services-container { 
+    display: flex; flex-wrap: wrap; justify-content: center; 
+    gap: 20px; width: 100%; max-width: 1100px; 
+    align-items: stretch; /* Ensures all cards match the tallest one naturally */
+}
 
 .solid-card {
     background: var(--solid-bg); border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px; padding: 25px; width: 280px; flex: 0 0 auto;
     position: relative; transition: 0.3s var(--v-curve);
     display: flex; flex-direction: column; align-items: center; text-align: center;
-    box-sizing: border-box;
-    min-height: 440px; /* Taller card to soak up dead space */
+    box-sizing: border-box; height: auto; /* Allows content to dictate height naturally */
 }
 
 .solid-card:hover { border-color: var(--v-gold); transform: translate3d(0, -5px, 0); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -85,7 +88,7 @@ html, body {
 /* MATCHING vsrsupport.html BUTTON */
 .btn-request {
     background: var(--v-gold); color: #000; border: 1px solid var(--v-gold);
-    padding: 14px; width: 100%; margin-top: auto; /* margin-top: auto forces button to bottom of the tall card */
+    padding: 14px; width: 100%; margin-top: auto; /* Forces button to the bottom evenly across all cards */
     border-radius: 50px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; 
     cursor: pointer; transition: 0.3s;
 }
@@ -101,7 +104,7 @@ html, body {
 .tier-features li::before { content: "•"; color: var(--v-gold); position: absolute; left: 0; font-weight: 900; }
 .tier-footnote { color: #fff; font-size: 0.75rem; font-style: italic; margin-bottom: 15px; opacity: 0.8; }
 
-/* --- MODAL ENGINE (CENTERED & RE-ORDERED) --- */
+/* --- MODAL ENGINE --- */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; }
 .modal-content { background: #000; border: 1px solid var(--v-gold); border-radius: 24px; width: 95%; max-width: 480px; display: flex; flex-direction: column; overflow: hidden; }
 .modal-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; }
@@ -120,11 +123,26 @@ html, body {
 .btn-modal-cancel { background: transparent; color: var(--v-gold); flex: 1; padding: 12px; }
 .btn-modal-submit { background: var(--v-gold); color: #000; flex: 1.5; padding: 12px; }
 
-/* --- MOBILE RESPONSIVENESS --- */
+/* --- STRICT MOBILE SCROLLING FIXES --- */
 @media (max-width: 800px) {
     .viewport-wrapper { padding-top: 30px; }
-    .services-container { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding: 10px 10px 35px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; gap: 15px; }
-    .solid-card { width: 85%; scroll-snap-align: center; min-height: 420px; }
+    
+    .services-container { 
+        flex-wrap: nowrap; 
+        justify-content: flex-start; 
+        overflow-x: auto; 
+        overflow-y: hidden; /* STRICTLY PREVENTS VERTICAL CARD SCROLLING */
+        padding: 10px 10px 35px; 
+        scroll-snap-type: x mandatory; 
+        -webkit-overflow-scrolling: touch; 
+        gap: 15px; 
+    }
+    
+    .solid-card { 
+        width: 85%; 
+        scroll-snap-align: center; 
+        height: auto; 
+    }
 }
 
 /* --- PERSISTENT FOOTER --- */
