@@ -18,24 +18,23 @@
         }
         .resource-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.05); }
 
-        /* MODAL */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px);
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(10px);
             display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
-            opacity: 0; transition: opacity 0.3s ease;
+            opacity: 0; transition: opacity 0.4s ease;
         }
         .modal-content {
             background: #050505; border: 1px solid var(--gold); border-radius: 24px;
             width: 100%; max-width: 450px; max-height: 80vh; padding: 30px;
-            display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.3s var(--v-curve);
+            display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.4s var(--v-curve);
         }
         .modal-overlay.active { opacity: 1; }
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         #modal-body { overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .resource-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .resource-item h3 { color: var(--gold); font-size: 1rem; margin-bottom: 5px; }
-        .resource-item p { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px; }
+        .resource-item { background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .resource-item h3 { color: var(--gold); font-size: 1.05rem; margin-bottom: 6px; }
+        .resource-item p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4; }
 
         @media (max-width: 480px) { .resource-grid { grid-template-columns: 1fr; } }
     </style>
@@ -45,7 +44,7 @@
     <div class="universe"><div class="star-layer"></div></div>
 
     <header class="vanguard-header">
-        <h1 id="welcome-text" class="gold-text-outline" style="text-transform: uppercase; font-size: 1.3rem;">Welcome, Citizen</h1>
+        <h1 id="welcome-text" class="gold-text-outline" style="text-transform: uppercase; font-size: 1.2rem; letter-spacing: 1px;">Welcome, Citizen</h1>
     </header>
 
     <main>
@@ -78,9 +77,9 @@
 
     <div class="modal-overlay" id="modal-overlay" onclick="if(event.target.id==='modal-overlay') forceCloseModal()">
         <div class="modal-content">
-            <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px;">Category</h2>
+            <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.2rem;">Category</h2>
             <div id="modal-body"></div>
-            <button class="gold-pill" onclick="forceCloseModal()" style="border-color: #444; color: #888;">CLOSE</button>
+            <button class="gold-pill" onclick="forceCloseModal()" style="border-color: #333; color: #666; font-size: 0.7rem;">CLOSE WINDOW</button>
         </div>
     </div>
 
@@ -139,26 +138,44 @@
         function forceCloseModal() {
             const modal = document.getElementById('modal-overlay');
             modal.classList.remove('active');
-            setTimeout(() => modal.style.display = 'none', 300);
+            setTimeout(() => modal.style.display = 'none', 400);
         }
 
+        // --- NEW RECURSIVE FOOTER ANIMATION (Mobile Stable) ---
         function runFooterCycle() {
             const el = document.getElementById('footer-text');
             const original = "Powered Vanguard Citizen Services © 2026";
             const motto = "Empower . Educate . Elevate";
-            setInterval(() => {
-                el.classList.add('footer-glow');
-                setTimeout(() => {
-                    el.style.opacity = '0';
-                    setTimeout(() => {
-                        el.innerText = motto; el.classList.remove('footer-glow'); el.style.opacity = '1';
-                        setTimeout(() => {
-                            el.style.opacity = '0';
-                            setTimeout(() => { el.innerText = original; el.style.opacity = '1'; }, 500);
-                        }, 2500);
-                    }, 500);
-                }, 1200);
-            }, 9000);
+
+            const step1 = () => {
+                el.classList.add('footer-active'); // Glow
+                setTimeout(step2, 1500);
+            };
+
+            const step2 = () => {
+                el.style.opacity = '0'; // Fade Out
+                setTimeout(step3, 600);
+            };
+
+            const step3 = () => {
+                el.innerText = motto;
+                el.classList.remove('footer-active'); // Clean reset of Gold
+                el.style.opacity = '1'; // Fade In Motto
+                setTimeout(step4, 2500);
+            };
+
+            const step4 = () => {
+                el.style.opacity = '0'; // Fade Out Motto
+                setTimeout(step5, 600);
+            };
+
+            const step5 = () => {
+                el.innerText = original;
+                el.style.opacity = '1'; // Back to Original
+                setTimeout(step1, 5000); // Wait 5s before next cycle
+            };
+
+            step1();
         }
 
         window.onload = () => { syncIdentity(); fetchPopulation(); runFooterCycle(); };
