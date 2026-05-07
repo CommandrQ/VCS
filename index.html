@@ -1,147 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fort Toward | Vanguard Prime</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+// --- THE GATEKEEPER LOGIC ---
+async function handleEntry() {
+    const msg = document.getElementById('auth-msg');
+    msg.innerText = "Validating Clearances...";
 
-    <div class="universe"><div class="star-layer"></div></div>
+    try {
+        const [{ data: config }, { data: { session } }] = await Promise.all([
+            supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
+            supabaseClient.auth.getSession()
+        ]);
 
-    <header class="vanguard-header">
-        <h1 class="gold-text-outline" style="text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px;">Fort Toward</h1>
-    </header>
-
-    <main>
-        <div class="glass-card animate-wake">
-            <div style="text-align: center; width: 100%;">
-                <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px;">Security Terminal</h3>
-                <h1 style="font-size: 2rem; font-weight: 900; line-height: 1.1;">CITIZEN<br>IDENTIFICATION</h1>
-            </div>
-
-            <hr class="white-divider">
-
-            <p id="auth-msg" style="font-size: 0.85rem; color: var(--text-dim); min-height: 3em; padding: 0 10px;">
-                Please synchronize your credentials to access the Vanguard network.
-            </p>
-
-            <div class="settings-form" style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
-                <input type="email" id="login-email" placeholder="Citizen Email Address">
-                
-                <button class="gold-pill" id="action-btn" onclick="handleAuth()">Request Access Link</button>
-                
-                <button class="gold-pill" id="enter-btn" onclick="handleEntry()" style="display: none; background: var(--gold); color: #000;">Enter Fort</button>
-            </div>
-
-            <button class="legal-link" style="margin-top: 10px; color: #444; font-size: 0.6rem; border: none; background: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-                Authorized Personnel Only
-            </button>
-        </div>
-    </main>
-
-    <footer class="vanguard-footer">
-        <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
-    </footer>
-
-    <script>
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-        // --- AUTH FLOW ---
-        async function handleAuth() {
-            const email = document.getElementById('login-email').value;
-            const msg = document.getElementById('auth-msg');
-
-            if (!email) {
-                msg.innerText = "Error: Email coordinate required.";
-                msg.style.color = "var(--error-red)";
-                return;
-            }
-
-            msg.innerText = "Transmitting Magic Link...";
-            const { error } = await supabaseClient.auth.signInWithOtp({ email });
-
-            if (error) {
-                msg.innerText = "Transmission Failed: " + error.message;
-                msg.style.color = "var(--error-red)";
-            } else {
-                msg.innerText = "Link Transmitted. Check your transmission logs (email) to authorize this terminal.";
-                msg.style.color = "var(--gold)";
-            }
+        if (!session) {
+            msg.innerText = "Session Expired. Please re-authenticate.";
+            return;
         }
 
-        // --- THE GATEKEEPER LOGIC ---
-        async function handleEntry() {
-            const msg = document.getElementById('auth-msg');
-            msg.innerText = "Validating Clearances...";
+        const { data: citizen } = await supabaseClient
+            .from('citizens')
+            .select('role')
+            .eq('auth_id', session.user.id)
+            .single();
 
-            try {
-                // 1. Fetch Site Status and User Session
-                const [{ data: config }, { data: { session } }] = await Promise.all([
-                    supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
-                    supabaseClient.auth.getSession()
-                ]);
+        const isSiteOnline = config ? config.value_bool : true;
+        const userRole = citizen ? citizen.role : 'Citizen';
 
-                if (!session) {
-                    msg.innerText = "Session Expired. Please re-authenticate.";
-                    return;
-                }
-
-                // 2. Check Role
-                const { data: citizen } = await supabaseClient
-                    .from('citizens')
-                    .select('role')
-                    .eq('auth_id', session.user.id)
-                    .single();
-
-                const isSiteOnline = config ? config.value_bool : true;
-                const userRole = citizen ? citizen.role : 'Citizen';
-
-                // 3. ENFORCE LOCKDOWN
-                if (!isSiteOnline && userRole !== 'Owner') {
-                    // Redirect non-owners to UC if offline
-                    window.location.href = 'https://vcscitizen.org/uc.html';
-                } else {
-                    // Enter for Owners (anytime) or Citizens (if online)
-                    window.location.href = 'directory.html';
-                }
-            } catch (err) {
-                msg.innerText = "System Error: Connection to Ledger lost.";
-            }
+        // LOCKDOWN LOGIC: Only 'Command' can bypass the Offline state
+        if (!isSiteOnline && userRole !== 'Command') {
+            window.location.href = 'https://vcscitizen.org/uc.html';
+        } else {
+            window.location.href = 'directory.html';
         }
-
-        // --- CHECK INITIAL STATE ---
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                document.getElementById('login-email').style.display = 'none';
-                document.getElementById('action-btn').style.display = 'none';
-                document.getElementById('enter-btn').style.display = 'block';
-                document.getElementById('auth-msg').innerText = "Terminal Synchronized. Operational clearance ready.";
-            }
-        }
-
-        // --- FOOTER CYCLE ---
-        function runFooter() {
-            const el = document.getElementById('footer-text');
-            const original = "Powered Vanguard Citizen Services © 2026";
-            const motto = "Empower . Educate . Elevate";
-            const step1 = () => { el.classList.add('footer-active'); setTimeout(step2, 1500); };
-            const step2 = () => { el.style.opacity = '0'; setTimeout(step3, 600); };
-            const step3 = () => { el.innerText = motto; el.classList.remove('footer-active'); el.style.opacity = '1'; setTimeout(step4, 2500); };
-            const step4 = () => { el.style.opacity = '0'; setTimeout(step5, 600); };
-            const step5 = () => { el.innerText = original; el.style.opacity = '1'; setTimeout(step1, 5000); };
-            step1();
-        }
-
-        window.onload = () => {
-            checkSession();
-            runFooter();
-        };
-    </script>
-</body>
-</html>
+    } catch (err) {
+        msg.innerText = "System Error: Connection to Ledger lost.";
+    }
+}
