@@ -3,230 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANGUARD COMMAND | DIRECTORY</title>
-
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
+    <title>Vanguard | Citizen Ledger</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        :root {
-            --gold: #d4af37;
-            --v-black: #000000;
-            --v-gray-glass: rgba(15, 15, 15, 0.85);
-            --v-mono: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', monospace;
-        }
-
-        /* --- CORE ARCHITECTURE --- */
-        body {
-            background-color: var(--v-black);
-            color: #FFFFFF;
-            font-family: var(--v-mono);
-            margin: 0;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            animation: portalFadeIn 0.8s ease-out;
-            text-transform: uppercase;
-        }
-
-        @keyframes portalFadeIn {
-            from { opacity: 0; transform: scale(0.99); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* --- CATEGORY SELECTOR (TUNER) --- */
-        .category-tuner {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 20px;
-            z-index: 20;
-            flex-wrap: wrap;
-        }
-
-        .tuner-btn {
-            background: transparent;
-            border: 1px solid #333;
-            color: #666;
-            padding: 8px 16px;
-            font-family: var(--v-mono);
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 4px;
-        }
-
-        .tuner-btn.active {
-            border-color: var(--gold);
-            color: var(--gold);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-        }
-
-        /* --- CONTENT GRID --- */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            padding: 20px 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex: 1;
-            z-index: 10;
-        }
-
-        .glass-card {
-            background: var(--v-gray-glass);
-            border: 1px solid #222;
-            padding: 30px;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            backdrop-filter: blur(10px);
-            border-top: 2px solid #222;
-        }
-
-        .glass-card:hover {
-            border-top-color: var(--gold);
-            transform: translateY(-5px);
-        }
-
-        .glass-card h2 {
-            font-size: 1.2rem;
-            margin: 15px 0;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
-
-        .glass-card p {
-            font-size: 0.85rem;
-            color: #bbb;
-            text-transform: none;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .gold-btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            text-decoration: none;
-            font-size: 0.8rem;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .gold-btn:hover {
-            background: var(--gold);
-            color: #000;
-        }
-
-        /* --- FOOTER --- */
-        .vanguard-footer {
-            padding: 30px;
-            text-align: center;
-            font-size: 0.7rem;
-            color: #444;
-            z-index: 10;
-        }
-
-        .footer-link {
-            color: var(--gold);
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-        }
-
-        .footer-link:hover {
-            border-bottom: 1px solid var(--gold);
-        }
-    </style>
 </head>
 <body>
 
-    <div class="universe" aria-hidden="true">
+    <div class="universe">
         <div class="star-layer layer-distant"></div>
-        <div class="star-layer layer-mid"></div>
-        <div class="star-layer layer-near"></div>
     </div>
 
-    <header class="vanguard-header" style="padding: 40px 20px; text-align: center; z-index: 20;">
-        <div class="header-inner">
-            <h1 id="greeting" style="letter-spacing: 4px; font-weight: 900; font-size: 1.5rem;">Welcome, Citizen</h1>
-        </div>
+    <header class="vanguard-header">
+        <h1 class="gold-text-outline" id="greeting" style="font-size: 1.6rem; text-transform: uppercase;">Citizen Ledger</h1>
     </header>
 
-    <nav class="category-tuner" id="category-row"></nav>
+    <main>
+        <div class="content-grid">
+            
+            <div class="glass-card">
+                <h2>Verified Citizens</h2>
+                <p>The core population of Fort Toward. Verified and synchronized.</p>
+                
+                <table class="tactical-table">
+                    <thead>
+                        <tr>
+                            <th>Citizen</th>
+                            <th>Rank</th>
+                            <th>Handle</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directory-body">
+                        </tbody>
+                </table>
+            </div>
 
-    <main class="content-grid" id="portal-feed"></main>
+            <div class="glass-card">
+                <h2>Operational Intel</h2>
+                <p>Real-time data regarding the Vanguard network status.</p>
+                
+                <div style="padding: 20px 0; border-top: 1px solid var(--glass-border);">
+                    <h3 style="color: var(--gold); font-size: 0.9rem;">Population Count</h3>
+                    <p id="stat-count" style="font-size: 2rem; font-weight: 800;">--</p>
+                </div>
+
+                <div style="padding: 20px 0; border-top: 1px solid var(--glass-border);">
+                    <h3 style="color: var(--gold); font-size: 0.9rem;">Fort Status</h3>
+                    <p style="color: #39ff14; font-weight: 800; letter-spacing: 2px;">SECURE</p>
+                </div>
+
+                <a href="settings.html" class="btn-pill-centered">UPDATE PROFILE</a>
+            </div>
+
+        </div>
+    </main>
 
     <footer class="vanguard-footer">
-        <p>Powered by <a href="https://vcscitizen.org" class="footer-link" target="_blank">Vanguard Citizen Services</a> &copy; <span id="year"></span></p>
+        <p>Vanguard OS v4.7 Prime | Mission Critical Data</p>
     </footer>
 
     <script>
-        const VANGUARD_DB = {
-            "Operations": [
-                { title: "Support & Repair", desc: "Straightforward technical remediation and hardware maintenance for the local corridor.", link: "https://vsr.vcscitizen.org/index.html", btnText: "GET SUPPORT" }
-            ],
-            "Intelligence": [
-                { title: "Technical Manuals", desc: "Digital essentialism frameworks and masters-level technology mastery guides.", link: "#", btnText: "READ MANUALS" }
-            ],
-            "Training": [
-                { title: "Systems Literacy", desc: "High-discipline training for computer fundamentals and hardware proficiency.", link: "#", btnText: "JOIN ACADEMY" }
-            ],
-            "Identity": [
-                { title: "Citizen Terminal", desc: "Access your secure local settings and manage your community credentials.", link: "settings.html", btnText: "OPEN SETTINGS" }
-            ]
-        };
+        // --- CONFIG ---
+        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        const navRow = document.getElementById('category-row');
-        const feed = document.getElementById('portal-feed');
-        document.getElementById('year').textContent = new Date().getFullYear();
+        // --- IDENTITY & LOCKDOWN ---
+        async function runPreflight() {
+            // 1. Check Maintenance Switch
+            const { data: config } = await supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single();
+            if (config && config.value_bool === false) window.location.href = 'uc.html';
 
-        function syncIdentity() {
-            const citizen = JSON.parse(localStorage.getItem('vanguard_citizen'));
-            if (citizen && citizen.full_name) {
-                const firstName = citizen.full_name.split(' ')[0].toUpperCase();
-                document.getElementById('greeting').innerText = `OPERATOR: ${firstName}`;
+            // 2. Personalize Greeting
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                const { data: citizen } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
+                if (citizen) document.getElementById('greeting').innerText = `Ledger: ${citizen.full_name}`;
             }
         }
 
-        function renderCards(cat) {
-            feed.innerHTML = '';
-            VANGUARD_DB[cat].forEach(item => {
-                const card = document.createElement('article');
-                card.className = 'glass-card';
-                card.innerHTML = `
-                    <div>
-                        <h2>${item.title}</h2>
-                        <p>${item.desc}</p>
-                    </div>
-                    <a href="${item.link}" class="gold-btn">${item.btnText}</a>
+        // --- FETCH CITIZENS ---
+        async function fetchLedger() {
+            const tbody = document.getElementById('directory-body');
+            const statCount = document.getElementById('stat-count');
+
+            const { data, error } = await supabaseClient
+                .from('citizens')
+                .select('full_name, rank, handle')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="3">Sync Error</td></tr>';
+                return;
+            }
+
+            // Update Stats Card
+            statCount.innerText = data.length;
+
+            // Populate Main Card
+            tbody.innerHTML = '';
+            data.forEach(citizen => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight:700;">${citizen.full_name}</td>
+                    <td><span class="rank-pill">${citizen.rank || 'Citizen'}</span></td>
+                    <td style="font-family:monospace; color:var(--text-dim);">@${citizen.handle || '---'}</td>
                 `;
-                feed.appendChild(card);
+                tbody.appendChild(row);
             });
         }
 
-        Object.keys(VANGUARD_DB).forEach((cat, index) => {
-            const btn = document.createElement('button');
-            btn.innerText = cat;
-            btn.className = index === 0 ? 'tuner-btn active' : 'tuner-btn';
-            btn.onclick = () => {
-                document.querySelectorAll('.tuner-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderCards(cat);
-            };
-            navRow.appendChild(btn);
-            if (index === 0) renderCards(cat);
+        // --- REFRESH LOGIC ---
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted || window.performance.navigation.type === 2) window.location.reload();
         });
 
-        window.onload = syncIdentity;
+        window.onload = () => {
+            runPreflight();
+            fetchLedger();
+        };
     </script>
 </body>
 </html>
