@@ -4,20 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | Tech Support</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="techhelp.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
     <div class="universe-bg">
         <div class="star-layer stars-1"></div>
         <div class="star-layer stars-2"></div>
     </div>
 
     <div class="viewport-wrapper">
-        
         <header class="page-header">
             <h1>Tech Support</h1>
             <div class="header-actions">
@@ -28,55 +25,44 @@
 
         <section class="intro-section">
             <h2>Take a deep breath.</h2>
-            <p>Technology can be frustrating, but you are not alone. Vanguard is here to diagnose, repair, and optimize your systems so you can get back to what matters.</p>
+            <p>Technology can be frustrating, but you are not alone. Vanguard is here to help you navigate, setup, and master your tools.</p>
         </section>
 
         <section class="range-box">
             <h3>Primary Service Range</h3>
-            <p>In-person dispatch is currently available for <strong>Hardin</strong> and <strong>Jefferson</strong> counties in Kentucky. If you require service outside of these areas, please contact Customer Service to discuss travel availability and custom quotes.</p>
+            <p>In-person dispatch available for <strong>Hardin</strong> and <strong>Jefferson</strong> counties, KY. Others, please ask Customer Service.</p>
         </section>
 
-        <section class="services-container" id="tiers-container">
-            </section>
+        <section class="services-container" id="tiers-container"></section>
     </div>
 
     <div class="modal-overlay" id="request-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-tier-title">Selected Tier</h2>
-                <p>Submitting will draft a secure email to a Vanguard Knight.</p>
+                <p>Submitting drafts an email to a Vanguard Knight.</p>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="f-name" class="form-input" placeholder="Your Name">
+                <div class="form-group"><label>Full Name</label><input type="text" id="f-name" class="form-input"></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="f-email" class="form-input"></div>
+                <div class="form-group"><label>Phone Number</label><input type="tel" id="f-phone" class="form-input"></div>
+                
+                <div class="form-group" id="student-check-container" style="display:none;">
+                    <label class="check-label">
+                        <input type="checkbox" id="f-student"> 
+                        <span>I am a College Student ($50 Special)</span>
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="f-email" class="form-input" placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="f-phone" class="form-input" placeholder="(555) 000-0000">
-                </div>
-                <div class="form-group">
-                    <label>What do you need help with?</label>
-                    <textarea id="f-issue" class="form-input" placeholder="Describe the issue..."></textarea>
-                </div>
+
+                <div class="form-group"><label>Message Payload</label><textarea id="f-issue" class="form-input"></textarea></div>
+
                 <div id="auth-section">
                     <div class="policy-box">
-                        <h3>Vanguard Operational Policies</h3>
-                        <p><strong>Lateness:</strong> Appointments canceled 30 min past arrival if contact is not established.</p>
-                        <p><strong>Cancellations:</strong> 3 hours notice required. Max 2 reschedules.</p>
+                        <h3>Vanguard Policies</h3>
+                        <p>30 min late = cancellation. 3 hours notice for reschedules.</p>
                     </div>
-                    <div class="form-group">
-                        <label>Service Address</label>
-                        <input type="text" id="f-address" class="form-input" placeholder="Address, City, Zip">
-                    </div>
-                    <div class="form-group">
-                        <label>Will an adult be present? (Type YES)</label>
-                        <input type="text" id="f-adult" class="form-input" placeholder="YES">
-                    </div>
+                    <div class="form-group"><label>Service Address</label><input type="text" id="f-address" class="form-input"></div>
+                    <div class="form-group"><label>Adult Present? (Type YES)</label><input type="text" id="f-adult" class="form-input"></div>
                 </div>
                 <div id="sys-msg"></div>
             </div>
@@ -87,10 +73,7 @@
         </div>
     </div>
 
-    <footer class="vanguard-footer">
-        Powered by Vanguard Citizen Services &copy; <span id="current-year"></span>
-    </footer>
-
+    <footer class="vanguard-footer">Powered by Vanguard Citizen Services &copy; <span id="current-year"></span></footer>
     <script src="techhelp.js"></script>
 </body>
 </html>
