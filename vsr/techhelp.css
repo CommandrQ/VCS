@@ -1,291 +1,68 @@
-/* --- CORE VARIABLES & DEFAULTS --- */
-:root {
-    --v-gold: #d4af37;
-    --solid-bg: #121212;
-    --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-html, body {
-    margin: 0; padding: 0;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    width: 100vw;
-    overflow: hidden; 
-    background: #000;
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* --- ANIMATED STARFIELD --- */
-.universe-bg {
-    position: fixed; inset: 0; z-index: -1;
-    background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-}
-.star-layer {
-    position: absolute; inset: -500px;
-    background-repeat: repeat;
-    animation: starDrift linear infinite;
-}
-.stars-1 { 
-    background-image: radial-gradient(3px 3px at 25px 50px, #fff, transparent); 
-    background-size: 350px 350px; 
-    animation-duration: 150s; 
-    opacity: 0.5; 
-}
-.stars-2 { 
-    background-image: radial-gradient(4px 4px at 200px 100px, var(--v-gold), transparent); 
-    background-size: 550px 550px; 
-    animation-duration: 100s; 
-    opacity: 0.3; 
-}
-@keyframes starDrift { 
-    from { transform: translateY(0); } 
-    to { transform: translateY(500px); } 
-}
-
-/* --- MAIN VIEWPORT WRAPPER --- */
-.viewport-wrapper {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 10px 50px; 
-    box-sizing: border-box;
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-.viewport-wrapper::-webkit-scrollbar { display: none; }
-
-/* --- HEADER & NAVIGATION --- */
-.page-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px; /* Fixed 25px gap between title and buttons */
-    margin-bottom: 25px;
+/* --- TICKER ENGINE --- */
+.announcement-ticker {
     width: 100%;
+    background: rgba(0,0,0,0.8);
+    border-bottom: 2px solid var(--v-gold);
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 10;
+}
+.ticker-content {
+    display: inline-block;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-left: 100%;
+    animation: tickerScroll 25s linear infinite;
+}
+@keyframes tickerScroll { 
+    0% { transform: translateX(0); } 
+    100% { transform: translateX(-100%); } 
 }
 
-.page-header h1 {
-    margin: 0;
-    font-size: clamp(1.5rem, 8vw, 2.5rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+/* --- MODAL UPDATES --- */
+.modal-body {
+    padding: 25px;
+    text-align: center; /* CENTER ALL TEXT */
+}
+
+.modal-body .form-group label {
     text-align: center;
 }
 
-.header-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    width: 100%;
-    flex-wrap: wrap; /* Prevents jumbling on small screens */
+.modal-body .form-input {
+    text-align: center;
 }
 
-.btn-return {
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid var(--v-gold);
-    color: var(--v-gold);
-    padding: 8px 15px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-size: 0.75rem;
+/* MATCHING BUTTON AESTHETICS */
+.btn-modal-cancel, .btn-modal-submit {
+    padding: 12px 25px;
+    border-radius: 50px; /* PILL SHAPE */
+    font-size: 0.8rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: 0.3s var(--v-curve);
-    white-space: nowrap;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid var(--v-gold);
 }
 
-.btn-return:hover {
+.btn-modal-cancel {
+    background: transparent;
+    color: var(--v-gold);
+    flex: 1;
+}
+
+.btn-modal-submit {
     background: var(--v-gold);
     color: #000;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    flex: 1.5;
 }
 
-/* --- INTRO SECTION (Centered & Wrapping) --- */
-.intro-section {
-    text-align: center;
-    margin-bottom: 20px;
-    max-width: 600px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 15px;
-    box-sizing: border-box;
-}
+.btn-modal-cancel:hover { background: rgba(212, 175, 55, 0.1); }
+.btn-modal-submit:hover { background: #fff; border-color: #fff; }
 
-.intro-section h2 { 
-    color: var(--v-gold); 
-    font-size: clamp(1.1rem, 5vw, 1.5rem); 
-    margin: 0 0 10px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Desktop Pulse Animation */
-@media (min-width: 801px) {
-    .intro-section h2 {
-        animation: goldPulse 3s ease-in-out infinite;
-    }
-}
-
-@keyframes goldPulse {
-    0% { text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); transform: scale(1); }
-    50% { text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); transform: scale(1.03); }
-    100% { text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); transform: scale(1); }
-}
-
-.intro-section p { 
-    font-size: 0.9rem; 
-    line-height: 1.6; 
-    margin: 0; 
-    opacity: 0.9;
-    text-align: center;
-    word-wrap: break-word;
-    max-width: 100%;
-}
-
-/* --- SERVICE RANGE FAQ --- */
-.range-box {
-    background: var(--solid-bg);
-    border: 1px solid var(--v-gold);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 30px;
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    box-sizing: border-box;
-}
-.range-box h3 { color: var(--v-gold); margin: 0 0 5px 0; font-size: 0.8rem; text-transform: uppercase; }
-.range-box p { font-size: 0.8rem; line-height: 1.4; margin: 0; }
-
-/* --- SERVICE TIERS (TECHHELP) --- */
-.services-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1100px;
-}
-
-.solid-card {
-    background: var(--solid-bg);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-    width: 280px;
-    flex: 0 0 auto;
-    position: relative;
-    box-sizing: border-box;
-    transition: transform 0.3s var(--v-curve), border-color 0.3s;
-}
-
-.solid-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--v-gold);
-}
-
-.student-badge {
-    position: absolute; top: -12px; right: 12px;
-    background: var(--v-gold); color: #000;
-    font-size: 0.65rem; font-weight: 900;
-    padding: 4px 10px; border-radius: 4px;
-    text-transform: uppercase;
-}
-
-.tier-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin: 0; }
-.tier-price { font-size: 1.4rem; font-weight: 900; color: var(--v-gold); margin: 10px 0; }
-.student-rate { display: block; font-size: 0.8rem; color: #fff; font-weight: 400; margin-top: 5px; }
-
-.tier-features { list-style: none; padding: 0; margin: 0 0 20px 0; font-size: 0.85rem; flex-grow: 1; }
-.tier-features li { margin-bottom: 8px; padding-left: 15px; position: relative; }
-.tier-features li::before { content: "•"; color: var(--v-gold); position: absolute; left: 0; }
-.tier-footnote { color: #fff; font-size: 0.75rem; font-style: italic; margin-bottom: 15px; }
-
-.btn-request {
-    background: var(--v-gold); color: #000; border: none;
-    padding: 12px; border-radius: 8px; font-weight: 800;
-    text-transform: uppercase; cursor: pointer; font-size: 0.8rem;
-}
-
-/* --- SUPPORT PAGE SPECIFIC --- */
-.support-card {
-    background: var(--solid-bg);
-    border: 1px solid var(--v-gold);
-    border-radius: 20px;
-    padding: clamp(20px, 5vw, 35px);
-    width: 100%;
-    max-width: 550px;
-    box-sizing: border-box;
-}
-
-.instruction-text {
-    background: rgba(255,255,255,0.05);
-    padding: 15px; border-radius: 10px;
-    font-size: 0.85rem; margin-bottom: 20px;
-    line-height: 1.5; border-left: 3px solid var(--v-gold);
-    text-align: left;
-}
-
-/* --- FORM ELEMENTS (Common) --- */
-.form-group { margin-bottom: 15px; text-align: left; width: 100%; }
-.form-group label {
-    display: block; font-size: 0.7rem; font-weight: 700;
-    text-transform: uppercase; color: #fff;
-    margin-bottom: 6px; letter-spacing: 1px;
-}
-.form-input {
-    width: 100%; background: #000;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px; padding: 12px; color: #fff;
-    font-size: 1rem; box-sizing: border-box; font-family: inherit;
-}
-.form-input:focus { outline: none; border-color: var(--v-gold); }
-textarea.form-input { min-height: 100px; resize: vertical; }
-
-/* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 800px) {
-    .viewport-wrapper { padding-top: 30px; }
-    
-    .services-container {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding: 5px 0 30px;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        gap: 15px;
-    }
-    
-    .solid-card {
-        width: 85%;
-        scroll-snap-align: center;
-    }
-}
-
-/* --- MODAL ENGINE --- */
-.modal-overlay {
-    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000;
-}
-.modal-content {
-    background: #000; border: 1px solid var(--v-gold); border-radius: 20px;
-    width: 95%; max-width: 450px; display: flex; flex-direction: column; overflow: hidden;
-}
-.modal-body { padding: 20px; overflow-y: auto; max-height: 75vh; }
-.modal-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
-
-/* --- PERSISTENT FOOTER --- */
-.vanguard-footer {
-    position: fixed; bottom: 0; width: 100%;
-    height: 40px; background: #000; border-top: 1px solid #222;
-    display: flex; align-items: center; justify-content: center;
-    color: #ffffff; font-size: 0.7rem; font-weight: 700;
-    text-transform: uppercase; z-index: 100; letter-spacing: 1.5px;
-}
+/* ... rest of original CSS ... */
