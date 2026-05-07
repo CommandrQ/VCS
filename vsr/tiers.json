@@ -3,27 +3,27 @@
         "title": "Essential Guidance",
         "price": "Free",
         "features": [
-            "30m Remote Consulting",
-            "Basic Diagnostics",
-            "Quick Troubleshooting"
+            "30m Remote Consultation",
+            "Basic Tech Diagnostics",
+            "Software Troubleshooting"
         ]
     },
     {
         "title": "Enhanced Care",
         "price": "$25",
         "features": [
-            "60m Hands-on Support",
-            "Network/Router Setup",
-            "System Optimization"
+            "60m Remote Support",
+            "Network & Router Setup",
+            "System Speed Optimization"
         ]
     },
     {
         "title": "Extended Resolution",
         "price": "$55",
         "features": [
-            "90m Resolution",
-            "Whole-home Wi-Fi",
-            "Hardware Upgrades"
+            "90m Resolution Session",
+            "Whole-Home Wi-Fi Setup",
+            "PC Hardware Upgrades"
         ]
     },
     {
@@ -31,8 +31,8 @@
         "price": "$75",
         "features": [
             "2h In-Home Dispatch",
-            "Shopping Assistance",
-            "Full Setup & Education"
+            "Personal Shop Assistance",
+            "Setup & Basics Education"
         ],
         "footnote": "*When available",
         "studentPromo": {
@@ -40,7 +40,7 @@
             "price": "$50",
             "deadline": "2026-06-01",
             "label": "Student Special",
-            "desc": "Shopping, setup, and education."
+            "desc": "Shopping, setup, and basics."
         }
     }
 ]
