@@ -1,13 +1,34 @@
-/* --- TICKER ENGINE --- */
+/* --- CORE VARIABLES --- */
+:root {
+    --v-gold: #d4af37;
+    --solid-bg: #121212;
+    --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body {
+    margin: 0; padding: 0;
+    height: 100dvh; width: 100vw;
+    overflow: hidden; 
+    background: #000; color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- ANIMATED STARFIELD --- */
+.universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
+.star-layer { position: absolute; inset: -500px; background-repeat: repeat; animation: starDrift linear infinite; }
+.stars-1 { background-image: radial-gradient(3px 3px at 25px 50px, #fff, transparent); background-size: 350px 350px; animation-duration: 150s; opacity: 0.5; }
+@keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
+
+/* --- TICKER ENGINE (Animated Scroll) --- */
 .announcement-ticker {
     width: 100%;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.9);
     border-bottom: 2px solid var(--v-gold);
     padding: 10px 0;
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    z-index: 10;
+    z-index: 100;
 }
 .ticker-content {
     display: inline-block;
@@ -15,54 +36,86 @@
     font-size: 0.8rem;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding-left: 100%;
-    animation: tickerScroll 25s linear infinite;
+    letter-spacing: 2px;
+    padding-left: 100%; /* Forces text to start off-screen right */
+    animation: tickerScroll 30s linear infinite;
 }
 @keyframes tickerScroll { 
     0% { transform: translateX(0); } 
-    100% { transform: translateX(-100%); } 
+    100% { transform: translateX(-100%); } /* Moves text completely off-screen left */
 }
 
-/* --- MODAL UPDATES --- */
-.modal-body {
-    padding: 25px;
-    text-align: center; /* CENTER ALL TEXT */
+/* --- VIEWPORT & HEADER --- */
+.viewport-wrapper {
+    height: calc(100dvh - 40px);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 10px 50px; box-sizing: border-box;
+    overflow-y: auto; scrollbar-width: none;
 }
 
-.modal-body .form-group label {
-    text-align: center;
-}
+.page-header { display: flex; flex-direction: column; align-items: center; gap: 25px; margin-bottom: 25px; }
+.page-header h1 { margin: 0; font-size: clamp(1.8rem, 8vw, 2.5rem); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+.header-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-.modal-body .form-input {
-    text-align: center;
+.btn-return {
+    background: rgba(212, 175, 55, 0.1); border: 1px solid var(--v-gold);
+    color: var(--v-gold); padding: 10px 20px; border-radius: 50px;
+    text-decoration: none; font-size: 0.75rem; font-weight: 800;
+    text-transform: uppercase; white-space: nowrap; transition: 0.3s;
 }
+.btn-return:hover { background: var(--v-gold); color: #000; }
 
-/* MATCHING BUTTON AESTHETICS */
+/* --- INTRO SECTION (Centered & Pulsing) --- */
+.intro-section { text-align: center; margin-bottom: 20px; max-width: 600px; padding: 0 15px; }
+.intro-section h2 { 
+    color: var(--v-gold); font-size: 1.2rem; margin: 0 0 10px 0; text-transform: uppercase;
+    animation: goldPulse 3s ease-in-out infinite;
+}
+@keyframes goldPulse {
+    0%, 100% { text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); transform: scale(1); }
+    50% { text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); transform: scale(1.03); }
+}
+.intro-section p { font-size: 0.9rem; line-height: 1.6; margin: 0; opacity: 0.9; text-align: center; }
+
+/* --- SERVICE CARDS --- */
+.services-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; }
+.solid-card {
+    background: var(--solid-bg); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px; padding: 25px; width: 280px; flex: 0 0 auto;
+    position: relative; transition: 0.3s;
+}
+.solid-card:hover { border-color: var(--v-gold); transform: translateY(-5px); }
+.student-badge { position: absolute; top: -10px; right: 10px; background: var(--v-gold); color: #000; font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; }
+
+/* --- MODAL ENGINE (Centered Content) --- */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: #000; border: 1px solid var(--v-gold); border-radius: 24px; width: 95%; max-width: 480px; }
+.modal-body { padding: 30px; text-align: center; overflow-y: auto; max-height: 75vh; }
+
+.form-group { margin-bottom: 15px; text-align: center; }
+.form-group label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--v-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+.form-input { width: 100%; background: #0a0a0a; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; text-align: center; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+.form-input:focus { border-color: var(--v-gold); outline: none; }
+
+.policy-box { background: rgba(212, 175, 55, 0.05); border: 1px dashed var(--v-gold); border-radius: 12px; padding: 15px; margin-top: 15px; }
+.policy-box h3 { color: var(--v-gold); margin: 0 0 5px 0; font-size: 0.8rem; text-transform: uppercase; }
+.policy-box p { font-size: 0.75rem; color: #fff; margin: 0; line-height: 1.4; opacity: 0.9; }
+
+/* MODAL BUTTONS (Pill Style) */
+.modal-footer { padding: 20px; display: flex; gap: 12px; border-top: 1px solid #222; }
 .btn-modal-cancel, .btn-modal-submit {
-    padding: 12px 25px;
-    border-radius: 50px; /* PILL SHAPE */
-    font-size: 0.8rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid var(--v-gold);
+    padding: 12px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;
+    text-transform: uppercase; cursor: pointer; transition: 0.3s; border: 1px solid var(--v-gold);
 }
-
-.btn-modal-cancel {
-    background: transparent;
-    color: var(--v-gold);
-    flex: 1;
-}
-
-.btn-modal-submit {
-    background: var(--v-gold);
-    color: #000;
-    flex: 1.5;
-}
-
+.btn-modal-cancel { background: transparent; color: var(--v-gold); flex: 1; }
+.btn-modal-submit { background: var(--v-gold); color: #000; flex: 1.5; }
 .btn-modal-cancel:hover { background: rgba(212, 175, 55, 0.1); }
 .btn-modal-submit:hover { background: #fff; border-color: #fff; }
 
-/* ... rest of original CSS ... */
+/* --- FOOTER --- */
+.vanguard-footer { position: fixed; bottom: 0; width: 100%; height: 40px; background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+
+@media (max-width: 600px) {
+    .services-container { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 25px; scroll-snap-type: x mandatory; }
+    .solid-card { width: 85%; scroll-snap-align: center; }
+}
