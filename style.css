@@ -1,58 +1,80 @@
 /* --- VANGUARD OS CORE VARIABLES (v5.1) --- */
 :root {
     --gold: #d4af37;
-    --gold-glow: rgba(212, 175, 55, 0.5);
-    --card-bg: #0a0a0a;
+    --gold-glow: rgba(212, 175, 55, 0.4);
+    --gold-border: rgba(212, 175, 55, 0.6);
+    
+    /* DESIGN: Solid backgrounds for readability */
+    --card-bg: #0a0a0a; 
+    --card-border: rgba(255, 255, 255, 0.1);
+    
     --bg-black: #000000;
     --text-main: #ffffff;
     --text-dim: #a1a1a6;
+    --error-red: #f87171;
+    
     --font-ui: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* --- SYSTEM PINNING (Strict Viewport Control) --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 html, body {
+    /* Pushes the site to physical screen edges; prevents mobile URL bar bounce */
     position: fixed; 
     top: 0; left: 0; right: 0; bottom: 0;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     background: var(--bg-black);
     color: var(--text-main);
     font-family: var(--font-ui);
-    overflow: hidden;
+    overflow: hidden; /* Page itself never scrolls */
     display: flex;
     flex-direction: column;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* --- UPDATED STARFIELD (Larger Stars) --- */
+/* --- CINEMATIC STARFIELD --- */
 .universe {
     position: absolute;
     inset: 0;
     z-index: -1;
     background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+    overflow: hidden;
+    pointer-events: none;
 }
 
 .star-layer {
     position: absolute;
     inset: -50%;
     width: 200%; height: 200%;
-    /* Stars increased to 2px and 3px */
-    background-image: radial-gradient(2px 2px at 10% 10%, #fff 100%, transparent),
-                      radial-gradient(3px 3px at 20% 50%, var(--gold) 100%, transparent),
-                      radial-gradient(2px 2px at 70% 30%, #fff 100%, transparent);
+    /* Stars increased to 2px and 3px as requested */
+    background-image: 
+        radial-gradient(2px 2px at 10% 10%, #fff 100%, transparent),
+        radial-gradient(3px 3px at 20% 50%, var(--gold) 100%, transparent),
+        radial-gradient(2px 2px at 70% 30%, #fff 100%, transparent);
     background-size: 400px 400px;
-    animation: drift 200s linear infinite; /* Slower, more subtle */
+    animation: drift 200s linear infinite;
     opacity: 0.18;
+    will-change: transform;
 }
 
-@keyframes drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(150px, 150px, 0); } }
+@keyframes drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(150px, 150px, 0); }
+}
 
-/* --- HEADER & FOOTER --- */
+/* --- HEADER & FOOTER (Fixed) --- */
 .vanguard-header {
     flex: 0 0 auto;
-    padding: 20px;
+    padding: 20px 30px;
     text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: var(--bg-black);
     z-index: 10;
 }
@@ -61,81 +83,131 @@ html, body {
     flex: 0 0 auto;
     padding: 10px 20px;
     text-align: center;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg-black);
     z-index: 10;
+    width: 100%;
 }
 
 #footer-text {
+    /* Fluid typography to prevent squishing on mobile */
     font-size: clamp(0.65rem, 2.8vw, 0.75rem);
     letter-spacing: 1px;
-    /* Simplified transition to prevent "stuck" text on mobile */
-    transition: opacity 0.6s ease, color 0.6s ease, text-shadow 0.6s ease;
+    /* transition must be explicit for mobile rendering */
+    transition: opacity 0.6s ease-in-out, color 0.6s ease-in-out, text-shadow 0.6s ease-in-out;
     color: var(--text-dim);
     text-transform: uppercase;
     white-space: nowrap;
 }
 
-/* The Gold State */
 .footer-active { 
     color: var(--gold) !important;
     text-shadow: 0 0 12px var(--gold-glow);
 }
 
-/* --- MAIN VIEWPORT & CARDS --- */
+/* --- MAIN VIEWPORT & CARD WINDOWS --- */
 main {
     flex: 1 1 auto;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 15px;
-    overflow: hidden;
+    overflow: hidden; /* Page doesn't scroll, cards do */
 }
 
 .glass-card {
     background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid var(--card-border);
     border-radius: 24px;
     padding: 30px;
     width: 100%;
     max-width: 500px;
-    max-height: 100%;
+    
+    /* DESIGN: Auto-flex and internal scrolling */
+    max-height: 100%; 
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll for iOS */
+    
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    text-align: center;
+    gap: 20px; /* Reduces dead space between elements */
     box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+    transition: border-color 0.4s var(--v-curve);
 }
 
-.gold-text-outline { color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); font-weight: 700; }
+.glass-card:hover { border-color: var(--gold-border); }
 
+/* Custom Internal Scrollbar */
+.glass-card::-webkit-scrollbar { width: 4px; }
+.glass-card::-webkit-scrollbar-track { background: transparent; }
+.glass-card::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.glass-card::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* --- BUTTONS (Centered Pills) --- */
 .gold-pill {
     display: inline-block;
     padding: 12px 28px;
     border: 1px solid var(--gold);
-    border-radius: 50px;
+    border-radius: 50px; /* PILL */
     color: var(--gold);
-    text-decoration: none;
     font-weight: 700;
-    font-size: 0.75rem;
-    background: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
     cursor: pointer;
     transition: 0.3s;
-    text-transform: uppercase;
+    background: transparent;
+    text-align: center;
+    margin: 0 auto; /* Centering */
 }
 
-.gold-pill:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+.gold-pill:hover {
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 20px var(--gold-glow);
+}
 
-hr { width: 80%; border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 5px 0; }
+/* --- TYPOGRAPHY & UTILITIES --- */
+.gold-text-outline {
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold-glow);
+    font-weight: 700;
+}
 
-@keyframes smoothWake { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-.animate-wake { animation: smoothWake 0.7s var(--v-curve) forwards; }
+hr {
+    width: 80%;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
+}
 
-@keyframes dataPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-.loading-state { animation: dataPulse 1.5s ease-in-out infinite; }
+/* --- ANIMATIONS --- */
+@keyframes smoothWake {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-wake { 
+    animation: smoothWake 0.7s var(--v-curve) forwards; 
+}
+
+@keyframes dataPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+.loading-state { 
+    animation: dataPulse 1.5s ease-in-out infinite; 
+}
+
+/* --- MOBILE TWEAKS --- */
+@media (max-width: 480px) {
+    main { padding: 10px; }
+    .glass-card { padding: 25px 20px; border-radius: 20px; gap: 15px; }
+    .vanguard-header { padding: 15px; }
+    .vanguard-footer { height: 50px; }
+}
