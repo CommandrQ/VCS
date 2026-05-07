@@ -1,35 +1,128 @@
-// --- THE GATEKEEPER LOGIC ---
-async function handleEntry() {
-    const msg = document.getElementById('auth-msg');
-    msg.innerText = "Validating Clearances...";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fort Toward | Vanguard Prime</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
-    try {
-        const [{ data: config }, { data: { session } }] = await Promise.all([
-            supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
-            supabaseClient.auth.getSession()
-        ]);
+    <div class="universe"><div class="star-layer"></div></div>
 
-        if (!session) {
-            msg.innerText = "Session Expired. Please re-authenticate.";
-            return;
+    <header class="vanguard-header">
+        <h1 class="gold-text-outline" style="text-transform: uppercase; font-size: 1.5rem; letter-spacing: 2px;">Fort Toward</h1>
+    </header>
+
+    <main>
+        <div class="glass-card animate-wake">
+            <div style="text-align: center; width: 100%;">
+                <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px;">Access Terminal</h3>
+                <h1 style="font-size: 2rem; font-weight: 900; line-height: 1.1; text-transform: uppercase;">Citizen<br>Identification</h1>
+            </div>
+
+            <hr class="white-divider">
+
+            <p id="auth-msg" style="font-size: 0.85rem; color: var(--text-dim); min-height: 3.5em; padding: 0 10px; line-height: 1.5;">
+                Synchronize your credentials to establish a secure link to the Vanguard network.
+            </p>
+
+            <div class="settings-form" style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
+                <div id="login-zone">
+                    <input type="email" id="login-email" placeholder="Citizen Email Address" style="margin-bottom: 15px;">
+                    <button class="gold-pill" onclick="handleAuth()" style="width: 100%;">Request Access Link</button>
+                </div>
+                
+                <div id="entry-zone" style="display: none;">
+                    <button class="gold-pill" onclick="handleEntry()" style="width: 100%; background: var(--gold); color: #000;">Enter Command Hub</button>
+                    <button class="legal-link" onclick="handleLogout()" style="margin-top: 10px; display: block; width: 100%; text-align: center; border: none; background: none; color: #555; cursor: pointer; font-size: 0.6rem; letter-spacing: 1px;">DISCONNECT SESSION</button>
+                </div>
+            </div>
+
+            <p style="margin-top: 15px; color: #333; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 800;">
+                Authorized Personnel Only
+            </p>
+        </div>
+    </main>
+
+    <footer class="vanguard-footer">
+        <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
+    </footer>
+
+    <script>
+        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        // --- AUTH FLOW ---
+        async function handleAuth() {
+            const email = document.getElementById('login-email').value;
+            const msg = document.getElementById('auth-msg');
+
+            if (!email) {
+                msg.innerText = "Security Alert: Email coordinate required.";
+                msg.style.color = "var(--error-red)";
+                return;
+            }
+
+            msg.innerText = "Transmitting Cryptographic Link...";
+            msg.style.color = "var(--gold)";
+
+            const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+            if (error) {
+                msg.innerText = "Transmission Failed: " + error.message;
+                msg.style.color = "var(--error-red)";
+            } else {
+                msg.innerText = "Link Transmitted. Check your transmission logs (email) to authorize this terminal.";
+                msg.style.color = "#39ff14";
+            }
         }
 
-        const { data: citizen } = await supabaseClient
-            .from('citizens')
-            .select('role')
-            .eq('auth_id', session.user.id)
-            .single();
-
-        const isSiteOnline = config ? config.value_bool : true;
-        const userRole = citizen ? citizen.role : 'Citizen';
-
-        // LOCKDOWN LOGIC: Only 'Command' can bypass the Offline state
-        if (!isSiteOnline && userRole !== 'Command') {
-            window.location.href = 'https://vcscitizen.org/uc.html';
-        } else {
+        // --- SIMPLE ENTRY ---
+        function handleEntry() {
+            // No gatekeeper logic here. Just go. 
+            // The directory.html will kick them out if they aren't Command while the site is offline.
             window.location.href = 'directory.html';
         }
-    } catch (err) {
-        msg.innerText = "System Error: Connection to Ledger lost.";
-    }
-}
+
+        // --- LOGOUT ---
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            location.reload();
+        }
+
+        // --- SESSION SYNC ---
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                document.getElementById('login-zone').style.display = 'none';
+                document.getElementById('entry-zone').style.display = 'block';
+                document.getElementById('auth-msg').innerText = "Clearance Detected. You are authorized to access the Hub.";
+                document.getElementById('auth-msg').style.color = "var(--gold)";
+            }
+        }
+
+        // --- FOOTER CYCLE ---
+        function runFooter() {
+            const el = document.getElementById('footer-text');
+            const original = "Powered Vanguard Citizen Services © 2026";
+            const motto = "Empower . Educate . Elevate";
+
+            const step1 = () => { el.classList.add('footer-active'); setTimeout(step2, 1500); };
+            const step2 = () => { el.style.opacity = '0'; setTimeout(step3, 600); };
+            const step3 = () => { el.innerText = motto; el.classList.remove('footer-active'); el.style.opacity = '1'; setTimeout(step4, 2500); };
+            const step4 = () => { el.style.opacity = '0'; setTimeout(step5, 600); };
+            const step5 = () => { el.innerText = original; el.style.opacity = '1'; setTimeout(step1, 5000); };
+            
+            step1();
+        }
+
+        window.onload = () => {
+            checkSession();
+            runFooter();
+        };
+    </script>
+</body>
+</html>
