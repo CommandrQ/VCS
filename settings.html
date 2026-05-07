@@ -12,23 +12,21 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- VIEWPORT & DYNAMIC LAYOUT --- */
+        /* --- LOCKED VIEWPORT LOGIC --- */
         html, body {
             margin: 0; padding: 0;
-            min-height: 100%;
+            height: 100dvh; /* Locked to screen height */
+            width: 100vw;
+            overflow: hidden; /* No page scrolling */
             background: #000;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden; /* Prevent horizontal jitter */
         }
 
         /* --- SUBTLE ANIMATED STARFIELD --- */
         .universe-bg {
             position: fixed; inset: 0; z-index: -1;
             background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-            overflow: hidden;
         }
 
         .star-layer {
@@ -36,141 +34,118 @@
             background-repeat: repeat;
             animation: starDrift linear infinite;
         }
-
-        /* Three layers for parallax depth */
-        .stars-distant {
-            background-image: radial-gradient(1px 1px at 10px 20px, #fff, rgba(0,0,0,0)),
-                              radial-gradient(1px 1px at 50px 70px, rgba(255,255,255,0.5), rgba(0,0,0,0));
-            background-size: 200px 200px;
-            animation-duration: 120s;
-            opacity: 0.3;
-        }
-
-        .stars-mid {
-            background-image: radial-gradient(1.5px 1.5px at 100px 150px, #fff, rgba(0,0,0,0)),
-                              radial-gradient(1.5px 1.5px at 300px 400px, var(--gold), rgba(0,0,0,0));
-            background-size: 400px 400px;
-            animation-duration: 80s;
-            opacity: 0.2;
-        }
-
-        .stars-near {
-            background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0));
-            background-size: 600px 600px;
-            animation-duration: 40s;
-            opacity: 0.1;
-        }
-
+        .stars-1 { background-image: radial-gradient(1px 1px at 10px 20px, #fff, transparent); background-size: 200px 200px; animation-duration: 150s; opacity: 0.3; }
+        .stars-2 { background-image: radial-gradient(1.5px 1.5px at 100px 150px, var(--gold), transparent); background-size: 400px 400px; animation-duration: 100s; opacity: 0.15; }
+        
         @keyframes starDrift {
             from { transform: translateY(0); }
             to { transform: translateY(500px); }
         }
 
-        /* --- MAIN CONTENT SCROLLING --- */
-        .vanguard-header {
-            padding: 50px 20px 20px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .settings-container {
-            flex-grow: 1;
+        /* --- CENTERING ENGINE --- */
+        .viewport-wrapper {
             display: flex;
             flex-direction: column;
+            height: 100dvh;
+            width: 100%;
             align-items: center;
-            padding: 20px 20px 100px; /* Extra bottom padding to see everything */
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .identity-terminal {
             width: 100%;
             max-width: 420px;
-            padding: 35px;
+            max-height: 85vh; /* Card will never be taller than 85% of screen */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            padding: 30px;
+            gap: 15px;
+            box-sizing: border-box;
+            position: relative;
         }
 
+        /* --- INTERNAL SCROLLING --- */
+        .terminal-body {
+            flex: 1;
+            overflow-y: auto; /* Only the form content scrolls if needed */
+            padding-right: 5px;
+            width: 100%;
+        }
+        .terminal-body::-webkit-scrollbar { width: 3px; }
+        .terminal-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
         /* --- IDENTITY UI --- */
+        .identity-header { text-align: center; margin-bottom: 10px; }
         .rank-tag {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255,255,255,0.1);
             color: #888;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
             padding: 4px 14px;
             border-radius: 50px;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            display: inline-block;
+            margin-bottom: 5px;
         }
         .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
         .white-divider {
             width: 100%; height: 1px; background: #fff; border: none;
-            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0;
+            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 10px 0;
         }
 
-        .form-area { width: 100%; text-align: left; }
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label {
-            display: block; font-size: 0.65rem; font-weight: 700;
+            display: block; font-size: 0.6rem; font-weight: 700;
             text-transform: uppercase; color: var(--gold);
-            margin-bottom: 6px; letter-spacing: 1px;
+            margin-bottom: 5px; letter-spacing: 1px;
         }
         .form-group input {
             width: 100%; background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px; padding: 12px; color: #fff;
-            font-size: 1rem; box-sizing: border-box;
+            font-size: 0.95rem; box-sizing: border-box;
         }
-        .form-group input:focus { outline: none; border-color: var(--gold); }
 
         .helper-link {
             background: none; border: none; color: #fff;
-            font-size: 0.8rem; text-decoration: underline;
-            cursor: pointer; transition: 0.3s;
+            font-size: 0.75rem; text-decoration: underline;
+            cursor: pointer; margin: 10px auto; display: block;
         }
-        .helper-link:hover { color: var(--gold); }
-
-        .status-msg { font-size: 0.8rem; margin-top: 10px; min-height: 1.2em; text-align: center; }
 
         .vanguard-footer {
-            padding: 30px 20px;
-            text-align: center;
-            background: linear-gradient(to top, #000, transparent);
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            font-size: 0.8rem; opacity: 0.7; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
     <div class="universe-bg">
-        <div class="star-layer stars-distant"></div>
-        <div class="star-layer stars-mid"></div>
-        <div class="star-layer stars-near"></div>
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
     </div>
 
-    <header class="vanguard-header">
-        <h1 style="text-transform: uppercase; letter-spacing: 3px; font-size: 1.3rem;">Identity Terminal</h1>
-    </header>
-
-    <main class="settings-container">
+    <div class="viewport-wrapper">
         <article class="glass-card identity-terminal" id="identity-card">
             
-            <div class="identity-header" style="text-align: center; width: 100%;">
+            <div class="identity-header">
                 <div id="auth-tag" class="rank-tag">Unauthenticated</div>
-                <h2 id="citizen-name" style="margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
+                <h2 id="citizen-name" style="margin: 0; font-size: 1.6rem; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
             </div>
 
-            <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 35px;">Return Home</a>
+            <div style="display: flex; justify-content: center;">
+                <a href="directory.html" class="gold-pill" style="width: auto; padding: 8px 30px; font-size: 0.8rem;">Return Home</a>
+            </div>
 
             <hr class="white-divider">
 
-            <div class="form-area" id="form-content">
-                
-                <div id="state-loading" style="text-align: center; color: #888;">Synchronizing Ledger...</div>
+            <div class="terminal-body">
+                <div id="state-loading" style="text-align: center; color: #888; padding: 20px;">Initialising Ledger...</div>
 
-                <div id="state-unauth" style="display: none; flex-direction: column; gap: 15px;">
+                <div id="state-unauth" style="display: none; flex-direction: column;">
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="reg-name" placeholder="John Doe">
@@ -180,14 +155,14 @@
                         <input type="email" id="reg-email" placeholder="name@email.com">
                     </div>
                     <div class="form-group">
-                        <label>Security Password</label>
+                        <label>Password</label>
                         <input type="password" id="reg-password" placeholder="••••••••">
                     </div>
-                    <button class="gold-pill" style="width: 100%;" onclick="handleSignUp()">Sync Identity</button>
-                    <button class="helper-link" style="display: block; margin: 10px auto;" onclick="toggleRestore(true)">lost access? Restore via email</button>
+                    <button class="gold-pill" onclick="handleSignUp()">Sync Identity</button>
+                    <button class="helper-link" onclick="setView('restore')">lost access? Restore via email</button>
                 </div>
 
-                <div id="state-restore" style="display: none; flex-direction: column; gap: 15px;">
+                <div id="state-restore" style="display: none; flex-direction: column;">
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="res-name" placeholder="John Doe">
@@ -196,32 +171,30 @@
                         <label>Email Address</label>
                         <input type="email" id="res-email" placeholder="name@email.com">
                     </div>
-                    <button class="gold-pill" style="width: 100%;" onclick="handleRestoreAccess()">Restore Access</button>
-                    <button class="helper-link" style="display: block; margin: 10px auto;" onclick="toggleRestore(false)">return to log in</button>
+                    <button class="gold-pill" onclick="handleRestoreAccess()">Restore Access</button>
+                    <button class="helper-link" onclick="setView('unauth')">return to log in</button>
                 </div>
 
-                <div id="state-auth" style="display: none; flex-direction: column; gap: 15px;">
+                <div id="state-auth" style="display: none; flex-direction: column;">
                     <div class="form-group">
-                        <label>Email (Locked)</label>
+                        <label>Identity Email</label>
                         <input type="email" id="auth-email" disabled>
                     </div>
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="auth-name">
                     </div>
-                    <button class="gold-pill" style="width: 100%;" onclick="handleUpdateProfile()">Update Profile</button>
+                    <button class="gold-pill" onclick="handleUpdateProfile()">Update Profile</button>
                     <button class="gold-pill" style="margin-top: 15px; background: transparent; color: #f87171; border-color: #f87171;" onclick="handleLogout()">Disconnect Identity</button>
                 </div>
-
             </div>
             
-            <div id="sys-msg" class="status-msg"></div>
-            
+            <div id="sys-msg" style="text-align: center; font-size: 0.75rem; margin-top: 5px; min-height: 1.2em;"></div>
         </article>
-    </main>
+    </div>
 
     <footer class="vanguard-footer">
-        <p id="footer-text">Vanguard OS v7.1 | Identity Protocol Enabled</p>
+        <p id="footer-text">Vanguard OS v7.2 | Identity Protocol Enabled</p>
     </footer>
 
     <script>
@@ -233,46 +206,43 @@
             tag: document.getElementById('auth-tag'),
             nameDisplay: document.getElementById('citizen-name'),
             msg: document.getElementById('sys-msg'),
-            loading: document.getElementById('state-loading'),
-            unauth: document.getElementById('state-unauth'),
-            restore: document.getElementById('state-restore'),
-            auth: document.getElementById('state-auth'),
-            authEmail: document.getElementById('auth-email'),
-            authName: document.getElementById('auth-name')
+            states: {
+                loading: document.getElementById('state-loading'),
+                unauth: document.getElementById('state-unauth'),
+                restore: document.getElementById('state-restore'),
+                auth: document.getElementById('state-auth')
+            },
+            inputs: {
+                authEmail: document.getElementById('auth-email'),
+                authName: document.getElementById('auth-name')
+            }
         };
 
-        async function init() {
+        async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                localStorage.setItem('vanguard_logged_in', 'true');
-                loadAuthView(session.user);
+                localStorage.setItem('v_login', 'true');
+                loadAuth(session.user);
             } else {
-                localStorage.removeItem('vanguard_logged_in');
-                loadUnauthView();
+                localStorage.removeItem('v_login');
+                setView('unauth');
             }
         }
 
-        function setView(state) {
-            [ui.loading, ui.unauth, ui.restore, ui.auth].forEach(el => el.style.display = 'none');
-            ui[state].style.display = 'flex';
-            if(state === 'loading') ui.loading.style.display = 'block';
+        function setView(key) {
+            Object.keys(ui.states).forEach(k => ui.states[k].style.display = 'none');
+            ui.states[key].style.display = (key === 'loading' ? 'block' : 'flex');
+            if (key === 'unauth') { ui.tag.innerText = "Unauthenticated"; ui.tag.classList.remove('tag-verified'); ui.nameDisplay.innerText = "Guest Mode"; }
         }
 
-        function loadUnauthView() {
-            ui.tag.innerText = "Unauthenticated";
-            ui.tag.classList.remove('tag-verified');
-            ui.nameDisplay.innerText = "Guest Mode";
-            setView('unauth');
-        }
-
-        async function loadAuthView(user) {
+        async function loadAuth(user) {
             ui.tag.innerText = "Authenticated";
             ui.tag.classList.add('tag-verified');
             const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', user.id).single();
-            const displayName = data ? data.full_name : user.email.split('@')[0];
-            ui.nameDisplay.innerText = displayName;
-            ui.authEmail.value = user.email;
-            ui.authName.value = displayName;
+            const name = data ? data.full_name : user.email.split('@')[0];
+            ui.nameDisplay.innerText = name;
+            ui.inputs.authEmail.value = user.email;
+            ui.inputs.authName.value = name;
             setView('auth');
         }
 
@@ -280,37 +250,30 @@
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-            notify("Syncing...", "var(--gold)");
+            notify("Processing...", "var(--gold)");
             const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
-            error ? notify(error.message, "#f87171") : notify("Check email to confirm sync.", "#4ade80");
+            error ? notify(error.message, "#f87171") : notify("Verification sent to email.", "#4ade80");
         }
 
         async function handleRestoreAccess() {
             const email = document.getElementById('res-email').value;
-            notify("Transmitting...", "var(--gold)");
+            notify("Transmitting Magic Link...", "var(--gold)");
             const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-            error ? notify(error.message, "#f87171") : notify("Magic Link Sent.", "#4ade80");
+            error ? notify(error.message, "#f87171") : notify("Link sent! Check your inbox.", "#4ade80");
         }
 
         async function handleUpdateProfile() {
-            const newName = ui.authName.value;
             const { data: { session } } = await supabaseClient.auth.getSession();
+            const newName = ui.inputs.authName.value;
             const { error } = await supabaseClient.from('citizens').update({ full_name: newName }).eq('auth_id', session.user.id);
-            if (!error) { ui.nameDisplay.innerText = newName; notify("Ledger Updated.", "#4ade80"); }
+            if (!error) { ui.nameDisplay.innerText = newName; notify("Profile Updated.", "#4ade80"); }
         }
 
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            location.reload();
-        }
-
-        function toggleRestore(show) { setView(show ? 'restore' : 'unauth'); }
-
-        function notify(text, color) { ui.msg.innerText = text; ui.msg.style.color = color; }
-
-        supabaseClient.auth.onAuthStateChange((event) => { if (event === 'SIGNED_IN') init(); });
-
-        window.onload = init;
+        async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+        function notify(t, c) { ui.msg.innerText = t; ui.msg.style.color = c; }
+        
+        supabaseClient.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_IN') checkAuth(); });
+        window.onload = checkAuth;
     </script>
 </body>
 </html>
