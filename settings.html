@@ -7,104 +7,78 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- SETTINGS FORM STYLES --- */
-        .settings-form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* --- LAYOUT REFINEMENTS --- */
+        .glass-card {
+            display: flex; flex-direction: column; align-items: center; gap: 25px;
+            padding: 40px; max-height: 90vh;
         }
 
-        .field-group { text-align: left; width: 100%; }
+        /* 1. Identity Header */
+        .identity-display { text-align: center; width: 100%; }
+        #display-role { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        #display-name { font-size: 2rem; font-weight: 800; line-height: 1.1; }
 
-        label {
-            display: block;
-            color: var(--gold);
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-            padding-left: 5px;
+        /* 2. Direct Buttons */
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+
+        /* 3. White Glowing Divider */
+        .white-divider {
+            width: 100%; height: 1px; background: #fff; border: none;
+            box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0; opacity: 0.9;
         }
 
+        /* 4. Scrollable Settings Content */
+        .scroll-area {
+            width: 100%; display: flex; flex-direction: column; gap: 20px;
+            overflow-y: auto; padding-right: 10px; max-height: 350px;
+            text-align: left;
+        }
+        .scroll-area::-webkit-scrollbar { width: 3px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        /* Form Styling */
+        .field-group { width: 100%; }
+        label { 
+            display: block; font-size: 0.65rem; color: var(--gold); 
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 800;
+        }
         input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-size: 0.9rem;
-            transition: 0.3s;
+            width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 14px; color: white; font-size: 0.9rem; transition: 0.3s;
         }
+        input:focus { outline: none; border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+        input:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        input:focus {
-            outline: none;
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.05);
-        }
+        .btn-danger { border-color: #f87171 !important; color: #f87171 !important; margin-top: 10px; }
+        .btn-danger:hover { background: #f87171 !important; color: #000 !important; }
 
-        input:disabled { opacity: 0.4; cursor: not-allowed; border-color: transparent; }
-
-        .btn-danger {
-            border-color: var(--error-red) !important;
-            color: var(--error-red) !important;
-        }
-
-        .btn-danger:hover {
-            background: var(--error-red) !important;
-            color: white !important;
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.3) !important;
-        }
-
-        /* --- LEGAL MODAL --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px);
-            display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
-            opacity: 0; transition: opacity 0.4s ease;
-        }
-        .modal-content {
-            background: #050505; border: 1px solid var(--gold); border-radius: 28px;
-            width: 100%; max-width: 500px; max-height: 80vh; padding: 30px;
-            display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.4s var(--v-curve);
-        }
-        .modal-overlay.active { opacity: 1; }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        
-        .legal-body { 
-            overflow-y: auto; display: flex; flex-direction: column; gap: 20px; 
-            text-align: left; padding-right: 10px;
-        }
-        .legal-body h3 { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .legal-body p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
-
-        .legal-link {
-            background: transparent; border: none; color: #444; font-size: 0.65rem;
-            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
-            transition: 0.3s; margin-top: 10px; text-decoration: none;
-        }
-        .legal-link:hover { color: var(--gold); }
+        @media (max-width: 480px) { .button-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="universe"><div class="star-layer"></div></div>
 
-    <header class="vanguard-header">
-        <h1 id="welcome-text" class="gold-text-outline" style="text-transform: uppercase; font-size: 1.2rem; letter-spacing: 1px;">Terminal: Settings</h1>
+    <header class="vanguard-header" style="text-align:center; padding: 20px;">
+        <h1 class="gold-text-outline" style="text-transform: uppercase; font-size: 1.1rem; letter-spacing: 2px;">Identity Management</h1>
     </header>
 
     <main>
         <div class="glass-card animate-wake" id="settings-card" style="opacity: 0;">
-            <div style="text-align: center; width: 100%;">
-                <h3 id="display-role" style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;">---</h3>
-                <h1 id="display-name" style="font-size: 1.8rem; font-weight: 800;">---</h1>
+            
+            <div class="identity-display">
+                <h3 id="display-role">---</h3>
+                <h1 id="display-name">Loading...</h1>
+            </div>
+
+            <div class="button-row">
+                <a href="directory.html" class="gold-pill">Directory</a>
+                <a href="support.html" class="gold-pill">Support</a>
             </div>
 
             <hr class="white-divider">
 
-            <div class="settings-form">
+            <div class="scroll-area">
                 <div class="field-group">
                     <label>Registered Email</label>
                     <input type="email" id="f-email" disabled>
@@ -117,16 +91,16 @@
 
                 <div class="field-group">
                     <label>Discord ID</label>
-                    <input type="text" id="f-discord" placeholder="Name#0000">
+                    <input type="text" id="f-discord" placeholder="Username#0000">
                 </div>
 
-                <button class="gold-pill" onclick="updateProfile()">Save Changes</button>
+                <button class="gold-pill" onclick="updateProfile()" style="margin-top: 10px;">Save Profile Changes</button>
+                
                 <button class="gold-pill btn-danger" onclick="handleLogout()">Disconnect Session</button>
                 
-                <button class="legal-link" onclick="openLegal()">Protocol: Legal & Privacy</button>
+                <p id="sys-msg" style="font-size: 0.7rem; text-align: center; min-height: 1.2em; font-weight: bold;"></p>
             </div>
-            
-            <div id="sys-msg" style="font-size: 0.7rem; font-weight: bold; min-height: 1em; text-align: center;"></div>
+
         </div>
     </main>
 
@@ -134,60 +108,40 @@
         <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
     </footer>
 
-    <div class="modal-overlay" id="legal-overlay" onclick="if(event.target.id==='legal-overlay') closeLegal()">
-        <div class="modal-content">
-            <h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase;">Legal Protocols</h2>
-            
-            <div class="legal-body">
-                <section>
-                    <h3>1. Data Governance</h3>
-                    <p>We store only necessary identifiers: your email and registered name. We do not track browser history, hardware IDs, or physical location coordinates.</p>
-                </section>
-                <section>
-                    <h3>2. Privacy Policy</h3>
-                    <p>Vanguard does not share, sell, or trade citizen data with third-party entities. Your data remains encrypted within our private ledger.</p>
-                </section>
-                <section>
-                    <h3>3. Terms of Service</h3>
-                    <p>By accessing this terminal, you agree to protect operational security. Any attempt to breach unauthorized nodes will result in immediate rank revocation.</p>
-                </section>
-            </div>
-
-            <button class="gold-pill" onclick="closeLegal()" style="border-color: #333; color: #666; font-size: 0.7rem; width: 100%;">CLOSE</button>
-        </div>
-    </div>
-
     <script>
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- 1. GLOBAL GATEKEEPER ---
-        async function enforceSecurity() {
+        // --- 1. OPTIMIZED SECURITY GATE ---
+        async function runGatekeeper() {
             try {
-                // Wait briefly for Supabase to wake up
-                await new Promise(r => setTimeout(r, 200));
-
-                const [{ data: config }, { data: { session } }] = await Promise.all([
-                    supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
-                    supabaseClient.auth.getSession()
-                ]);
-
+                const { data: { session } } = await supabaseClient.auth.getSession();
                 if (!session) { window.location.href = 'index.html'; return; }
 
-                const { data: citizen } = await supabaseClient.from('citizens').select('role').eq('auth_id', session.user.id).single();
+                const { data: config } = await supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single();
                 const isOnline = config ? config.value_bool : true;
-                const userRole = citizen ? citizen.role : 'Citizen';
 
-                if (!isOnline && userRole !== 'Command') {
-                    window.location.href = 'https://vcscitizen.org/uc.html';
+                if (isOnline) {
+                    revealSettings();
                 } else {
-                    document.getElementById('settings-card').style.opacity = '1';
-                    syncSettings();
+                    // Only check role if site is offline
+                    const { data: citizen } = await supabaseClient.from('citizens').select('role').eq('auth_id', session.user.id).single();
+                    if (citizen && citizen.role === 'Command') {
+                        revealSettings();
+                    } else {
+                        window.location.href = 'https://vcscitizen.org/uc.html';
+                    }
                 }
-            } catch (err) {
+            } catch (e) {
                 window.location.href = 'index.html';
             }
+        }
+
+        function revealSettings() {
+            document.getElementById('settings-card').style.opacity = '1';
+            syncSettings();
+            runFooter();
         }
 
         // --- 2. DATA SYNC ---
@@ -205,7 +159,7 @@
             }
         }
 
-        // --- 3. PROFILE UPDATE ---
+        // --- 3. UPDATE LOGIC ---
         async function updateProfile() {
             const msg = document.getElementById('sys-msg');
             msg.innerText = "Transmitting Updates...";
@@ -220,52 +174,35 @@
             const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', session.user.id);
             
             if (error) {
-                msg.innerText = "Transmission Error: " + error.message;
-                msg.style.color = "var(--error-red)";
+                msg.innerText = "Error: " + error.message;
+                msg.style.color = "#f87171";
             } else {
-                msg.innerText = "Ledger Updated Successfully.";
-                msg.style.color = "#39ff14";
+                msg.innerText = "Profile Synchronized Successfully.";
+                msg.style.color = "#4ade80";
                 setTimeout(() => { msg.innerText = ""; }, 3000);
             }
         }
 
-        // --- 4. AUTH ACTIONS ---
+        // --- 4. EXTRAS ---
         async function handleLogout() {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         }
 
-        // --- 5. LEGAL MODAL ---
-        function openLegal() {
-            const modal = document.getElementById('legal-overlay');
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('active'), 10);
-        }
-
-        function closeLegal() {
-            const modal = document.getElementById('legal-overlay');
-            modal.classList.remove('active');
-            setTimeout(() => modal.style.display = 'none', 400);
-        }
-
-        // --- 6. FOOTER ---
-        function runFooterCycle() {
+        function runFooter() {
             const el = document.getElementById('footer-text');
-            const motto = "Empower . Educate . Elevate";
-            const original = `Powered Vanguard Citizen Services © ${new Date().getFullYear()}`;
-
-            const step1 = () => { el.classList.add('footer-active'); setTimeout(step2, 1800); };
-            const step2 = () => { el.style.opacity = '0'; setTimeout(step3, 600); };
-            const step3 = () => { el.innerText = motto; el.classList.remove('footer-active'); el.style.opacity = '1'; setTimeout(step4, 2500); };
-            const step4 = () => { el.style.opacity = '0'; setTimeout(step5, 600); };
-            const step5 = () => { el.innerText = original; el.style.opacity = '1'; setTimeout(step1, 6000); };
-            step1();
+            const motto = "Empower . Elevate . Educate";
+            const original = "Powered Vanguard Citizen Services © 2026";
+            setInterval(() => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.innerText = (el.innerText === original) ? motto : original;
+                    el.style.opacity = '1';
+                }, 600);
+            }, 6000);
         }
 
-        window.onload = () => {
-            enforceSecurity();
-            runFooterCycle();
-        };
+        window.onload = runGatekeeper;
     </script>
 </body>
 </html>
