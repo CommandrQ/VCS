@@ -3,124 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | Citizen Ledger</title>
+    <title>Vanguard | Services</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div class="universe">
-        <div class="star-layer layer-distant"></div>
-    </div>
+    <div class="universe"><div class="star-layer"></div></div>
 
     <header class="vanguard-header">
-        <h1 class="gold-text-outline" id="greeting" style="font-size: 1.6rem; text-transform: uppercase;">Citizen Ledger</h1>
+        <nav class="nav-container" id="nav-scroll">
+            <button class="gold-pill active">🔧 Services</button>
+            </nav>
+        <div class="scroll-arrow" id="nav-arrow">→</div>
     </header>
 
     <main>
-        <div class="content-grid">
+        <div class="glass-card">
+            <div id="population-stat">
+                <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase;">Active Population</h3>
+                <h1 id="pop-count" style="font-size: 2.5rem;">--</h1>
+            </div>
+
+            <hr style="width: 50%; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+
+            <div class="service-item">
+                <h3>🛡️ Tech Support</h3>
+                <p style="color: var(--text-dim); font-size: 0.85rem;">Secure hardware repair and software optimization for local citizens.</p>
+                <a href="support.html" class="gold-pill" style="margin-top: 10px;">Request Dispatch</a>
+            </div>
+
+            <div class="service-item">
+                <h3>📡 Network Audit</h3>
+                <p style="color: var(--text-dim); font-size: 0.85rem;">Deep-packet inspection and Wi-Fi hardening for home foundations.</p>
+                <a href="support.html" class="gold-pill" style="margin-top: 10px;">Initialize Audit</a>
+            </div>
             
-            <div class="glass-card">
-                <h2>Verified Citizens</h2>
-                <p>The core population of Fort Toward. Verified and synchronized.</p>
-                
-                <table class="tactical-table">
-                    <thead>
-                        <tr>
-                            <th>Citizen</th>
-                            <th>Rank</th>
-                            <th>Handle</th>
-                        </tr>
-                    </thead>
-                    <tbody id="directory-body">
-                        </tbody>
-                </table>
+            <div class="service-item">
+                <h3>👤 Profile Terminal</h3>
+                <p style="color: var(--text-dim); font-size: 0.85rem;">Manage your Vanguard identity and cryptographic handles.</p>
+                <a href="settings.html" class="gold-pill" style="margin-top: 10px;">Access Profile</a>
             </div>
-
-            <div class="glass-card">
-                <h2>Operational Intel</h2>
-                <p>Real-time data regarding the Vanguard network status.</p>
-                
-                <div style="padding: 20px 0; border-top: 1px solid var(--glass-border);">
-                    <h3 style="color: var(--gold); font-size: 0.9rem;">Population Count</h3>
-                    <p id="stat-count" style="font-size: 2rem; font-weight: 800;">--</p>
-                </div>
-
-                <div style="padding: 20px 0; border-top: 1px solid var(--glass-border);">
-                    <h3 style="color: var(--gold); font-size: 0.9rem;">Fort Status</h3>
-                    <p style="color: #39ff14; font-weight: 800; letter-spacing: 2px;">SECURE</p>
-                </div>
-
-                <a href="settings.html" class="btn-pill-centered">UPDATE PROFILE</a>
-            </div>
-
         </div>
     </main>
 
     <footer class="vanguard-footer">
-        <p>Vanguard OS v4.7 Prime | Mission Critical Data</p>
+        <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
     </footer>
 
     <script>
-        // --- CONFIG ---
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- IDENTITY & LOCKDOWN ---
-        async function runPreflight() {
-            // 1. Check Maintenance Switch
-            const { data: config } = await supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single();
-            if (config && config.value_bool === false) window.location.href = 'uc.html';
-
-            // 2. Personalize Greeting
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const { data: citizen } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
-                if (citizen) document.getElementById('greeting').innerText = `Ledger: ${citizen.full_name}`;
-            }
-        }
-
-        // --- FETCH CITIZENS ---
-        async function fetchLedger() {
-            const tbody = document.getElementById('directory-body');
-            const statCount = document.getElementById('stat-count');
-
-            const { data, error } = await supabaseClient
+        // --- POPULATION COUNT ---
+        async function fetchPopulation() {
+            const { count, error } = await supabaseClient
                 .from('citizens')
-                .select('full_name, rank, handle')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                tbody.innerHTML = '<tr><td colspan="3">Sync Error</td></tr>';
-                return;
-            }
-
-            // Update Stats Card
-            statCount.innerText = data.length;
-
-            // Populate Main Card
-            tbody.innerHTML = '';
-            data.forEach(citizen => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="font-weight:700;">${citizen.full_name}</td>
-                    <td><span class="rank-pill">${citizen.rank || 'Citizen'}</span></td>
-                    <td style="font-family:monospace; color:var(--text-dim);">@${citizen.handle || '---'}</td>
-                `;
-                tbody.appendChild(row);
-            });
+                .select('*', { count: 'exact', head: true });
+            
+            if (!error) document.getElementById('pop-count').innerText = count;
         }
 
-        // --- REFRESH LOGIC ---
-        window.addEventListener('pageshow', (e) => {
-            if (e.persisted || window.performance.navigation.type === 2) window.location.reload();
-        });
+        // --- HEADER SCROLL LOGIC ---
+        function checkNavScroll() {
+            const nav = document.getElementById('nav-scroll');
+            const arrow = document.getElementById('nav-arrow');
+            arrow.style.display = (nav.scrollWidth > nav.clientWidth) ? 'block' : 'none';
+        }
+
+        // --- FOOTER ANIMATION CYCLE ---
+        function runFooterCycle() {
+            const el = document.getElementById('footer-text');
+            const original = "Powered Vanguard Citizen Services © 2026";
+            const motto = "Empower . Educate . Elevate";
+
+            setInterval(() => {
+                // 1. Glow
+                el.classList.add('footer-glow');
+                
+                setTimeout(() => {
+                    // 2. Wipe / Fade Out
+                    el.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        // 3. Swap to Motto
+                        el.innerText = motto;
+                        el.style.opacity = '1';
+                        el.classList.remove('footer-glow');
+
+                        setTimeout(() => {
+                            // 4. Wipe / Fade Out
+                            el.style.opacity = '0';
+
+                            setTimeout(() => {
+                                // 5. Back to Original
+                                el.innerText = original;
+                                el.style.opacity = '1';
+                            }, 500);
+                        }, 2000); // Hold motto for 2s
+                    }, 500);
+                }, 1000); // Hold glow for 1s
+            }, 8000); // Total cycle repeats every 8s
+        }
 
         window.onload = () => {
-            runPreflight();
-            fetchLedger();
+            fetchPopulation();
+            checkNavScroll();
+            runFooterCycle();
         };
+        window.onresize = checkNavScroll;
     </script>
 </body>
 </html>
