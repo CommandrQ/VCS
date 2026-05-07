@@ -3,212 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fort Toward | Directory</title>
+    <title>VANGUARD COMMAND | DIRECTORY</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        /* --- CORE OS ARCHITECTURE --- */
-        body, html {
-            overflow: hidden; height: 100%;
-            display: flex; flex-direction: column;
+        :root {
+            --gold: #d4af37;
+            --v-black: #000000;
+            --v-gray-glass: rgba(15, 15, 15, 0.85);
+            --v-mono: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', monospace;
         }
 
-        .scanlines {
-            position: fixed; inset: 0;
-            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(255, 255, 255, 0.02) 50%);
-            background-size: 100% 4px; z-index: 1; pointer-events: none;
+        /* --- CORE ARCHITECTURE --- */
+        body {
+            background-color: var(--v-black);
+            color: #FFFFFF;
+            font-family: var(--v-mono);
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            animation: portalFadeIn 0.8s ease-out;
+            text-transform: uppercase;
         }
 
-        /* --- HEADER --- */
-        .hud-header {
-            flex-shrink: 0; background: #000; border-bottom: 2px solid var(--v-gold); z-index: 10;
-        }
-        .header-content {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px; width: 100%; box-sizing: border-box;
+        @keyframes portalFadeIn {
+            from { opacity: 0; transform: scale(0.99); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- NAVIGATION --- */
-        .tuner-wrapper {
-            position: relative; width: 100%; background: #000; border-bottom: 1px solid #222;
-            display: flex; align-items: center; z-index: 10;
-        }
-        .category-nav {
-            display: flex; gap: 15px; padding: 15px 40px; overflow-x: auto;
-            scrollbar-width: none; scroll-behavior: smooth; width: 100%;
+        /* --- CATEGORY SELECTOR (TUNER) --- */
+        .category-tuner {
+            display: flex;
             justify-content: center;
-        }
-        .category-nav::-webkit-scrollbar { display: none; }
-
-        .btn-pill {
-            flex: 0 0 auto; font-family: inherit; font-weight: 900; padding: 10px 22px;
-            font-size: 0.85rem; border-radius: 50px; cursor: pointer;
-            transition: 0.3s var(--v-curve); border: none; text-align: center;
-        }
-        .btn-active { background: var(--v-gold) !important; color: #000 !important; box-shadow: 0 4px 0 #8a6d0d; }
-        .btn-inactive { background: transparent !important; border: 1px solid #555 !important; color: #bbb !important; }
-
-        .scroll-arrow {
-            position: absolute; right: 15px; color: var(--v-gold); font-size: 1.2rem;
-            pointer-events: none; animation: arrowPulse 2s infinite; display: none;
-        }
-
-        /* --- CONTENT --- */
-        .os-viewport {
-            flex: 1; overflow-y: auto; padding: 40px 20px;
-            display: flex; flex-direction: column; align-items: center; z-index: 5;
-        }
-        .portal-card {
-            background: #0a0a0a; border: 1px solid #333; border-left: 5px solid var(--v-gold);
-            width: 100%; max-width: 800px; padding: 30px; margin-bottom: 25px;
-            box-shadow: 20px 20px 40px rgba(0,0,0,1);
-            display: flex; justify-content: space-between; align-items: center;
-            gap: 25px; animation: systemWake 0.6s var(--v-curve) forwards;
-        }
-
-        /* --- FOOTER DESKTOP LAYOUT --- */
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
             gap: 10px;
-        }
-        
-        .footer-nav {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+            padding: 20px;
+            z-index: 20;
+            flex-wrap: wrap;
         }
 
-        /* --- MOBILE REFINEMENTS --- */
-        @media (max-width: 768px) {
-            .header-content { flex-direction: column; text-align: center; gap: 15px; padding: 15px 10px; }
-            .header-content nav { flex-direction: row; justify-content: center; width: 100%; flex-wrap: wrap; }
-            .category-nav { justify-content: flex-start; padding: 15px 20px; }
-            .portal-card { flex-direction: column; text-align: left; }
-            .card-btn { width: 100%; text-align: center; }
-            
-            /* FOOTER STACKING ON MOBILE */
-            .footer-content { 
-                flex-direction: column; 
-                justify-content: center; 
-                text-align: center; 
-                gap: 15px; 
-            }
-            .footer-nav {
-                justify-content: center;
-                width: 100%;
-            }
+        .tuner-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #666;
+            padding: 8px 16px;
+            font-family: var(--v-mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 4px;
+        }
+
+        .tuner-btn.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        /* --- CONTENT GRID --- */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--v-gray-glass);
+            border: 1px solid #222;
+            padding: 30px;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            border-top: 2px solid #222;
+        }
+
+        .glass-card:hover {
+            border-top-color: var(--gold);
+            transform: translateY(-5px);
+        }
+
+        .glass-card h2 {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .glass-card p {
+            font-size: 0.85rem;
+            color: #bbb;
+            text-transform: none;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .gold-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .gold-btn:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* --- FOOTER --- */
+        .vanguard-footer {
+            padding: 30px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #444;
+            z-index: 10;
+        }
+
+        .footer-link {
+            color: var(--gold);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer-link:hover {
+            border-bottom: 1px solid var(--gold);
         }
     </style>
 </head>
-<body class="fixed-hud">
+<body>
 
-    <div class="scanlines"></div>
-    <div class="starfield s1"></div>
+    <div class="universe" aria-hidden="true">
+        <div class="star-layer layer-distant"></div>
+        <div class="star-layer layer-mid"></div>
+        <div class="star-layer layer-near"></div>
+    </div>
 
-    <header class="hud-header">
-        <div class="header-content">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="images/vanguardorglogo.png" alt="VCS Logo" style="width:35px;">
-                <span id="os-title" class="gold-text-outline" style="font-size: 1.2rem;">Fort Toward Directory</span>
-            </div>
-            <nav style="display: flex; gap: 10px;">
-                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='vcsinfo.html'">ABOUT VANGUARD</button>
-                <button class="btn-pill btn-active" style="padding: 6px 18px; font-size: 0.75rem;" onclick="location.href='support.html'">CUSTOMER SERVICE</button>
-            </nav>
+    <header class="vanguard-header" style="padding: 40px 20px; text-align: center; z-index: 20;">
+        <div class="header-inner">
+            <h1 id="greeting" style="letter-spacing: 4px; font-weight: 900; font-size: 1.5rem;">Welcome, Citizen</h1>
         </div>
     </header>
 
-    <div class="tuner-wrapper">
-        <nav class="category-nav" id="category-row"></nav>
-        <div class="scroll-arrow" id="nav-arrow" aria-hidden="true">➔</div>
-    </div>
+    <nav class="category-tuner" id="category-row"></nav>
 
-    <main class="os-viewport" id="portal-feed"></main>
+    <main class="content-grid" id="portal-feed"></main>
 
-    <footer class="vanguard-footer" style="border-top: 2px solid #222; padding: 20px; background: #000; z-index: 10;">
-        <div class="footer-content">
-            <p style="color: #FFF; font-size: 0.75rem; margin: 0;">&copy; 2026 VANGUARD CITIZEN SERVICES</p>
-            <nav class="footer-nav">
-                <a href="legal.html" style="color: #bbb; text-decoration: none; font-size: 0.8rem;">LEGAL</a>
-                <span style="color: #333;">|</span>
-                <a href="settings.html" style="color: #FFF; text-decoration: none; font-weight: bold; font-size: 1rem;">⚙️ SYSTEM SETTINGS</a>
-            </nav>
-        </div>
+    <footer class="vanguard-footer">
+        <p>Powered by <a href="https://vcscitizen.org" class="footer-link" target="_blank">Vanguard Citizen Services</a> &copy; <span id="year"></span></p>
     </footer>
 
     <script>
         const VANGUARD_DB = {
-            "Services": [
-                { title: "Vanguard Support & Repair", desc: "Friendly tech help and simple hardware repairs for your devices.", link: "https://vsr.vcscitizen.org/index.html", btnText: "REQUEST HELP" }
+            "Operations": [
+                { title: "Support & Repair", desc: "Straightforward technical remediation and hardware maintenance for the local corridor.", link: "https://vsr.vcscitizen.org/index.html", btnText: "GET SUPPORT" }
             ],
-            "Guides": [
-                { title: "Technology Guides", desc: "Easy-to-read resources to help you master your digital world.", link: "#", btnText: "READ NOW" }
+            "Intelligence": [
+                { title: "Technical Manuals", desc: "Digital essentialism frameworks and masters-level technology mastery guides.", link: "#", btnText: "READ MANUALS" }
             ],
-            "Academy": [
-                { title: "Computer Basics 101", desc: "A simple, stress-free class to help you get the most out of your devices.", link: "#", btnText: "JOIN CLASS" }
+            "Training": [
+                { title: "Systems Literacy", desc: "High-discipline training for computer fundamentals and hardware proficiency.", link: "#", btnText: "JOIN ACADEMY" }
             ],
-            "Volunteer": [
-                { title: "Community Hands", desc: "Request help for local projects or neighborly assistance with physical tasks.", link: "support.html", btnText: "SIGNAL CREW" }
+            "Identity": [
+                { title: "Citizen Terminal", desc: "Access your secure local settings and manage your community credentials.", link: "settings.html", btnText: "OPEN SETTINGS" }
             ]
         };
 
         const navRow = document.getElementById('category-row');
         const feed = document.getElementById('portal-feed');
-        const arrow = document.getElementById('nav-arrow');
+        document.getElementById('year').textContent = new Date().getFullYear();
 
         function syncIdentity() {
             const citizen = JSON.parse(localStorage.getItem('vanguard_citizen'));
             if (citizen && citizen.full_name) {
-                const firstName = citizen.full_name.split(' ')[0];
-                document.getElementById('os-title').innerText = `Welcome, ${firstName}`;
+                const firstName = citizen.full_name.split(' ')[0].toUpperCase();
+                document.getElementById('greeting').innerText = `OPERATOR: ${firstName}`;
             }
-        }
-
-        Object.keys(VANGUARD_DB).forEach((cat, index) => {
-            const btn = document.createElement('button');
-            btn.innerText = cat;
-            btn.className = index === 0 ? 'btn-pill btn-active' : 'btn-pill btn-inactive';
-            btn.onclick = () => switchCategory(cat, btn);
-            navRow.appendChild(btn);
-            if (index === 0) renderCards(cat);
-        });
-
-        function checkOverflow() {
-            if (navRow.scrollWidth > navRow.clientWidth) {
-                arrow.style.display = 'block';
-            } else {
-                arrow.style.display = 'none';
-            }
-        }
-
-        function switchCategory(cat, targetBtn) {
-            document.querySelectorAll('#category-row button').forEach(b => b.className = 'btn-pill btn-inactive');
-            targetBtn.className = 'btn-pill btn-active';
-            renderCards(cat);
         }
 
         function renderCards(cat) {
             feed.innerHTML = '';
             VANGUARD_DB[cat].forEach(item => {
-                const card = document.createElement('section');
-                card.className = 'portal-card';
+                const card = document.createElement('article');
+                card.className = 'glass-card';
                 card.innerHTML = `
-                    <div style="flex: 1;">
-                        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 12px; font-weight: 900;">${item.title}</h2>
-                        <p style="font-size: 1.15rem; color: #ddd; line-height: 1.6;">${item.desc}</p>
+                    <div>
+                        <h2>${item.title}</h2>
+                        <p>${item.desc}</p>
                     </div>
-                    <a href="${item.link}" class="btn-pill btn-active card-btn" style="padding: 15px 30px; font-size: 0.9rem; text-decoration: none;">${item.btnText}</a>
+                    <a href="${item.link}" class="gold-btn">${item.btnText}</a>
                 `;
                 feed.appendChild(card);
             });
         }
 
-        window.onload = () => { syncIdentity(); checkOverflow(); };
-        window.onresize = checkOverflow;
+        Object.keys(VANGUARD_DB).forEach((cat, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = cat;
+            btn.className = index === 0 ? 'tuner-btn active' : 'tuner-btn';
+            btn.onclick = () => {
+                document.querySelectorAll('.tuner-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderCards(cat);
+            };
+            navRow.appendChild(btn);
+            if (index === 0) renderCards(cat);
+        });
+
+        window.onload = syncIdentity;
     </script>
 </body>
 </html>
