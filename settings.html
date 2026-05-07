@@ -40,14 +40,15 @@
             align-items: center;
             text-align: center;
             gap: 20px;
+            transition: 0.3s var(--v-curve);
         }
 
         /* --- Header Logic --- */
         .identity-header { width: 100%; margin-bottom: 5px; }
         .rank-tag {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
             font-size: 0.7rem;
             font-weight: 800;
             padding: 4px 14px;
@@ -55,6 +56,13 @@
             text-transform: uppercase;
             display: inline-block;
             margin-bottom: 10px;
+            transition: 0.3s;
+        }
+        /* Authenticated State for Tag */
+        .tag-verified {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
         }
 
         /* --- White Glowing Divider --- */
@@ -70,8 +78,8 @@
             flex-direction: column;
             gap: 15px;
             overflow-y: auto;
-            max-height: 300px;
-            padding-right: 8px;
+            max-height: 350px;
+            padding: 5px 8px 5px 0;
             text-align: left;
         }
         .form-scroll-area::-webkit-scrollbar { width: 3px; }
@@ -87,17 +95,31 @@
             width: 100%; background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px; padding: 12px; color: #ffffff;
-            font-size: 1rem; transition: 0.3s;
+            font-size: 1rem; transition: 0.3s; box-sizing: border-box;
         }
         .form-group input:focus { outline: none; border-color: var(--gold); background: rgba(0, 0, 0, 0.6); }
+        .form-group input:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* --- Success/Notice Flash --- */
-        .status-msg { font-size: 0.8rem; font-weight: 600; min-height: 1.2em; transition: 0.3s; }
-        .success-flash { animation: pulseSuccess 1s ease-in-out; }
-        @keyframes pulseSuccess {
-            0%, 100% { border-color: rgba(255,255,255,0.1); }
-            50% { border-color: var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+        /* --- Helper Links --- */
+        .helper-link {
+            background: transparent; border: none;
+            color: #fff; /* White text as requested */
+            font-size: 0.8rem; cursor: pointer;
+            padding: 0; transition: 0.3s;
+            text-decoration: underline;
         }
+        .helper-link:hover { color: var(--gold); }
+
+        /* --- Success/Error Flash --- */
+        .status-msg { font-size: 0.8rem; font-weight: 600; min-height: 1.2em; transition: 0.3s; margin-top: 10px;}
+        
+        .error-flash { animation: pulseError 1s ease-in-out; }
+        @keyframes pulseError {
+            0%, 100% { border-color: rgba(255,255,255,0.1); }
+            50% { border-color: #f87171; box-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
+        }
+
+        @media (max-width: 480px) { .identity-terminal { padding: 25px; } }
     </style>
 </head>
 <body>
@@ -116,35 +138,84 @@
         <article class="glass-card identity-terminal" id="identity-card">
             
             <div class="identity-header">
-                <div class="rank-tag">Public Access</div>
-                <h2 style="margin: 0; font-size: 1.8rem; color: #fff; font-weight: 900;">GUEST CITIZEN</h2>
+                <div id="auth-tag" class="rank-tag">Unauthenticated</div>
+                <h2 id="citizen-name" style="margin: 0; font-size: 1.8rem; color: #fff; font-weight: 900; text-transform: uppercase;">Guest Mode</h2>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
-                <a href="index.html" class="gold-pill">Return Home</a>
-                <a href="directory.html" class="gold-pill">Directory</a>
+            <div style="width: 100%; display: flex; justify-content: center;">
+                <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 30px;">Return Home</a>
             </div>
 
             <hr class="white-divider">
 
-            <div class="form-scroll-area">
-                <div class="form-group">
-                    <label>Assigned Callsign</label>
-                    <input type="text" id="f-handle" placeholder="Enter Guest Handle...">
-                </div>
+            <div class="form-scroll-area" id="form-content">
                 
-                <div class="form-group">
-                    <label>Discord Identity</label>
-                    <input type="text" id="f-discord" placeholder="Username#0000">
+                <div id="state-loading" style="text-align: center; color: #888; padding: 20px;">
+                    Synchronizing with Ledger...
                 </div>
 
-                <div style="background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3);">
-                    <p style="color: #888; font-size: 0.75rem; margin: 0; line-height: 1.4;">
-                        <strong>SYSTEM NOTE:</strong> Authentication is currently bypassed. Local changes to callsigns will not be saved to the permanent ledger until Identity Protocols are re-enabled.
-                    </p>
+                <div id="state-unauth" style="display: none; flex-direction: column; gap: 15px;">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-name" placeholder="First Last">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="reg-email" placeholder="citizen@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Security Password</label>
+                        <input type="password" id="reg-password" placeholder="••••••••">
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="gold-pill" style="width: 100%;" onclick="handleSignUp()">Sync Identity</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="helper-link" onclick="toggleRestoreMode(true)">lost access? Restore via email</button>
+                    </div>
                 </div>
 
-                <button class="gold-pill" style="margin-top: 5px;" onclick="simulateSync()">Apply Local Changes</button>
+                <div id="state-restore" style="display: none; flex-direction: column; gap: 15px;">
+                    <p style="color: #888; font-size: 0.8rem; text-align: center; margin-bottom: 10px;">Enter details to transmit a recovery signal.</p>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="res-name" placeholder="First Last">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="res-email" placeholder="citizen@email.com">
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="gold-pill" style="width: 100%;" onclick="handleRestoreAccess()">Restore Access</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="helper-link" onclick="toggleRestoreMode(false)">return to log in</button>
+                    </div>
+                </div>
+
+                <div id="state-auth" style="display: none; flex-direction: column; gap: 15px;">
+                    <div class="form-group">
+                        <label>Email Address (Primary)</label>
+                        <input type="email" id="auth-email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="auth-name" placeholder="First Last">
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="gold-pill" style="width: 100%;" onclick="handleUpdateProfile()">Update Profile</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="gold-pill" style="width: auto; border-color: #f87171; color: #f87171; background: transparent;" onclick="handleLogout()">Disconnect Identity</button>
+                    </div>
+                </div>
+
             </div>
             
             <div id="sys-msg" class="status-msg"></div>
@@ -153,15 +224,192 @@
     </main>
 
     <footer class="vanguard-footer">
-        <p id="footer-text">Vanguard OS v6.0 | Identity Protocol Enabled</p>
+        <p id="footer-text">Vanguard OS v7.0 | Identity Protocol Enabled</p>
     </footer>
 
     <script>
-        // Footer animation logic
+        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        // UI Elements
+        const ui = {
+            card: document.getElementById('identity-card'),
+            tag: document.getElementById('auth-tag'),
+            nameDisplay: document.getElementById('citizen-name'),
+            msg: document.getElementById('sys-msg'),
+            // States
+            loading: document.getElementById('state-loading'),
+            unauth: document.getElementById('state-unauth'),
+            restore: document.getElementById('state-restore'),
+            auth: document.getElementById('state-auth'),
+            // Inputs
+            authEmail: document.getElementById('auth-email'),
+            authName: document.getElementById('auth-name')
+        };
+
+        // --- 1. SESSION INITIALIZATION ---
+        async function initTerminal() {
+            setUiState('loading');
+            
+            // Check current session
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (session) {
+                // USER IS LOGGED IN
+                localStorage.setItem('vanguard_auth_active', 'true'); // Create local cookie replacement
+                loadAuthenticatedState(session.user);
+            } else {
+                // USER IS NOT LOGGED IN
+                localStorage.removeItem('vanguard_auth_active');
+                loadUnauthenticatedState();
+            }
+            runFooter();
+        }
+
+        // --- 2. STATE MANAGEMENT ---
+        function setUiState(activeState) {
+            // Hide all
+            ui.loading.style.display = 'none';
+            ui.unauth.style.display = 'none';
+            ui.restore.style.display = 'none';
+            ui.auth.style.display = 'none';
+            // Show active
+            ui[activeState].style.display = 'flex';
+            if(activeState === 'loading') ui.loading.style.display = 'block';
+        }
+
+        function loadUnauthenticatedState() {
+            ui.tag.innerText = "Unauthenticated";
+            ui.tag.classList.remove('tag-verified');
+            ui.nameDisplay.innerText = "Guest Mode";
+            setUiState('unauth');
+        }
+
+        function toggleRestoreMode(showRestore) {
+            setUiState(showRestore ? 'restore' : 'unauth');
+            ui.msg.innerText = ""; // Clear messages
+        }
+
+        async function loadAuthenticatedState(authUser) {
+            ui.tag.innerText = "Authenticated";
+            ui.tag.classList.add('tag-verified');
+            
+            // Fetch public profile data
+            const { data, error } = await supabaseClient
+                .from('citizens')
+                .select('full_name')
+                .eq('auth_id', authUser.id)
+                .single();
+
+            const fullName = (data && data.full_name) ? data.full_name : authUser.email.split('@')[0];
+            
+            ui.nameDisplay.innerText = fullName;
+            ui.authEmail.value = authUser.email;
+            ui.authName.value = fullName;
+            
+            setUiState('auth');
+        }
+
+        // --- 3. AUTHENTICATION ACTIONS ---
+        
+        // A: Sign Up (Sync Identity)
+        async function handleSignUp() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            if (!name || !email || !password) { notify("All fields required.", "#f87171"); return; }
+            if (password.length < 6) { notify("Password must be 6+ chars.", "#f87171"); return; }
+
+            notify("Transmitting to Ledger...", "var(--gold)");
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: { full_name: name } // Store name in metadata temporarily
+                }
+            });
+
+            if (error) {
+                notify("Sync Failed: " + error.message, "#f87171");
+            } else {
+                notify("Verification Email Sent. Check inbox.", "#4ade80");
+                // Note: Users must confirm email usually before login works completely
+            }
+        }
+
+        // B: Restore Access (Magic Link)
+        async function handleRestoreAccess() {
+            const name = document.getElementById('res-name').value.trim();
+            const email = document.getElementById('res-email').value.trim();
+
+            if (!name || !email) { notify("Name and Email required.", "#f87171"); return; }
+
+            notify("Transmitting Signal...", "var(--gold)");
+
+            // Note: In a real app, you'd verify the name matches the email in your 'citizens' table first.
+            // For this implementation, we proceed to send link.
+
+            const { error } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: {
+                    emailRedirectTo: window.location.href // Redirect back here
+                }
+            });
+
+            if (error) {
+                notify("Restore Failed: " + error.message, "#f87171");
+            } else {
+                notify("Magic Link transmitted. Check email.", "#4ade80");
+            }
+        }
+
+        // C: Update Profile
+        async function handleUpdateProfile() {
+            const newName = ui.authName.value.trim();
+            if (!newName) { notify("Name cannot be empty.", "#f87171"); return; }
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+
+            notify("Updating Ledger...", "var(--gold)");
+
+            const { error } = await supabaseClient
+                .from('citizens')
+                .update({ full_name: newName })
+                .eq('auth_id', session.user.id);
+
+            if (error) {
+                notify("Update Failed: " + error.message, "#f87171");
+            } else {
+                ui.nameDisplay.innerText = newName;
+                notify("Profile Synchronized.", "#4ade80");
+            }
+        }
+
+        // D: Logout
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('vanguard_auth_active');
+            location.reload(); // Reload to reset state to Guest
+        }
+
+        // --- 4. HELPERS ---
+        function notify(msg, color) {
+            ui.msg.innerText = msg;
+            ui.msg.style.color = color;
+            if (color === "#f87171") {
+                ui.card.classList.add('error-flash');
+                setTimeout(() => ui.card.classList.remove('error-flash'), 1000);
+            }
+        }
+
         function runFooter() {
             const el = document.getElementById('footer-text');
             const motto = "Empower . Elevate . Educate";
-            const original = "Vanguard OS v6.0 | Identity Protocol Enabled";
+            const original = "Vanguard OS v7.0 | Identity Protocol Enabled";
             setInterval(() => {
                 el.style.opacity = '0';
                 setTimeout(() => {
@@ -171,26 +419,16 @@
             }, 6000);
         }
 
-        // Feedback simulation
-        function simulateSync() {
-            const el = document.getElementById('sys-msg');
-            const card = document.getElementById('identity-card');
-            
-            el.innerText = "Synchronizing Local Identity...";
-            el.style.color = "var(--gold)";
-            card.classList.add('success-flash');
+        // Listen for auth state changes (e.g., magic link clicked)
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                localStorage.setItem('vanguard_auth_active', 'true');
+                loadAuthenticatedState(session.user);
+                notify("Identity Verified.", "#4ade80");
+            }
+        });
 
-            setTimeout(() => {
-                el.innerText = "Identity Applied Locally.";
-                el.style.color = "#4ade80";
-                setTimeout(() => { 
-                    el.innerText = "";
-                    card.classList.remove('success-flash');
-                }, 2000);
-            }, 1200);
-        }
-
-        window.onload = runFooter;
+        window.onload = initTerminal;
     </script>
 </body>
 </html>
