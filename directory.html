@@ -15,9 +15,9 @@
         /* --- LOCKED VIEWPORT ENGINE --- */
         html, body {
             margin: 0; padding: 0;
-            height: 100dvh; /* Dynamic Viewport Height for mobile browsers */
+            height: 100dvh; 
             width: 100vw;
-            overflow: hidden; /* Strict lock on the body */
+            overflow: hidden; 
             background: #000; color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex; flex-direction: column;
@@ -35,14 +35,14 @@
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             height: 100%; width: 100%;
-            padding: 15px 15px 55px 15px; /* 55px bottom padding protects the footer */
+            padding: 15px 15px 55px 15px; 
             box-sizing: border-box;
         }
 
         /* --- SLOW ANNOUNCEMENT TICKER (1s Pause) --- */
         .announcement-ticker {
             width: 100%; max-width: 850px;
-            flex: 0 0 auto; /* Prevent from shrinking */
+            flex: 0 0 auto; 
             background: rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
             border-bottom: 2px solid var(--gold);
@@ -55,21 +55,20 @@
             display: inline-block;
             color: #fff; font-size: 0.8rem; font-weight: bold;
             text-transform: uppercase; letter-spacing: 1.5px;
-            padding-left: 100%; /* Pushes text to start from the far right edge */
-            /* 30s total animation. 96.6% = ~29s moving, 3.4% = ~1s pause */
+            padding-left: 100%; 
             animation: tickerScroll 30s linear infinite;
         }
         @keyframes tickerScroll { 
             0% { transform: translateX(0); } 
-            96.6% { transform: translateX(-100%); } /* Text exits far left */
-            100% { transform: translateX(-100%); } /* 1 second pause */
+            96.6% { transform: translateX(-100%); } 
+            100% { transform: translateX(-100%); } 
         }
 
         /* --- BIG DIRECTORY CARD --- */
         .directory-terminal {
             width: 100%; max-width: 850px;
-            flex: 1 1 auto; /* Allows the card to take remaining screen space */
-            min-height: 0; /* CRITICAL FIX: Allows internal scrolling on mobile */
+            flex: 1 1 auto; 
+            min-height: 0; 
             display: flex; flex-direction: column;
             padding: 25px 25px 15px; gap: 20px;
             box-sizing: border-box; position: relative;
@@ -82,7 +81,6 @@
         /* --- DYNAMIC POPULATION COUNTER --- */
         .pop-container { flex: 0 0 auto; text-align: center; width: 100%; }
         .pop-label { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
-        /* Font size uses 'min' to auto-shrink on small screens when numbers get huge */
         .pop-count { font-size: min(4rem, 12vw); font-weight: 900; color: #fff; margin: 5px 0 0; line-height: 1; transition: 0.5s; word-wrap: break-word; }
         .loading-count { opacity: 0.5; font-size: 2rem; }
 
@@ -111,8 +109,8 @@
 
         /* --- MINI CARDS CONTAINER --- */
         .directory-content {
-            flex: 1 1 auto; /* Takes leftover space inside the big card */
-            min-height: 0; /* CRITICAL FIX for mobile scroll */
+            flex: 1 1 auto; 
+            min-height: 0; 
             overflow-y: auto;
             width: 100%; padding-right: 5px;
             display: grid; 
@@ -122,24 +120,24 @@
         .directory-content::-webkit-scrollbar { width: 4px; }
         .directory-content::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
-        /* --- MINI CARDS (Centered Layout) --- */
+        /* --- MINI CARDS --- */
         .link-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px; padding: 25px 20px;
             transition: 0.3s;
             display: flex; flex-direction: column; 
-            align-items: center; /* Centers items horizontally */
-            text-align: center; /* Centers text */
+            align-items: center; 
+            text-align: center; 
             gap: 12px;
         }
         .link-card:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.3); transform: translateY(-3px); }
         
         .card-title { color: #fff; font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
-        .card-desc { color: #fff; font-size: 0.8rem; margin: 0; line-height: 1.5; flex-grow: 1; } /* Changed from #aaa to #fff */
+        .card-desc { color: #fff; font-size: 0.8rem; margin: 0; line-height: 1.5; flex-grow: 1; } 
         
         .card-btn {
-            margin-top: auto; /* Pushes button to bottom, keeps it centered */
+            margin-top: auto; 
             padding: 10px 25px; font-size: 0.75rem; width: auto;
         }
 
@@ -162,14 +160,12 @@
             transition: opacity 1s, filter 1s;
         }
 
-        /* Slice Animation for Motto */
         .motto-text {
             clip-path: inset(0 100% 0 0);
             transition: clip-path 1.5s var(--v-curve), opacity 1s;
             color: var(--gold);
         }
 
-        /* Active states triggered by JS */
         .state-copyright .copyright-text { opacity: 1; filter: blur(0); }
         .state-copyright .motto-text { opacity: 0; filter: blur(5px); clip-path: inset(0 100% 0 0); }
 
@@ -188,7 +184,7 @@
         
         <div class="announcement-ticker">
             <div class="ticker-content">
-             ::: MONITOR TERMINAL FOR UPDATES ::: END NOTICE :::
+                ::: SYSTEM NOTICE: NETWORK UPGRADE PENDING FOR 2026.05.15 ::: REQUIRED CITIZEN DATA RESYNC SCHEDULED ::: MONITOR TERMINAL FOR UPDATES ::: END NOTICE :::
             </div>
         </div>
 
@@ -226,12 +222,19 @@
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         const directoryData = {
-            "Services": [
-                { title: "Vanguard Support & Repair", desc: "Simple tech help and support.", url: "https://vsr.vcscitizen.org/ }
+            "Core Nodes": [
+                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "settings.html" },
+                { title: "Network Status", desc: "Live uptime monitor for all Vanguard infrastructure nodes.", url: "#" },
+                { title: "Central Ledger", desc: "Public record of verified network transmissions.", url: "#" }
             ],
-            "System Menu": [
-                { title: "Settings", desc: "Sync user data and contact customer service.", url: "settings.html" },
-                { title: "Legal", desc: "View terms of service and privacy policy.", url: "legal.html" }
+            "Resources": [
+                { title: "Knowledge Base", desc: "Documentation on Vanguard OS protocols and citizen rights.", url: "legal.html" },
+                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "support.html" },
+                { title: "Asset Repository", desc: "Download official Vanguard media packages and templates.", url: "#" }
+            ],
+            "Directives": [
+                { title: "Current Mandates", desc: "Active operational directives issued by Command.", url: "#" },
+                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" }
             ]
         };
 
@@ -258,7 +261,6 @@
                 const { count, error } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
                 if (error) throw error;
                 
-                // Formats the number (e.g. 1,000,000). The CSS clamp() handles the visual shrinking automatically
                 ui.popCount.innerText = count.toLocaleString();
                 ui.popCount.classList.remove('loading-count');
             } catch (err) {
@@ -312,7 +314,7 @@
                         card.innerHTML = `
                             <h3 class="card-title">${res.title}</h3>
                             <p class="card-desc">${res.desc}</p>
-                            <a href="${res.url}" class="gold-pill card-btn">Go ➞</a>
+                            <a href="${res.url}" class="gold-pill card-btn">Execute ➞</a>
                         `;
                         ui.dirList.appendChild(card);
                     });
@@ -322,7 +324,7 @@
         }
 
         // ==========================================
-        // ANIMATED FOOTER LOOP (3s Text + 3s Transition)
+        // ANIMATED FOOTER LOOP
         // ==========================================
         function startFooterLoop() {
             setInterval(() => {
@@ -333,7 +335,7 @@
                     ui.body.classList.remove('state-motto');
                     ui.body.classList.add('state-copyright');
                 }
-            }, 6000); // 6s cycle gives roughly 3s of reading time per text
+            }, 6000); 
         }
 
         window.onload = initSystem;
