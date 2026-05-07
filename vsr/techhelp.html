@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | Tech Support</title>
-    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="techhelp.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -23,12 +20,20 @@
         
         <header class="page-header">
             <h1>Tech Support</h1>
-            <a href="../directory.html" class="btn-return">Return Home</a>
+            <div class="header-actions">
+                <a href="../index.html" class="btn-return">Return Home</a>
+                <a href="vsrsupport.html" class="btn-return">Customer Service</a>
+            </div>
         </header>
 
         <section class="intro-section">
             <h2>Take a deep breath.</h2>
             <p>Technology can be frustrating, but you are not alone. Vanguard is here to diagnose, repair, and optimize your systems so you can get back to what matters.</p>
+        </section>
+
+        <section class="range-box">
+            <h3>Primary Service Range</h3>
+            <p>In-person dispatch is currently available for <strong>Hardin</strong> and <strong>Jefferson</strong> counties in Kentucky. If you require service outside of these areas, please contact Customer Service to discuss travel availability and custom quotes.</p>
         </section>
 
         <section class="services-container" id="tiers-container">
@@ -41,7 +46,6 @@
                 <h2 id="modal-tier-title">Selected Tier</h2>
                 <p>Submitting will draft a secure email to a Vanguard Knight.</p>
             </div>
-
             <div class="modal-body">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -57,29 +61,25 @@
                 </div>
                 <div class="form-group">
                     <label>What do you need help with?</label>
-                    <textarea id="f-issue" class="form-input" placeholder="Please describe your technical issue..."></textarea>
+                    <textarea id="f-issue" class="form-input" placeholder="Describe the issue..."></textarea>
                 </div>
-
                 <div id="auth-section">
                     <div class="policy-box">
                         <h3>Vanguard Operational Policies</h3>
-                        <p><strong>Payment & Lateness:</strong> Appointments are subject to cancellation if the Knight is unable to reach you or access the premises 30 minutes past the scheduled arrival.</p>
-                        <p><strong>Cancellations:</strong> A minimum of 3 hours notice is required for cancellations. A maximum of 2 reschedules are permitted per request.</p>
+                        <p><strong>Lateness:</strong> Appointments canceled 30 min past arrival if contact is not established.</p>
+                        <p><strong>Cancellations:</strong> 3 hours notice required. Max 2 reschedules.</p>
                     </div>
-
                     <div class="form-group">
                         <label>Service Address</label>
-                        <input type="text" id="f-address" class="form-input" placeholder="123 Main St, City, Zip">
+                        <input type="text" id="f-address" class="form-input" placeholder="Address, City, Zip">
                     </div>
                     <div class="form-group">
                         <label>Will an adult be present? (Type YES)</label>
                         <input type="text" id="f-adult" class="form-input" placeholder="YES">
                     </div>
                 </div>
-                
                 <div id="sys-msg"></div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeModal()">Cancel</button>
                 <button class="btn-submit" onclick="submitRequest()">Review Request</button>
