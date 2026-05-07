@@ -138,7 +138,7 @@
         
         .card-btn {
             margin-top: auto; 
-            padding: 10px 25px; font-size: 0.75rem; width: auto;
+            padding: 10px 35px; font-size: 0.75rem; width: auto; font-weight: 800;
         }
 
         /* --- ANIMATED FOOTER ENGINE --- */
@@ -221,20 +221,14 @@
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
+        // Easily update categories, titles, descriptions, and URLs here
         const directoryData = {
-            "Core Nodes": [
-                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "settings.html" },
-                { title: "Network Status", desc: "Live uptime monitor for all Vanguard infrastructure nodes.", url: "#" },
-                { title: "Central Ledger", desc: "Public record of verified network transmissions.", url: "#" }
+            "Services": [
+                { title: "Vanguard Support & Repair", desc: "Simple tech help and support.", url: "support.html" }
             ],
-            "Resources": [
-                { title: "Knowledge Base", desc: "Documentation on Vanguard OS protocols and citizen rights.", url: "legal.html" },
-                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "support.html" },
-                { title: "Asset Repository", desc: "Download official Vanguard media packages and templates.", url: "#" }
-            ],
-            "Directives": [
-                { title: "Current Mandates", desc: "Active operational directives issued by Command.", url: "#" },
-                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" }
+            "System Menu": [
+                { title: "Settings", desc: "Access your verified citizen profile and preferences.", url: "settings.html" },
+                { title: "Legal", desc: "Documentation on Vanguard OS privacy and terms of use.", url: "legal.html" }
             ]
         };
 
@@ -248,7 +242,7 @@
         async function initSystem() {
             document.getElementById('current-year').innerText = new Date().getFullYear();
             fetchPopulation();
-            setInterval(fetchPopulation, 15000); // Polling every 15s to save DB reads
+            setInterval(fetchPopulation, 15000); 
             renderCategories();
             startFooterLoop();
         }
@@ -314,7 +308,7 @@
                         card.innerHTML = `
                             <h3 class="card-title">${res.title}</h3>
                             <p class="card-desc">${res.desc}</p>
-                            <a href="${res.url}" class="gold-pill card-btn">Execute ➞</a>
+                            <a href="${res.url}" class="gold-pill card-btn">Go</a>
                         `;
                         ui.dirList.appendChild(card);
                     });
