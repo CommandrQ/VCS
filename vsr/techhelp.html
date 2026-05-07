@@ -9,10 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="universe-bg">
-        <div class="star-layer stars-1"></div>
-        <div class="star-layer stars-2"></div>
-    </div>
+    <div class="universe-bg"><div class="star-layer stars-1"></div><div class="star-layer stars-2"></div></div>
 
     <div class="announcement-ticker">
         <div class="ticker-content">
@@ -54,9 +51,9 @@
                 </div>
 
                 <div class="form-group" id="student-check-container" style="display:none;">
-                    <label class="check-label">
+                    <label class="check-label" style="display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; color: #fff; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;">
                         <input type="checkbox" id="f-student"> 
-                        <span>I am a College Student ($50 Special)</span>
+                        <span>Apply Student Special ($50)</span>
                     </label>
                 </div>
 
@@ -65,8 +62,7 @@
                 <div id="auth-section" style="display:none;">
                     <div class="form-group"><label>Will an adult be present? (Type YES)</label><input type="text" id="f-adult" class="form-input" placeholder="YES"></div>
                     <div class="policy-box">
-                        <h3>Vanguard Policies</h3>
-                        <p>30 min late = cancellation. 3 hours notice required for reschedules.</p>
+                        <p>30 min late = cancellation. 3 hours notice for reschedules.</p>
                     </div>
                 </div>
                 <div id="sys-msg"></div>
