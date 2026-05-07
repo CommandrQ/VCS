@@ -63,8 +63,8 @@ html, body {
 /* --- GRID ENGINE (Desktop: 4 Columns) --- */
 .services-container { 
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* FORCES 4 PER ROW ON DESKTOP */
-    gap: 20px; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px; 
     width: 100%; 
     max-width: 1200px; 
     margin: 0 auto;
@@ -72,34 +72,34 @@ html, body {
 
 .solid-card {
     background: var(--solid-bg); border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px; padding: 25px; 
+    border-radius: 16px; padding: 20px; 
     display: flex; flex-direction: column; align-items: center; text-align: center;
-    min-height: 450px; /* Soaks up dead space */
+    min-height: 380px; /* REDUCED HEIGHT FOR DESKTOP */
     position: relative; transition: 0.3s;
 }
 .solid-card:hover { border-color: var(--v-gold); transform: translate3d(0, -5px, 0); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-/* MATCHING vsrsupport.html BUTTON */
+/* PILL BUTTONS */
 .btn-request {
     background: var(--v-gold); color: #000; border: 1px solid var(--v-gold);
-    padding: 14px; width: 100%; margin-top: auto; 
+    padding: 12px; width: 100%; margin-top: auto; 
     border-radius: 50px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; 
     cursor: pointer; transition: 0.3s;
 }
 .btn-request:hover { background: #fff; border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); }
 
-.tier-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin: 0; }
-.tier-price { font-size: 1.4rem; font-weight: 900; color: var(--v-gold); margin: 10px 0; }
-.tier-features { list-style: none; padding: 0; margin: 0 0 15px 0; font-size: 0.8rem; width: 100%; flex-grow: 1; }
-.tier-features li { margin-bottom: 6px; padding-left: 15px; position: relative; text-align: left; }
+.tier-title { font-size: 0.95rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+.tier-price { font-size: 1.3rem; font-weight: 900; color: var(--v-gold); margin: 8px 0; }
+.tier-features { list-style: none; padding: 0; margin: 0 0 10px 0; font-size: 0.75rem; width: 100%; flex-grow: 1; }
+.tier-features li { margin-bottom: 5px; padding-left: 15px; position: relative; text-align: left; }
 .tier-features li::before { content: "•"; color: var(--v-gold); position: absolute; left: 0; font-weight: 900; }
-.tier-footnote { color: #fff; font-size: 0.7rem; font-style: italic; margin-bottom: 10px; opacity: 0.8; }
+.tier-footnote { color: #fff; font-size: 0.65rem; font-style: italic; margin-bottom: 8px; opacity: 0.8; }
 .student-badge { position: absolute; top: -10px; right: 10px; background: var(--v-gold); color: #000; font-size: 0.6rem; font-weight: 900; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; }
 
 /* --- MOBILE ENGINE (Horizontal Only) --- */
 @media (max-width: 1000px) {
     .services-container {
-        display: flex; /* Switch from grid to flex for horizontal scrolling */
+        display: flex;
         flex-wrap: nowrap;
         justify-content: flex-start;
         overflow-x: auto;
@@ -109,13 +109,13 @@ html, body {
         -webkit-overflow-scrolling: touch;
     }
     .solid-card {
-        flex: 0 0 82%; /* Forces width to fit screen with a peek of the next card */
-        min-height: 420px;
+        flex: 0 0 82%; 
+        min-height: 400px; /* Slightly taller for mobile readability */
         scroll-snap-align: center;
     }
 }
 
-/* MODAL ENGINE (Centered) */
+/* MODAL ENGINE */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
 .modal-content { background: #000; border: 1px solid var(--v-gold); border-radius: 24px; width: 95%; max-width: 450px; display: flex; flex-direction: column; }
 .modal-body { padding: 25px; text-align: center; overflow-y: auto; max-height: 70vh; }
@@ -123,8 +123,6 @@ html, body {
 .form-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--v-gold); margin-bottom: 4px; text-transform: uppercase; }
 .form-input { width: 100%; background: #0a0a0a; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; text-align: center; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
 .form-input:focus { border-color: var(--v-gold); outline: none; }
-.policy-box { background: rgba(212, 175, 55, 0.05); border: 1px dashed var(--v-gold); border-radius: 12px; padding: 12px; margin-top: 10px; }
-.policy-box p { font-size: 0.7rem; color: #fff; margin: 0; line-height: 1.4; opacity: 0.9; }
 
 .modal-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #222; }
 .btn-modal-cancel, .btn-modal-submit { border-radius: 50px; padding: 12px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; cursor: pointer; border: 1px solid var(--v-gold); transition: 0.3s; }
