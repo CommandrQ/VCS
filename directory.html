@@ -7,31 +7,45 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Specific tweaks for the 2-column layout and scrollable grid */
+        /* --- DIRECTORY COMPONENT STYLES --- */
         .resource-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%;
-            overflow-y: auto; max-height: 35vh; padding: 5px; -webkit-overflow-scrolling: touch;
         }
+
+        /* Scrollable Category Container */
+        .category-scroll-area {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%;
+            overflow-y: auto; max-height: 28vh; padding-right: 5px; -webkit-overflow-scrolling: touch;
+        }
+        .category-scroll-area::-webkit-scrollbar { width: 3px; }
+        .category-scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
         .category-btn {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white; padding: 15px; border-radius: 15px; font-size: 0.8rem; font-weight: 600;
-            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+            color: white; padding: 16px 10px; border-radius: 15px; font-size: 0.75rem; 
+            font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase;
         }
-        .category-btn:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+        .category-btn:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(255,255,255,0.05); }
 
-        /* MODAL (ROLLING LIST) */
+        /* --- MODAL (ROLLING LIST) --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px);
             display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
+            opacity: 0; transition: opacity 0.4s ease;
         }
         .modal-content {
-            background: #050505; border: 1px solid var(--gold); border-radius: 24px;
+            background: #050505; border: 1px solid var(--gold); border-radius: 28px;
             width: 100%; max-width: 450px; max-height: 80vh; padding: 30px;
-            display: flex; flex-direction: column; gap: 20px;
+            display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.4s var(--v-curve);
         }
-        #modal-body { overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .modal-overlay.active { opacity: 1; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
         
-        @media (max-width: 480px) { .resource-grid { grid-template-columns: 1fr; } }
+        #modal-body { overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+
+        @media (max-width: 480px) { 
+            .resource-grid, .category-scroll-area { grid-template-columns: 1fr; } 
+        }
     </style>
 </head>
 <body>
@@ -43,11 +57,11 @@
     </header>
 
     <main>
-        <div class="glass-card animate-wake" id="main-hub" style="opacity: 0;">
+        <div class="glass-card animate-wake" id="directory-card" style="opacity: 0;">
             
-            <div style="text-align: center;">
+            <div style="text-align: center; width: 100%;">
                 <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Active Population</h3>
-                <h1 id="pop-count" class="loading-state" style="font-size: 3rem; font-weight: 900;">--</h1>
+                <h1 id="pop-count" class="loading-state" style="font-size: 3.2rem; font-weight: 900; margin-top: 5px;">--</h1>
             </div>
 
             <div class="resource-grid">
@@ -57,10 +71,12 @@
 
             <hr class="white-divider">
 
-            <h3 style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px;">Network Resources</h3>
-            <div class="resource-grid">
+            <div class="category-scroll-area">
                 <button class="category-btn" onclick="openResourceModal('Tech Help')">Tech Help</button>
-                </div>
+                <button class="category-btn" onclick="openResourceModal('Network Intel')">Network Intel</button>
+                <button class="category-btn" onclick="openResourceModal('Citizen Perks')">Citizen Perks</button>
+            </div>
+
         </div>
     </main>
 
@@ -68,11 +84,11 @@
         <p id="footer-text">Powered Vanguard Citizen Services © 2026</p>
     </footer>
 
-    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target.id==='modal-overlay') closeModal()">
+    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target.id==='modal-overlay') forceCloseModal()">
         <div class="modal-content">
-            <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase;"></h2>
+            <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">Category</h2>
             <div id="modal-body"></div>
-            <button class="gold-pill" onclick="closeModal()" style="border-color: #333; color: #666; font-size: 0.7rem; width: 100%;">CLOSE WINDOW</button>
+            <button class="gold-pill" onclick="forceCloseModal()" style="border-color: #333; color: #666; font-size: 0.7rem; width: 100%;">CLOSE WINDOW</button>
         </div>
     </div>
 
@@ -83,51 +99,56 @@
 
         const DATABASE = {
             "Tech Help": [
-                { title: "Vanguard Support & Repair", desc: "Simple tech help and support for local citizens.", url: "https://vsr.vcscitizen.org" }
+                { title: "Vanguard Support & Repair", desc: "Hardware repair and encrypted software support.", url: "https://vsr.vcscitizen.org" }
+            ],
+            "Network Intel": [
+                { title: "Uptime Monitor", desc: "Live status of all Vanguard nodes.", url: "#" }
+            ],
+            "Citizen Perks": [
+                { title: "Vanguard Benefits", desc: "Access your rank-exclusive rewards.", url: "#" }
             ]
         };
 
-        // --- 1. GLOBAL GATEKEEPER ---
-        async function enforceSecurity() {
+        // --- 1. GLOBAL GUARD & INITIALIZATION ---
+        async function runSecurityGate() {
             try {
                 const [{ data: config }, { data: { session } }] = await Promise.all([
                     supabaseClient.from('system_config').select('value_bool').eq('key', 'site_online').single(),
                     supabaseClient.auth.getSession()
                 ]);
 
-                // Kick to login if no session
+                // A: No Session -> Kick to Index
                 if (!session) { window.location.href = 'index.html'; return; }
 
                 const { data: citizen } = await supabaseClient.from('citizens').select('role').eq('auth_id', session.user.id).single();
-                
-                const isSiteOnline = config ? config.value_bool : true;
+                const isOnline = config ? config.value_bool : true;
                 const userRole = citizen ? citizen.role : 'Citizen';
 
-                // THE LOCKDOWN: Bounce non-Command users if site is offline
-                if (!isSiteOnline && userRole !== 'Command') {
+                // B: Site Offline and NOT Command -> Kick to UC
+                if (!isOnline && userRole !== 'Command') {
                     window.location.href = 'https://vcscitizen.org/uc.html';
                 } else {
-                    // Access Granted: Reveal the hub
-                    document.getElementById('main-hub').style.opacity = '1';
-                    syncData(); 
+                    // C: Success -> Show UI and Load Data
+                    document.getElementById('directory-card').style.opacity = '1';
+                    syncData();
+                    runFooterCycle();
                 }
             } catch (err) {
-                console.error("Security Handshake Failed:", err);
                 window.location.href = 'index.html';
             }
         }
 
-        // --- 2. DATA SYNC ---
+        // --- 2. DATA HANDSHAKE ---
         async function syncData() {
-            // Fetch Population
+            // Population Count
             const { count } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
             if (count !== null) {
-                const popEl = document.getElementById('pop-count');
-                popEl.classList.remove('loading-state');
-                popEl.innerText = count;
+                const pop = document.getElementById('pop-count');
+                pop.classList.remove('loading-state');
+                pop.innerText = count;
             }
 
-            // Fetch Identity for Greeting
+            // User Greeting
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
@@ -135,7 +156,7 @@
             }
         }
 
-        // --- 3. UI LOGIC ---
+        // --- 3. MODAL LOGIC ---
         function openResourceModal(cat) {
             const modal = document.getElementById('modal-overlay');
             const body = document.getElementById('modal-body');
@@ -145,55 +166,50 @@
             if (DATABASE[cat]) {
                 DATABASE[cat].forEach(item => {
                     const div = document.createElement('div');
-                    div.className = 'resource-item';
-                    div.style.background = 'rgba(255,255,255,0.03)';
-                    div.style.padding = '15px';
-                    div.style.borderRadius = '12px';
-                    div.innerHTML = `<h3 style="color:var(--gold); font-size:1rem; margin-bottom:5px;">${item.title}</h3>
-                                     <p style="color:var(--text-dim); font-size:0.8rem; margin-bottom:12px;">${item.desc}</p>
-                                     <a href="${item.url}" class="gold-pill" style="padding: 8px 15px; font-size: 0.65rem; width:fit-content;">GO ➞</a>`;
+                    div.style.cssText = "background:rgba(255,255,255,0.03); padding:18px; border-radius:15px; border:1px solid rgba(255,255,255,0.05);";
+                    div.innerHTML = `
+                        <h3 style="color:var(--gold); font-size:1rem; margin-bottom:5px;">${item.title}</h3>
+                        <p style="color:var(--text-dim); font-size:0.8rem; margin-bottom:12px;">${item.desc}</p>
+                        <a href="${item.url}" class="gold-pill" style="padding: 8px 15px; font-size: 0.65rem; width:fit-content; border-color:rgba(212,175,55,0.5);">GO ➞</a>
+                    `;
                     body.appendChild(div);
                 });
             }
             modal.style.display = 'flex';
-            setTimeout(() => modal.style.opacity = '1', 10);
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
-        function closeModal() {
+        function forceCloseModal() {
             const modal = document.getElementById('modal-overlay');
-            modal.style.opacity = '0';
-            setTimeout(() => modal.style.display = 'none', 300);
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 400);
         }
 
-        // --- 4. FOOTER & REFRESH ---
-        function runFooter() {
+        // --- 4. ANIMATED FOOTER ---
+        function runFooterCycle() {
             const el = document.getElementById('footer-text');
-            const original = "Powered Vanguard Citizen Services © 2026";
+            const original = `Powered Vanguard Citizen Services © ${new Date().getFullYear()}`;
             const motto = "Empower . Educate . Elevate";
 
-            const cycle = () => {
-                el.classList.add('footer-active');
-                setTimeout(() => {
-                    el.style.opacity = '0';
-                    setTimeout(() => {
-                        el.innerText = (el.innerText === original) ? motto : original;
-                        el.classList.remove('footer-active');
-                        el.style.opacity = '1';
-                    }, 600);
-                }, 2000);
-            };
-            setInterval(cycle, 8000);
+            const step1 = () => { el.classList.add('footer-active'); setTimeout(step2, 1800); };
+            const step2 = () => { el.style.opacity = '0'; setTimeout(step3, 600); };
+            const step3 = () => { el.innerText = motto; el.classList.remove('footer-active'); el.style.opacity = '1'; setTimeout(step4, 2500); };
+            const step4 = () => { el.style.opacity = '0'; setTimeout(step5, 600); };
+            const step5 = () => { el.innerText = original; el.style.opacity = '1'; setTimeout(step1, 6000); };
+            step1();
         }
 
-        window.onload = () => {
-            enforceSecurity();
-            runFooter();
-        };
+        // --- 5. SYSTEM EVENTS ---
+        window.onload = runSecurityGate;
 
-        // Auto-refresh data when returning to tab
+        // Auto-refresh data when user switches back to this tab
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') syncData();
         });
+
+        // Background Heartbeat (Refresh every 30s)
+        setInterval(syncData, 30000);
+
     </script>
 </body>
 </html>
