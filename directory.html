@@ -2,99 +2,379 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanguard | Public Directory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vanguard | Citizen Directory</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .glass-card { display: flex; flex-direction: column; align-items: center; gap: 25px; padding: 40px; opacity: 1 !important; }
-        #pop-count { font-size: 3.5rem; font-weight: 900; margin-top: 10px; }
-        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .white-divider { width: 100%; height: 1px; background: #fff; box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 5px 0; border: none; }
-        .scroll-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; max-height: 250px; padding-right: 5px; }
-        .category-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 18px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .category-btn:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: #050505; border: 1px solid var(--gold); border-radius: 28px; width: 100%; max-width: 450px; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        /* --- LOCKED VIEWPORT ENGINE --- */
+        html, body {
+            margin: 0; padding: 0;
+            height: 100vh; width: 100vw;
+            overflow: hidden; /* No page scrolling */
+            background: #000; color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- LARGE ANIMATED STARFIELD --- */
+        .universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
+        .star-layer { position: absolute; inset: -500px; background-repeat: repeat; animation: starDrift linear infinite; }
+        .stars-1 { background-image: radial-gradient(3.5px 3.5px at 25px 50px, #fff, transparent), radial-gradient(2.5px 2.5px at 150px 150px, #fff, transparent); background-size: 400px 400px; animation-duration: 160s; opacity: 0.4; }
+        .stars-2 { background-image: radial-gradient(5px 5px at 200px 100px, var(--gold), transparent), radial-gradient(3px 3px at 350px 350px, var(--gold), transparent); background-size: 600px 600px; animation-duration: 110s; opacity: 0.25; }
+        @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
+
+        /* --- MAIN LAYOUT --- */
+        .viewport-wrapper {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 20px 20px 50px; /* Safe space for footer */
+            box-sizing: border-box; width: 100%;
+        }
+
+        /* --- ANNOUNCEMENT TICKER --- */
+        .announcement-ticker {
+            width: 100%; max-width: 850px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid var(--gold);
+            border-radius: 8px 8px 0 0;
+            padding: 8px 15px; box-sizing: border-box;
+            overflow: hidden; white-space: nowrap;
+            margin-bottom: -1px; /* Overlap border */
+            z-index: 2;
+        }
+        .ticker-content {
+            display: inline-block;
+            color: #fff; font-size: 0.8rem; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px;
+            animation: tickerScroll 25s linear infinite;
+            padding-right: 100%; /* Ensure gap */
+        }
+        @keyframes tickerScroll { from { transform: translateX(0%); } to { transform: translateX(-100%); } }
+
+        /* --- DIRECTORY TERMINAL CARD --- */
+        .directory-terminal {
+            width: 100%;
+            max-width: 850px; /* Widened for desktop */
+            height: 80vh; max-height: 650px;
+            display: flex; flex-direction: column;
+            padding: 30px; gap: 20px;
+            box-sizing: border-box; position: relative;
+            overflow: hidden; /* Card doesn't scroll, contents do */
+            border-radius: 0 0 24px 24px; /* Matches ticker top */
+        }
+
+        /* --- POPULATION COUNTER --- */
+        .pop-container { text-align: center; width: 100%; }
+        .pop-label { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+        .pop-count { font-size: 3.2rem; font-weight: 900; color: #fff; margin: 5px 0 0; line-height: 1; transition: 0.5s; }
+        .loading-count { opacity: 0.5; font-size: 2rem; }
+
+        .white-divider { width: 100%; height: 1px; background: #fff; border: none; box-shadow: 0 0 10px #fff; margin: 5px 0; }
+
+        /* --- CATEGORY SELECTOR (Horizontal Scroll) --- */
+        .category-menu {
+            width: 100%; display: flex; gap: 10px;
+            overflow-x: auto; padding-bottom: 5px; /* space for bar */
+            -webkit-overflow-scrolling: touch;
+            justify-content: flex-start; /* Default for mobile */
+        }
+        /* Center on desktop if total width is small */
+        @media (min-width: 750px) { .category-menu { justify-content: center; overflow-x: hidden; } }
+        
+        .category-menu::-webkit-scrollbar { height: 3px; }
+        .category-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .cat-btn {
+            flex: 0 0 auto; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 10px 20px; border-radius: 50px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; transition: 0.3s;
+        }
+        .cat-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: #fff; }
+        .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+
+        /* --- CARD GRID (Vertical Scroll) --- */
+        .directory-content {
+            flex: 1; width: 100%;
+            overflow-y: auto; padding-right: 8px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            align-content: start; /* prevents stretching items when few */
+        }
+        .directory-content::-webkit-scrollbar { width: 3px; }
+        .directory-content::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        /* RESOURCE CARDS */
+        .link-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 20px;
+            transition: 0.3s; text-align: left;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .link-card:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        
+        .card-title { color: #fff; font-size: 1rem; font-weight: 800; margin: 0; text-transform: uppercase; }
+        .card-desc { color: #fff; font-size: 0.8rem; margin: 0; opacity: 0.8; line-height: 1.4; flex-grow: 1; }
+        
+        .card-btn {
+            margin-top: 10px; align-self: flex-start;
+            padding: 8px 18px; font-size: 0.7rem;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 750px) {
+            .identity-header h1 { font-size: 1.8rem; }
+            .directory-terminal { padding: 20px; height: 85vh; max-height: none; }
+            .directory-content { grid-template-columns: 1fr; } /* Stack on mobile */
+            .pop-count { font-size: 2.5rem; }
+            .category-menu { justify-content: flex-start; overflow-x: auto; } /* Ensure scrolling on mobile */
+        }
+
+        /* --- ANIMATED FOOTER ENGINE --- */
+        .vanguard-footer {
+            position: fixed; bottom: 0; width: 100%;
+            height: 40px; background: #000;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; overflow: hidden;
+        }
+        
+        .footer-text-container { position: relative; width: 100%; text-align: center; }
+
+        .footer-text {
+            position: absolute; width: 100%; left: 0; top: 50%;
+            transform: translateY(-50%);
+            margin: 0; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase; color: #fff;
+            transition: opacity 1s, filter 1s;
+        }
+
+        /* Slice Animation for Motto */
+        .motto-text {
+            clip-path: inset(0 100% 0 0); /* initially sliced off */
+            transition: clip-path 1.5s var(--v-curve), opacity 1s;
+            color: var(--gold);
+        }
+
+        /* Active states triggered by JS */
+        .state-copyright .copyright-text { opacity: 1; filter: blur(0); }
+        .state-copyright .motto-text { opacity: 0; filter: blur(5px); clip-path: inset(0 100% 0 0); }
+
+        .state-motto .copyright-text { opacity: 0; filter: blur(5px); }
+        .state-motto .motto-text { opacity: 1; filter: blur(0); clip-path: inset(0 0 0 0); } /* reveals */
+
     </style>
 </head>
-<body>
-    <div class="universe"><div class="star-layer"></div></div>
-    <header style="text-align:center; padding: 20px;">
-        <h1 class="gold-text-outline" style="text-transform: uppercase; font-size: 1.1rem; letter-spacing: 2px;">Vanguard Network</h1>
-    </header>
-    <main>
-        <div class="glass-card animate-wake">
-            <div style="text-align: center; width: 100%;">
-                <h3 style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Active Population</h3>
-                <h1 id="pop-count">--</h1>
-            </div>
-            <div class="button-row">
-                <a href="support.html" class="gold-pill">Customer Service</a>
-                <a href="settings.html" class="gold-pill">Settings</a>
-            </div>
-            <hr class="white-divider">
-            <div class="scroll-grid">
-                <button class="category-btn" onclick="openPopup('Tech Help')">Tech Help</button>
-                <button class="category-btn" onclick="openPopup('Archives')">Archives</button>
-            </div>
-        </div>
-    </main>
-    <footer class="vanguard-footer"><p id="footer-text">Powered Vanguard Citizen Services © 2026</p></footer>
-
-    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target.id==='modal-overlay') closePopup()">
-        <div class="modal-content">
-            <h2 id="modal-title" style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; text-transform: uppercase;">Category</h2>
-            <div id="modal-body"></div>
-            <button class="gold-pill" onclick="closePopup()" style="width: 100%;">CLOSE TERMINAL</button>
-        </div>
+<body class="state-copyright"> <div class="universe-bg">
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
     </div>
 
+    <div class="viewport-wrapper">
+        
+        <div class="announcement-ticker">
+            <div class="ticker-content">
+                ::: SYSTEM NOTICE: NETWORK UPGRADE PENDING FOR 2026.05.15 ::: REQUIRED CITIZEN DATA RESYNC SCHEDULED ::: MONITOR TERMINAL FOR UPDATES ::: END NOTICE :::
+            </div>
+        </div>
+
+        <article class="glass-card directory-terminal animate-wake" id="main-terminal">
+            
+            <div class="pop-container">
+                <div class="pop-label">Active Population</div>
+                <h1 id="population-count" class="pop-count loading-count">Syncing...</h1>
+            </div>
+
+            <hr class="white-divider">
+
+            <nav class="category-menu" id="category-bar">
+                </nav>
+
+            <div class="directory-content" id="directory-list">
+                </div>
+            
+        </article>
+    </div>
+
+    <footer class="vanguard-footer">
+        <div class="footer-text-container">
+            <p class="footer-text copyright-text">Powered by Vanguard Citizen Services &copy; <span id="current-year"></span></p>
+            <p class="footer-text motto-text">Empower . Educate . Elevate</p>
+        </div>
+    </footer>
+
     <script>
+        // ==========================================
+        // CONFIGURATION & DATA
+        // Easily add/remove categories and links here
+        // ==========================================
         const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-        
-        const DATABASE = { 
-            "Tech Help": [{ title: "Support", desc: "Technical resolution.", url: "https://vsr.vcscitizen.org" }], 
-            "Archives": [{ title: "The Ledger", desc: "Historical records.", url: "#" }] 
+
+        const directoryData = {
+            "Core Nodes": [
+                { title: "Citizen Portal", desc: "Access your verified citizen profile and settings terminal.", url: "index.html" },
+                { title: "Network Status", desc: "Live uptime monitor for all Vanguard infrastructure nodes.", url: "#" },
+                { title: "Central Ledger", desc: "Public record of verified network transmissions and allocations.", url: "#" }
+            ],
+            "Resources": [
+                { title: "Knowledge Base", desc: "Documentation on Vanguard OS protocols and citizen rights.", url: "#" },
+                { title: "Support Terminal", desc: "Submit tickets for hardware repair or encryption assistance.", url: "#" },
+                { title: "Asset Repository", desc: "Download official Vanguard media packages and templates.", url: "#" }
+            ],
+            "Directives": [
+                { title: "Current Mandates", desc: "Active operational directives issued by Command.", url: "#" },
+                { title: "Educational Tracks", desc: "Enroll in certification courses to elevate your rank.", url: "#" },
+                { title: "Community Forum", desc: "Secure channel for citizen synchronization and discussion.", url: "#" }
+            ]
         };
 
-        async function syncData() {
-            // Public fetch of population (Requires RLS Select Policy to be Public in Supabase)
-            const { count } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
-            if (count !== null) document.getElementById('pop-count').innerText = count;
+        // UI References
+        const ui = {
+            popCount: document.getElementById('population-count'),
+            catBar: document.getElementById('category-bar'),
+            dirList: document.getElementById('directory-list'),
+            body: document.body
+        };
+
+        // ==========================================
+        // SYSTEM INITIALIZATION
+        // ==========================================
+        async function initSystem() {
+            // 1. Set Year
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+
+            // 2. Start Population Sync
+            fetchPopulation();
+            setInterval(fetchPopulation, 10000); // Polling every 10s
+
+            // 3. Initialize Directory
+            renderCategories();
+            
+            // 4. Start Footer Animation Loop
+            startFooterLoop();
         }
 
-        function openPopup(cat) {
-            const body = document.getElementById('modal-body');
-            document.getElementById('modal-title').innerText = cat;
-            body.innerHTML = '';
-            if (DATABASE[cat]) {
-                DATABASE[cat].forEach(item => {
-                    const div = document.createElement('div');
-                    div.style.cssText = "background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:10px;";
-                    div.innerHTML = `<h3 style="color:var(--gold); font-size:1rem; margin-bottom:5px;">${item.title}</h3><p style="color:#888; font-size:0.8rem; margin-bottom:10px;">${item.desc}</p><a href="${item.url}" class="gold-pill" style="padding: 6px 12px; font-size:0.6rem; width:fit-content;">OPEN ➞</a>`;
-                    body.appendChild(div);
-                });
+        // ==========================================
+        // SUPABASE POPULATION SYNC
+        // ==========================================
+        async function fetchPopulation() {
+            try {
+                // Read exact count from 'citizens' table
+                const { count, error } = await supabaseClient
+                    .from('citizens')
+                    .select('*', { count: 'exact', head: true });
+
+                if (error) throw error;
+
+                // Update UI, remove loading style
+                ui.popCount.innerText = count.toLocaleString();
+                ui.popCount.classList.remove('loading-count');
+            } catch (err) {
+                console.error("Ledger Sync Error:", err);
+                ui.popCount.innerText = "OFFLINE";
+                ui.popCount.style.color = "#f87171"; // Red Error
             }
-            document.getElementById('modal-overlay').style.display = 'flex';
         }
-        function closePopup() { document.getElementById('modal-overlay').style.display = 'none'; }
-        
-        window.onload = () => { 
-            syncData(); 
-            setInterval(syncData, 30000); 
-            // Footer animation
-            const el = document.getElementById('footer-text');
+
+        // ==========================================
+        // DIRECTORY ENGINE
+        // ==========================================
+        function renderCategories() {
+            ui.catBar.innerHTML = '';
+            const categories = Object.keys(directoryData);
+
+            categories.forEach((cat, index) => {
+                const btn = document.createElement('button');
+                btn.className = `cat-btn ${index === 0 ? 'active' : ''}`;
+                btn.innerText = cat;
+                btn.onclick = () => selectCategory(cat, btn);
+                ui.catBar.appendChild(btn);
+            });
+
+            // Load first category by default
+            if (categories.length > 0) {
+                renderCards(categories[0]);
+            }
+        }
+
+        function selectCategory(catName, btnEl) {
+            // Update Active button style
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+
+            // Scroll standard categories into view on mobile
+            if(window.innerWidth < 750) {
+                btnEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            // Render Cards
+            renderCards(catName);
+        }
+
+        function renderCards(catName) {
+            // Animate out previous content
+            ui.dirList.style.opacity = 0;
+            
+            setTimeout(() => {
+                ui.dirList.innerHTML = '';
+                const resources = directoryData[catName];
+
+                if (!resources || resources.length === 0) {
+                    ui.dirList.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No resources in this node.</p>';
+                } else {
+                    resources.forEach(res => {
+                        const card = document.createElement('div');
+                        card.className = 'link-card animate-wake';
+                        card.innerHTML = `
+                            <h3 class="card-title">${res.title}</h3>
+                            <p class="card-desc">${res.desc}</p>
+                            <a href="${res.url}" class="gold-pill card-btn">Execute ➞</a>
+                        `;
+                        ui.dirList.appendChild(card);
+                    });
+                }
+                // Animate in new content
+                ui.dirList.style.opacity = 1;
+            }, 200); // matching CSS transition
+        }
+
+        // ==========================================
+        // ANIMATED FOOTER LOOP
+        // ==========================================
+        function startFooterLoop() {
+            const CYCLE_TIME = 6000; // Total cycle per text (3s static + 3s transition)
+
+            // Step 1: Initial state is copyright (set in body class)
+            
+            // Step 2: Loop logic
             setInterval(() => {
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.innerText = (el.innerText.includes("Powered")) ? "Empower . Elevate . Educate" : "Powered Vanguard Citizen Services © 2026";
-                    el.style.opacity = '1';
-                }, 600);
-            }, 6000);
-        };
+                // If currently copyright, switch to motto
+                if (ui.body.classList.contains('state-copyright')) {
+                    ui.body.classList.remove('state-copyright');
+                    ui.body.classList.add('state-motto');
+                    // CSS handles the slice animation in
+                } 
+                // If currently motto, switch to copyright (dissolve happens via CSS transition)
+                else {
+                    ui.body.classList.remove('state-motto');
+                    ui.body.classList.add('state-copyright');
+                }
+            }, CYCLE_TIME);
+        }
+
+        // System Start
+        window.onload = initSystem;
+
     </script>
 </body>
 </html>
