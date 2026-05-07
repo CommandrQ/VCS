@@ -12,18 +12,18 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- VIEWPORT LOGIC --- */
+        /* --- LOCKED VIEWPORT ENGINE --- */
         html, body {
             margin: 0; padding: 0;
-            height: 100dvh;
+            height: 100vh;
             width: 100vw;
-            overflow: hidden;
+            overflow: hidden; /* Strict: No page scrolling */
             background: #000;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* --- BIG STARFIELD ANIMATION --- */
+        /* --- LARGE ANIMATED STARFIELD --- */
         .universe-bg {
             position: fixed; inset: 0; z-index: -1;
             background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
@@ -36,76 +36,72 @@
         .stars-1 { 
             background-image: radial-gradient(3.5px 3.5px at 25px 50px, #fff, transparent),
                               radial-gradient(2.5px 2.5px at 150px 150px, #fff, transparent); 
-            background-size: 400px 400px; animation-duration: 150s; opacity: 0.4; 
+            background-size: 400px 400px; animation-duration: 160s; opacity: 0.4; 
         }
         .stars-2 { 
             background-image: radial-gradient(5px 5px at 200px 100px, var(--gold), transparent),
-                              radial-gradient(3px 3px at 350px 350px, var(--gold), transparent); 
-            background-size: 600px 600px; animation-duration: 100s; opacity: 0.2; 
+                              radial-gradient(3.5px 3.5px at 350px 350px, var(--gold), transparent); 
+            background-size: 600px 600px; animation-duration: 110s; opacity: 0.25; 
         }
         @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
 
-        /* --- CENTERING & WIDTH ENGINE --- */
+        /* --- CENTERING & DIMENSIONS --- */
         .viewport-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100dvh;
+            height: 100vh;
             width: 100%;
             align-items: center;
             justify-content: center;
-            padding: 20px 20px 60px;
+            padding: 20px;
             box-sizing: border-box;
         }
 
         .identity-terminal {
             width: 100%;
-            max-width: 700px; /* Widened for Desktop */
-            max-height: calc(100vh - 160px); 
+            max-width: 850px; /* Widened to fit all elements side-by-side */
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
             padding: 40px;
-            gap: 20px;
+            gap: 15px;
             box-sizing: border-box;
             position: relative;
+            overflow: hidden; /* Ensures the card itself doesn't scroll */
         }
 
-        /* --- GRID LOGIC --- */
+        /* --- DUAL COLUMN GRID --- */
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns on desktop */
-            gap: 20px;
+            grid-template-columns: 1fr 1fr; /* Side-by-side on desktop */
+            gap: 15px 25px;
             width: 100%;
+            margin-top: 5px;
         }
 
-        /* Mobile fallback for the grid */
-        @media (max-width: 600px) {
+        /* Span logic for wider fields */
+        .span-2 { grid-column: 1 / -1; }
+
+        @media (max-width: 750px) {
             .form-grid { grid-template-columns: 1fr; }
-            .identity-terminal { max-width: 420px; padding: 25px; }
+            .identity-terminal { max-width: 450px; padding: 25px; max-height: 85vh; }
+            .terminal-body { overflow-y: auto; } /* Allow scrolling ONLY on mobile */
         }
 
-        /* --- INTERNAL SCROLLING (Safety fallback) --- */
-        .terminal-body {
-            flex: 1;
-            overflow-y: auto;
-            width: 100%;
-        }
-        .terminal-body::-webkit-scrollbar { width: 3px; }
-        .terminal-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
-        /* --- UI ELEMENTS --- */
+        /* --- UI COMPONENTS --- */
         .identity-header { text-align: center; margin-bottom: 5px; }
         .rank-tag {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255,255,255,0.4);
             color: #fff;
             font-size: 0.7rem;
             font-weight: 800;
-            padding: 4px 18px;
+            padding: 5px 20px;
             border-radius: 50px;
             text-transform: uppercase;
             display: inline-block;
         }
-        .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+        .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.15); }
 
         .white-divider {
             width: 100%; height: 1px; background: #fff; border: none;
@@ -116,36 +112,38 @@
         .form-group label {
             display: block; font-size: 0.65rem; font-weight: 700;
             text-transform: uppercase; color: var(--gold);
-            margin-bottom: 6px; letter-spacing: 1px;
+            margin-bottom: 6px; letter-spacing: 1.5px;
         }
         .form-group input {
-            width: 100%; background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px; padding: 14px; color: #fff;
+            width: 100%; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px; padding: 14px; color: #fff;
             font-size: 1rem; box-sizing: border-box;
+            transition: border-color 0.3s;
         }
+        .form-group input:focus { outline: none; border-color: var(--gold); }
 
-        .action-container {
-            grid-column: 1 / -1; /* Buttons span full width of the grid */
+        .action-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .helper-link {
             background: none; border: none; color: #fff;
             font-size: 0.8rem; text-decoration: underline;
-            cursor: pointer;
+            cursor: pointer; opacity: 0.9;
         }
+        .helper-link:hover { opacity: 1; color: var(--gold); }
 
-        /* --- COMPACT FOOTER --- */
+        /* --- FOOTER --- */
         .vanguard-footer {
             position: absolute; bottom: 15px; width: 100%; text-align: center;
             pointer-events: none; z-index: 10;
         }
-        .vanguard-footer p { font-size: 0.75rem; color: #fff; margin: 0; font-weight: 600; }
+        .vanguard-footer p { font-size: 0.75rem; color: #fff; margin: 0; font-weight: 700; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -160,17 +158,17 @@
             
             <div class="identity-header">
                 <div id="auth-tag" class="rank-tag">Unauthenticated</div>
-                <h2 id="citizen-name" style="margin: 5px 0 0; font-size: 2rem; font-weight: 900; text-transform: uppercase; color: #fff;">Guest Mode</h2>
+                <h2 id="citizen-name" style="margin: 8px 0 0; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; color: #fff; letter-spacing: 1px;">Guest Mode</h2>
             </div>
 
             <div style="display: flex; justify-content: center;">
-                <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 40px; font-size: 0.85rem;">Return Home</a>
+                <a href="directory.html" class="gold-pill" style="width: auto; padding: 12px 50px; font-size: 0.9rem;">Return Home</a>
             </div>
 
             <hr class="white-divider">
 
             <div class="terminal-body">
-                <div id="state-loading" style="text-align: center; color: #fff; padding: 20px;">Initialising Ledger...</div>
+                <div id="state-loading" style="text-align: center; color: #fff; padding: 20px; font-weight: bold;">Initialising Ledger...</div>
 
                 <div id="state-unauth" class="form-grid" style="display: none;">
                     <div class="form-group">
@@ -181,27 +179,27 @@
                         <label>Email Address</label>
                         <input type="email" id="reg-email" placeholder="name@email.com">
                     </div>
-                    <div class="form-group" style="grid-column: 1 / -1;">
+                    <div class="form-group span-2">
                         <label>Security Password</label>
                         <input type="password" id="reg-password" placeholder="••••••••">
                     </div>
-                    <div class="action-container">
-                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleSignUp()">Sync Identity</button>
+                    <div class="action-stack span-2">
+                        <button class="gold-pill" style="width: 100%; max-width: 350px;" onclick="handleSignUp()">Sync Identity</button>
                         <button class="helper-link" onclick="setView('restore')">lost access? Restore via email</button>
                     </div>
                 </div>
 
                 <div id="state-restore" class="form-grid" style="display: none;">
                     <div class="form-group">
-                        <label>Full Name</label>
+                        <label>Verified Name</label>
                         <input type="text" id="res-name" placeholder="John Doe">
                     </div>
                     <div class="form-group">
-                        <label>Email Address</label>
+                        <label>Verified Email</label>
                         <input type="email" id="res-email" placeholder="name@email.com">
                     </div>
-                    <div class="action-container">
-                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleRestoreAccess()">Restore Access</button>
+                    <div class="action-stack span-2">
+                        <button class="gold-pill" style="width: 100%; max-width: 350px;" onclick="handleRestoreAccess()">Restore Access</button>
                         <button class="helper-link" onclick="setView('unauth')">return to log in</button>
                     </div>
                 </div>
@@ -215,19 +213,19 @@
                         <label>Full Name</label>
                         <input type="text" id="auth-name">
                     </div>
-                    <div class="action-container">
-                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleUpdateProfile()">Update Profile</button>
-                        <button class="gold-pill" style="margin-top: 10px; background: transparent; color: #f87171; border-color: #f87171; width: auto;" onclick="handleLogout()">Disconnect Identity</button>
+                    <div class="action-stack span-2">
+                        <button class="gold-pill" style="width: 100%; max-width: 350px;" onclick="handleUpdateProfile()">Update Profile</button>
+                        <button class="gold-pill" style="background: transparent; color: #f87171; border-color: #f87171; width: auto; font-size: 0.75rem;" onclick="handleLogout()">Disconnect Identity</button>
                     </div>
                 </div>
             </div>
             
-            <div id="sys-msg" style="text-align: center; font-size: 0.8rem; min-height: 1.2em; color: #fff;"></div>
+            <div id="sys-msg" style="text-align: center; font-size: 0.85rem; font-weight: bold; min-height: 1.2em; color: #fff; margin-top: 5px;"></div>
         </article>
     </div>
 
     <footer class="vanguard-footer">
-        <p id="footer-text">Vanguard OS v7.3 | Identity Protocol Enabled</p>
+        <p id="footer-text">Vanguard OS v7.4 | Identity Protocol Enabled</p>
     </footer>
 
     <script>
