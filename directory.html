@@ -7,122 +7,69 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- PAGE SPECIFIC ANIMATIONS --- */
-        
-        /* 1. The Smooth Entrance for the Main Card */
-        @keyframes smoothWake {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-wake {
-            animation: smoothWake 0.7s var(--v-curve) forwards;
-            opacity: 0; /* Starts hidden to allow smooth load */
-        }
+        /* --- PAGE ANIMATIONS --- */
+        @keyframes smoothWake { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .animate-wake { animation: smoothWake 0.7s var(--v-curve) forwards; opacity: 0; }
+        @keyframes dataPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .loading-state { animation: dataPulse 1.5s ease-in-out infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in-item { animation: fadeIn 0.4s var(--v-curve) forwards; opacity: 0; }
 
-        /* 2. The Loading Pulse for Data Fetching */
-        @keyframes dataPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        
-        .loading-state {
-            animation: dataPulse 1.5s ease-in-out infinite;
-        }
-
-        /* 3. Fade In for JSON Data */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in-item {
-            animation: fadeIn 0.4s var(--v-curve) forwards;
-        }
-
-        /* --- 2-COLUMN RESOURCE GRID --- */
+        /* --- 2-COLUMN GRID --- */
         .resource-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 100%;
-            overflow-y: auto;
-            max-height: 40vh; 
-            padding-right: 5px;
-            -webkit-overflow-scrolling: touch;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%;
+            overflow-y: auto; max-height: 40vh; padding-right: 5px; -webkit-overflow-scrolling: touch;
         }
-
         .resource-grid::-webkit-scrollbar { width: 4px; }
         .resource-grid::-webkit-scrollbar-track { background: transparent; }
         .resource-grid::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
         .resource-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            padding: 15px 10px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            text-align: center;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); padding: 15px 10px; border-radius: 12px; font-size: 0.85rem;
+            font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center;
         }
+        .resource-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
-        .resource-btn:hover {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--gold);
-        }
-
-        /* --- MODAL (POPUP WINDOW) STYLES --- */
+        /* --- MODAL (POPUP WINDOW) --- */
         .modal-overlay {
-            position: fixed; inset: 0; 
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            display: none; 
-            justify-content: center; align-items: center; 
-            z-index: 100; padding: 20px;
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
             opacity: 0; transition: opacity 0.3s ease;
         }
-
         .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            width: 100%; max-width: 450px;
-            max-height: 80vh; overflow-y: auto;
-            padding: 30px;
-            display: flex; flex-direction: column; gap: 20px;
+            background: var(--card-bg); border: 1px solid var(--gold); border-radius: 20px;
+            width: 100%; max-width: 450px; max-height: 80vh; overflow-y: hidden;
+            padding: 30px; display: flex; flex-direction: column; gap: 20px;
             box-shadow: 0 0 30px rgba(0,0,0,1), 0 0 20px rgba(212, 175, 55, 0.15);
             transform: scale(0.95); transition: transform 0.3s var(--v-curve);
         }
-
-        /* Classes to trigger modal animation via JS */
         .modal-overlay.active { opacity: 1; }
         .modal-overlay.active .modal-content { transform: scale(1); }
 
-        .resource-item {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: left;
+        /* The rolling list container inside the modal */
+        #modal-body {
+            display: flex; flex-direction: column; gap: 15px; 
+            overflow-y: auto; padding-right: 5px; -webkit-overflow-scrolling: touch;
         }
+        #modal-body::-webkit-scrollbar { width: 4px; }
+        #modal-body::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 4px; }
 
+        .resource-item {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            padding: 20px; border-radius: 12px; text-align: left; flex-shrink: 0;
+        }
         .resource-item h3 { color: var(--gold); font-size: 1.1rem; margin-bottom: 8px; text-align: left; }
         .resource-item p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 15px; text-align: left; }
         
         .modal-close {
             background: transparent; border: 1px solid #555; color: #fff;
             padding: 10px; border-radius: 50px; cursor: pointer; width: 100%;
-            margin-top: 10px; font-weight: 700; transition: 0.3s; text-transform: uppercase;
+            margin-top: 10px; font-weight: 700; transition: 0.3s; text-transform: uppercase; flex-shrink: 0;
         }
         .modal-close:hover { border-color: var(--error-red); color: var(--error-red); }
 
-        @media (max-width: 480px) {
-            .resource-grid { grid-template-columns: 1fr; } 
-        }
+        @media (max-width: 480px) { .resource-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -144,9 +91,10 @@
             <hr style="width: 80%; border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
 
             <h3 style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">Network Resources</h3>
+            
             <div class="resource-grid" id="resource-buttons">
                 <button class="resource-btn" onclick="openResourceModal('Tech Help')">Tech Help</button>
-                <button class="resource-btn" onclick="openResourceModal('Settings')">Settings</button>
+                <button class="resource-btn" onclick="openResourceModal('Cyber Intel')">Cyber Intel</button>
             </div>
 
         </div>
@@ -158,9 +106,10 @@
 
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content" id="modal-content">
-            <h2 id="modal-title" style="margin-bottom: 10px; border-bottom: 1px solid var(--gold); padding-bottom: 10px;">Category</h2>
-            <div id="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
-                </div>
+            <h2 id="modal-title" style="margin-bottom: 10px; border-bottom: 1px solid var(--gold); padding-bottom: 10px; flex-shrink: 0;">Category</h2>
+            
+            <div id="modal-body"></div>
+            
             <button class="modal-close" onclick="forceCloseModal()">CLOSE WINDOW</button>
         </div>
     </div>
@@ -170,16 +119,42 @@
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
+        // ==========================================
+        // STEP 2: ADD YOUR LINKS AND DESCRIPTIONS HERE
+        // ==========================================
+        const INTERNAL_DATABASE = {
+            "Tech Help": [
+                {
+                    title: "Vanguard Support & Repair",
+                    desc: "Simple tech help and support for local citizens.",
+                    url: "https://vsr.vcscitizen.org"
+                },
+                {
+                    title: "Hardware Requisitions",
+                    desc: "Submit a form to request replacement parts or upgrades.",
+                    url: "#"
+                }
+            ],
+            "Cyber Intel": [
+                {
+                    title: "Security Threat Map",
+                    desc: "Live view of known vulnerabilities and active network threats.",
+                    url: "#"
+                }
+            ]
+        };
+        // ==========================================
+
         async function syncIdentity() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
                 if (data) {
                     const welcomeText = document.getElementById('welcome-text');
-                    welcomeText.style.opacity = '0'; // Fade out "Citizen"
+                    welcomeText.style.opacity = '0';
                     setTimeout(() => {
                         welcomeText.innerText = `Welcome, ${data.full_name.split(' ')[0]}`;
-                        welcomeText.style.opacity = '1'; // Fade in Name
+                        welcomeText.style.opacity = '1';
                     }, 250);
                 }
             }
@@ -190,7 +165,6 @@
             const { count, error } = await supabaseClient.from('citizens').select('*', { count: 'exact', head: true });
             
             if (!error) {
-                // Remove the pulse and set the actual number
                 popCount.classList.remove('loading-state');
                 popCount.innerText = count;
             } else {
@@ -199,37 +173,32 @@
             }
         }
 
-        async function openResourceModal(category) {
+        function openResourceModal(category) {
             const modal = document.getElementById('modal-overlay');
             const modalTitle = document.getElementById('modal-title');
             const modalBody = document.getElementById('modal-body');
 
-            // 1. Show Loading State with Pulse
+            // 1. Setup UI for Wake Animation
             modalTitle.innerText = category;
             modalBody.innerHTML = '<p class="loading-state" style="text-align: center; color: #888; font-family: monospace;">[ DECRYPTING INTEL ]</p>';
             
-            // Display and trigger CSS transition
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10); 
 
-            try {
-                // Artificial delay (optional, just to make the tech vibe feel smooth)
-                await new Promise(resolve => setTimeout(resolve, 400));
+            // 2. Simulate short load, then pull from INTERNAL_DATABASE
+            setTimeout(() => {
+                const resources = INTERNAL_DATABASE[category];
 
-                const response = await fetch('json/resources.json');
-                const data = await response.json();
-
-                if (data[category] && data[category].length > 0) {
+                if (resources && resources.length > 0) {
                     modalBody.innerHTML = ''; 
                     
-                    data[category].forEach((item, index) => {
+                    resources.forEach((item, index) => {
                         const div = document.createElement('div');
                         div.className = 'resource-item fade-in-item';
-                        // Stagger the fade-in slightly if there are multiple items
                         div.style.animationDelay = `${index * 0.1}s`; 
                         div.innerHTML = `
                             <h3>${item.title}</h3>
-                            <p>${item.description}</p>
+                            <p>${item.desc}</p>
                             <a href="${item.url}" class="gold-pill" style="display: inline-block; text-align: center; width: auto; font-size: 0.75rem;">GO ➞</a>
                         `;
                         modalBody.appendChild(div);
@@ -237,19 +206,16 @@
                 } else {
                     modalBody.innerHTML = '<p style="text-align: center; color: #888;">No active resources in this sector.</p>';
                 }
-            } catch (error) {
-                modalBody.innerHTML = '<p style="text-align: center; color: var(--error-red);">Error establishing link.</p>';
-            }
+            }, 400); // 400ms fake load time for tactical feel
         }
 
         function closeModal(event) {
-            if (event.target.id === 'modal-overlay') { forceCloseModal(); }
+            if (event.target.id === 'modal-overlay') forceCloseModal();
         }
         
         function forceCloseModal() { 
             const modal = document.getElementById('modal-overlay');
             modal.classList.remove('active');
-            // Wait for transition to finish before hiding display
             setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
@@ -260,18 +226,10 @@
 
             setInterval(() => {
                 el.classList.add('footer-glow');
-                setTimeout(() => {
-                    el.style.opacity = '0';
-                    setTimeout(() => {
-                        el.innerText = motto;
-                        el.style.opacity = '1';
-                        el.classList.remove('footer-glow');
-                        setTimeout(() => {
-                            el.style.opacity = '0';
-                            setTimeout(() => {
-                                el.innerText = original;
-                                el.style.opacity = '1';
-                            }, 500);
+                setTimeout(() => { el.style.opacity = '0';
+                    setTimeout(() => { el.innerText = motto; el.style.opacity = '1'; el.classList.remove('footer-glow');
+                        setTimeout(() => { el.style.opacity = '0';
+                            setTimeout(() => { el.innerText = original; el.style.opacity = '1'; }, 500);
                         }, 2000);
                     }, 500);
                 }, 1000);
