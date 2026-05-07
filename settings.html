@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- LOCKED VIEWPORT LOGIC --- */
+        /* --- VIEWPORT LOGIC --- */
         html, body {
             margin: 0; padding: 0;
             height: 100dvh;
@@ -34,18 +34,18 @@
             animation: starDrift linear infinite;
         }
         .stars-1 { 
-            background-image: radial-gradient(3px 3px at 25px 50px, #fff, transparent),
-                              radial-gradient(2px 2px at 150px 150px, #fff, transparent); 
-            background-size: 350px 350px; animation-duration: 150s; opacity: 0.4; 
+            background-image: radial-gradient(3.5px 3.5px at 25px 50px, #fff, transparent),
+                              radial-gradient(2.5px 2.5px at 150px 150px, #fff, transparent); 
+            background-size: 400px 400px; animation-duration: 150s; opacity: 0.4; 
         }
         .stars-2 { 
-            background-image: radial-gradient(4px 4px at 200px 100px, var(--gold), transparent),
-                              radial-gradient(2.5px 2.5px at 350px 350px, var(--gold), transparent); 
-            background-size: 550px 550px; animation-duration: 100s; opacity: 0.2; 
+            background-image: radial-gradient(5px 5px at 200px 100px, var(--gold), transparent),
+                              radial-gradient(3px 3px at 350px 350px, var(--gold), transparent); 
+            background-size: 600px 600px; animation-duration: 100s; opacity: 0.2; 
         }
         @keyframes starDrift { from { transform: translateY(0); } to { transform: translateY(500px); } }
 
-        /* --- CENTERING ENGINE (Anti-Overlap) --- */
+        /* --- CENTERING & WIDTH ENGINE --- */
         .viewport-wrapper {
             display: flex;
             flex-direction: column;
@@ -53,45 +53,56 @@
             width: 100%;
             align-items: center;
             justify-content: center;
-            padding: 20px 20px 60px; /* Large bottom padding to protect footer */
+            padding: 20px 20px 60px;
             box-sizing: border-box;
         }
 
         .identity-terminal {
             width: 100%;
-            max-width: 420px;
-            /* Card height adjusts to leave room for footer and header */
+            max-width: 700px; /* Widened for Desktop */
             max-height: calc(100vh - 160px); 
             display: flex;
             flex-direction: column;
-            padding: 30px;
-            gap: 15px;
+            padding: 40px;
+            gap: 20px;
             box-sizing: border-box;
             position: relative;
         }
 
-        /* --- INTERNAL SCROLLING --- */
+        /* --- GRID LOGIC --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns on desktop */
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* Mobile fallback for the grid */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .identity-terminal { max-width: 420px; padding: 25px; }
+        }
+
+        /* --- INTERNAL SCROLLING (Safety fallback) --- */
         .terminal-body {
             flex: 1;
             overflow-y: auto;
-            padding-right: 5px;
             width: 100%;
         }
         .terminal-body::-webkit-scrollbar { width: 3px; }
         .terminal-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
-        /* --- IDENTITY UI --- */
+        /* --- UI ELEMENTS --- */
         .identity-header { text-align: center; margin-bottom: 5px; }
         .rank-tag {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255,255,255,0.3);
-            color: #fff; /* Changed from grey */
-            font-size: 0.65rem;
+            color: #fff;
+            font-size: 0.7rem;
             font-weight: 800;
-            padding: 4px 14px;
+            padding: 4px 18px;
             border-radius: 50px;
             text-transform: uppercase;
-            margin-bottom: 5px;
             display: inline-block;
         }
         .tag-verified { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
@@ -101,42 +112,40 @@
             box-shadow: 0 0 10px #fff, 0 0 5px #fff; margin: 10px 0;
         }
 
-        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group { text-align: left; }
         .form-group label {
-            display: block; font-size: 0.6rem; font-weight: 700;
+            display: block; font-size: 0.65rem; font-weight: 700;
             text-transform: uppercase; color: var(--gold);
-            margin-bottom: 5px; letter-spacing: 1px;
+            margin-bottom: 6px; letter-spacing: 1px;
         }
         .form-group input {
             width: 100%; background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px; padding: 12px; color: #fff;
-            font-size: 0.95rem; box-sizing: border-box;
+            border-radius: 10px; padding: 14px; color: #fff;
+            font-size: 1rem; box-sizing: border-box;
         }
-        .form-group input::placeholder { color: rgba(255,255,255,0.5); }
+
+        .action-container {
+            grid-column: 1 / -1; /* Buttons span full width of the grid */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
         .helper-link {
             background: none; border: none; color: #fff;
-            font-size: 0.75rem; text-decoration: underline;
-            cursor: pointer; margin: 10px auto; display: block;
+            font-size: 0.8rem; text-decoration: underline;
+            cursor: pointer;
         }
 
         /* --- COMPACT FOOTER --- */
         .vanguard-footer {
-            position: absolute;
-            bottom: 10px; /* Reduced distance from bottom */
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-            z-index: 10;
+            position: absolute; bottom: 15px; width: 100%; text-align: center;
+            pointer-events: none; z-index: 10;
         }
-        .vanguard-footer p {
-            font-size: 0.75rem;
-            color: #fff; /* Changed from grey */
-            margin: 0;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
+        .vanguard-footer p { font-size: 0.75rem; color: #fff; margin: 0; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -151,11 +160,11 @@
             
             <div class="identity-header">
                 <div id="auth-tag" class="rank-tag">Unauthenticated</div>
-                <h2 id="citizen-name" style="margin: 0; font-size: 1.6rem; font-weight: 900; text-transform: uppercase; color: #fff;">Guest Mode</h2>
+                <h2 id="citizen-name" style="margin: 5px 0 0; font-size: 2rem; font-weight: 900; text-transform: uppercase; color: #fff;">Guest Mode</h2>
             </div>
 
             <div style="display: flex; justify-content: center;">
-                <a href="directory.html" class="gold-pill" style="width: auto; padding: 8px 30px; font-size: 0.8rem;">Return Home</a>
+                <a href="directory.html" class="gold-pill" style="width: auto; padding: 10px 40px; font-size: 0.85rem;">Return Home</a>
             </div>
 
             <hr class="white-divider">
@@ -163,7 +172,7 @@
             <div class="terminal-body">
                 <div id="state-loading" style="text-align: center; color: #fff; padding: 20px;">Initialising Ledger...</div>
 
-                <div id="state-unauth" style="display: none; flex-direction: column;">
+                <div id="state-unauth" class="form-grid" style="display: none;">
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="reg-name" placeholder="John Doe">
@@ -172,15 +181,17 @@
                         <label>Email Address</label>
                         <input type="email" id="reg-email" placeholder="name@email.com">
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Security Password</label>
                         <input type="password" id="reg-password" placeholder="••••••••">
                     </div>
-                    <button class="gold-pill" onclick="handleSignUp()">Sync Identity</button>
-                    <button class="helper-link" onclick="setView('restore')">lost access? Restore via email</button>
+                    <div class="action-container">
+                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleSignUp()">Sync Identity</button>
+                        <button class="helper-link" onclick="setView('restore')">lost access? Restore via email</button>
+                    </div>
                 </div>
 
-                <div id="state-restore" style="display: none; flex-direction: column;">
+                <div id="state-restore" class="form-grid" style="display: none;">
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="res-name" placeholder="John Doe">
@@ -189,11 +200,13 @@
                         <label>Email Address</label>
                         <input type="email" id="res-email" placeholder="name@email.com">
                     </div>
-                    <button class="gold-pill" onclick="handleRestoreAccess()">Restore Access</button>
-                    <button class="helper-link" onclick="setView('unauth')">return to log in</button>
+                    <div class="action-container">
+                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleRestoreAccess()">Restore Access</button>
+                        <button class="helper-link" onclick="setView('unauth')">return to log in</button>
+                    </div>
                 </div>
 
-                <div id="state-auth" style="display: none; flex-direction: column;">
+                <div id="state-auth" class="form-grid" style="display: none;">
                     <div class="form-group">
                         <label>Identity Email</label>
                         <input type="email" id="auth-email" disabled>
@@ -202,17 +215,19 @@
                         <label>Full Name</label>
                         <input type="text" id="auth-name">
                     </div>
-                    <button class="gold-pill" onclick="handleUpdateProfile()">Update Profile</button>
-                    <button class="gold-pill" style="margin-top: 15px; background: transparent; color: #f87171; border-color: #f87171;" onclick="handleLogout()">Disconnect Identity</button>
+                    <div class="action-container">
+                        <button class="gold-pill" style="width: 100%; max-width: 300px;" onclick="handleUpdateProfile()">Update Profile</button>
+                        <button class="gold-pill" style="margin-top: 10px; background: transparent; color: #f87171; border-color: #f87171; width: auto;" onclick="handleLogout()">Disconnect Identity</button>
+                    </div>
                 </div>
             </div>
             
-            <div id="sys-msg" style="text-align: center; font-size: 0.75rem; margin-top: 5px; min-height: 1.2em; color: #fff;"></div>
+            <div id="sys-msg" style="text-align: center; font-size: 0.8rem; min-height: 1.2em; color: #fff;"></div>
         </article>
     </div>
 
     <footer class="vanguard-footer">
-        <p id="footer-text">Vanguard OS v7.2 | Identity Protocol Enabled</p>
+        <p id="footer-text">Vanguard OS v7.3 | Identity Protocol Enabled</p>
     </footer>
 
     <script>
@@ -229,25 +244,18 @@
                 unauth: document.getElementById('state-unauth'),
                 restore: document.getElementById('state-restore'),
                 auth: document.getElementById('state-auth')
-            },
-            inputs: {
-                authEmail: document.getElementById('auth-email'),
-                authName: document.getElementById('auth-name')
             }
         };
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                loadAuth(session.user);
-            } else {
-                setView('unauth');
-            }
+            if (session) loadAuth(session.user);
+            else setView('unauth');
         }
 
         function setView(key) {
             Object.keys(ui.states).forEach(k => ui.states[k].style.display = 'none');
-            ui.states[key].style.display = (key === 'loading' ? 'block' : 'flex');
+            ui.states[key].style.display = (key === 'loading' ? 'block' : 'grid');
             if (key === 'unauth') { ui.tag.innerText = "Unauthenticated"; ui.tag.classList.remove('tag-verified'); ui.nameDisplay.innerText = "Guest Mode"; }
         }
 
@@ -257,8 +265,8 @@
             const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', user.id).single();
             const name = data ? data.full_name : user.email.split('@')[0];
             ui.nameDisplay.innerText = name;
-            ui.inputs.authEmail.value = user.email;
-            ui.inputs.authName.value = name;
+            document.getElementById('auth-email').value = user.email;
+            document.getElementById('auth-name').value = name;
             setView('auth');
         }
 
@@ -266,9 +274,9 @@
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-            notify("Processing...", "var(--gold)");
+            notify("Syncing...", "var(--gold)");
             const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
-            error ? notify(error.message, "#f87171") : notify("Check email for link.", "#4ade80");
+            error ? notify(error.message, "#f87171") : notify("Verification sent.", "#4ade80");
         }
 
         async function handleRestoreAccess() {
@@ -280,9 +288,9 @@
 
         async function handleUpdateProfile() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            const newName = ui.inputs.authName.value;
-            const { error } = await supabaseClient.from('citizens').update({ full_name: newName }).eq('auth_id', session.user.id);
-            if (!error) { ui.nameDisplay.innerText = newName; notify("Profile Updated.", "#4ade80"); }
+            const name = document.getElementById('auth-name').value;
+            const { error } = await supabaseClient.from('citizens').update({ full_name: name }).eq('auth_id', session.user.id);
+            if (!error) { ui.nameDisplay.innerText = name; notify("Profile Updated.", "#4ade80"); }
         }
 
         async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
