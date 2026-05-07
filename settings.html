@@ -7,18 +7,15 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- SETTINGS SPECIFIC OVERRIDES --- */
+        /* --- SETTINGS SPECIFIC STYLES --- */
         .settings-form {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .field-group {
-            text-align: left;
-            width: 100%;
-        }
+        .field-group { text-align: left; width: 100%; }
 
         label {
             display: block;
@@ -49,24 +46,23 @@
         }
 
         input:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             border-color: transparent;
         }
 
         .btn-danger {
-            border-color: var(--error-red);
-            color: var(--error-red);
-            margin-top: 10px;
+            border-color: var(--error-red) !important;
+            color: var(--error-red) !important;
         }
 
         .btn-danger:hover {
-            background: var(--error-red);
-            color: white;
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+            background: var(--error-red) !important;
+            color: white !important;
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.3) !important;
         }
 
-        /* --- LEGAL MODAL STYLES --- */
+        /* --- LEGAL MODAL --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
             display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px;
@@ -74,7 +70,7 @@
         }
         .modal-content {
             background: #050505; border: 1px solid var(--gold); border-radius: 24px;
-            width: 100%; max-width: 550px; max-height: 80vh; padding: 35px;
+            width: 100%; max-width: 500px; max-height: 80vh; padding: 30px;
             display: flex; flex-direction: column; gap: 20px; transform: scale(0.9); transition: 0.4s var(--v-curve);
         }
         .modal-overlay.active { opacity: 1; }
@@ -84,13 +80,13 @@
             overflow-y: auto; display: flex; flex-direction: column; gap: 20px; 
             text-align: left; padding-right: 10px;
         }
-        .legal-body h3 { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-        .legal-body p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+        .legal-body h3 { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .legal-body p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
 
         .legal-link {
             background: transparent; border: none; color: #444; font-size: 0.65rem;
             text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
-            transition: 0.3s; margin-top: 10px;
+            transition: 0.3s; margin-top: 10px; text-decoration: none;
         }
         .legal-link:hover { color: var(--gold); }
     </style>
@@ -120,12 +116,12 @@
 
                 <div class="field-group">
                     <label>Citizen Handle</label>
-                    <input type="text" id="f-handle" placeholder="Enter Callsign...">
+                    <input type="text" id="f-handle" placeholder="Assign Callsign...">
                 </div>
 
                 <div class="field-group">
                     <label>Discord ID</label>
-                    <input type="text" id="f-discord" placeholder="Username#0000">
+                    <input type="text" id="f-discord" placeholder="Name#0000">
                 </div>
 
                 <button class="gold-pill" onclick="updateProfile()">Save Changes</button>
@@ -134,7 +130,7 @@
                 <button class="legal-link" onclick="openLegal()">Protocol: Legal & Privacy</button>
             </div>
             
-            <div id="sys-msg" style="font-size: 0.7rem; font-weight: bold; min-height: 1em;"></div>
+            <div id="sys-msg" style="font-size: 0.7rem; font-weight: bold; min-height: 1em; text-align: center;"></div>
         </div>
     </main>
 
@@ -144,24 +140,24 @@
 
     <div class="modal-overlay" id="legal-overlay" onclick="if(event.target.id==='legal-overlay') closeLegal()">
         <div class="modal-content">
-            <h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.2rem; text-transform: uppercase;">Legal Protocols</h2>
+            <h2 style="color: var(--gold); border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 10px; font-size: 1.1rem; text-transform: uppercase;">Legal Protocols</h2>
             
             <div class="legal-body">
                 <section>
-                    <h3>1. Privacy Ethos</h3>
-                    <p>Vanguard operates on a need-to-know basis. We collect minimal identification data (Email and Name) strictly for authentication. We do not use tracking cookies, analytics scripts, or third-party beacons.</p>
+                    <h3>1. Data Collection</h3>
+                    <p>We store only what is necessary for authentication: your email and your name. We do not track location, behavior, or hardware identifiers.</p>
                 </section>
                 <section>
-                    <h3>2. Data Security</h3>
-                    <p>Your identity is stored within a decentralized encrypted ledger. We do not sell, trade, or share your citizen data with any third-party corporate or government entities. You own your data.</p>
+                    <h3>2. Privacy Policy</h3>
+                    <p>Vanguard does not share your data with third parties, advertisers, or corporate entities. Your data exists only on the encrypted ledger.</p>
                 </section>
                 <section>
-                    <h3>3. Terms of Service</h3>
-                    <p>By accessing the Fort Toward network, you agree to maintain operational security. Unauthorized attempts to breach the Citizen Ledger or exploit system vulnerabilities will result in immediate rank revocation and permanent banishment.</p>
+                    <h3>3. Governance</h3>
+                    <p>By using this terminal, you agree to respect the operational security of the Fort. Unauthorized access attempts will result in permanent rank revocation.</p>
                 </section>
             </div>
 
-            <button class="gold-pill" onclick="closeLegal()" style="border-color: #333; color: #666; font-size: 0.7rem;">RETURN TO TERMINAL</button>
+            <button class="gold-pill" onclick="closeLegal()" style="border-color: #333; color: #666; font-size: 0.7rem;">CLOSE</button>
         </div>
     </div>
 
@@ -171,8 +167,13 @@
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         async function syncSettings() {
+            // FIX: Wait 500ms to allow Supabase to find the session before bouncing
+            await new Promise(res => setTimeout(res, 500)); 
+
             const { data: { session } } = await supabaseClient.auth.getSession();
+            
             if (!session) {
+                console.warn("Security check failed. Redirecting...");
                 window.location.href = 'index.html';
                 return;
             }
@@ -201,7 +202,7 @@
             const { error } = await supabaseClient.from('citizens').update(updates).eq('auth_id', user.id);
             
             if (error) {
-                msg.innerText = "Transmission Error: " + error.message;
+                msg.innerText = "Error: " + error.message;
                 msg.style.color = "var(--error-red)";
             } else {
                 msg.innerText = "Ledger Updated Successfully.";
