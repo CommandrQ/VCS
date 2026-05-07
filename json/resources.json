@@ -4,6 +4,13 @@
       "title": "Vanguard Support & Repair",
       "description": "Simple tech help and support for local citizens.",
       "url": "https://vsr.vcscitizen.org"
+    },
+    {
+  "Settings": [
+    {
+      "title": "Settings",
+      "description": "Sync account and make changes",
+      "url": "settings.html"
     }
   ]
 }
