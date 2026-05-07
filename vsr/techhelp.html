@@ -6,149 +6,18 @@
     <title>Vanguard | Tech Support</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
+    
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="techhelp.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        /* --- CORE OS VARIABLES & ENGINE --- */
-        :root {
-            --v-gold: #d4af37;
-        }
-
-        html, body {
-            margin: 0; padding: 0;
-            background: #000; color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            min-height: 100vh;
-        }
-
-        /* --- LAYOUT & CENTERING --- */
-        .viewport-wrapper {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
-            width: 100%; max-width: 1000px; margin: 0 auto;
-            padding: 40px 20px 80px 20px; box-sizing: border-box;
-        }
-
-        /* --- HEADER --- */
-        .page-header {
-            display: flex; flex-direction: column;
-            align-items: center;
-            gap: 25px; /* STRICT 25px GAP AS REQUESTED */
-            margin-bottom: 40px; text-align: center;
-        }
-
-        .page-header h1 {
-            margin: 0; font-size: 2.5rem; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 2px;
-            color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.2);
-        }
-
-        .btn-return {
-            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--v-gold);
-            color: var(--v-gold); padding: 10px 30px; border-radius: 50px; text-decoration: none;
-            font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .btn-return:hover { background: var(--v-gold); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-
-        /* --- INTRO SECTION --- */
-        .intro-section { text-align: center; margin-bottom: 40px; max-width: 600px; }
-        .intro-section h2 { color: var(--v-gold); font-size: 1.5rem; margin: 0 0 10px 0; font-weight: 700; }
-        .intro-section p { color: #ffffff; font-size: 1rem; line-height: 1.5; margin: 0; opacity: 0.9; }
-
-        /* --- SERVICE CARDS GRID --- */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px; width: 100%;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px; padding: 25px;
-            display: flex; flex-direction: column;
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        .glass-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
-
-        .tier-title { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; color: #ffffff; }
-        .tier-price { font-size: 1.4rem; font-weight: 900; color: var(--v-gold); margin: 0 0 15px 0; }
-        
-        .tier-features { list-style: none; padding: 0; margin: 0 0 20px 0; flex-grow: 1; }
-        .tier-features li { font-size: 0.85rem; color: #ffffff; margin-bottom: 8px; line-height: 1.4; padding-left: 12px; position: relative; opacity: 0.9; }
-        .tier-features li::before { content: "•"; color: var(--v-gold); position: absolute; left: 0; font-weight: bold; }
-        
-        .tier-footnote { font-size: 0.75rem; font-style: italic; color: rgba(255,255,255,0.6); margin-top: -10px; margin-bottom: 15px; }
-
-        .btn-request {
-            background: var(--v-gold); color: #000; border: none;
-            padding: 12px; border-radius: 8px; font-weight: 800;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            font-size: 0.8rem; width: 100%;
-        }
-        .btn-request:hover { background: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-
-        /* --- MODAL ENGINE --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 1000; padding: 20px;
-        }
-
-        .modal-content {
-            background: rgba(15, 15, 15, 0.95);
-            border: 1px solid var(--v-gold); border-radius: 20px;
-            width: 100%; max-width: 500px; max-height: 90vh;
-            display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        }
-
-        .modal-header { padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; flex: 0 0 auto; }
-        .modal-header h2 { margin: 0; color: #ffffff; font-size: 1.4rem; text-transform: uppercase; }
-        .modal-header p { margin: 5px 0 0 0; color: var(--v-gold); font-size: 0.8rem; font-weight: 600; }
-
-        .modal-body { padding: 25px; overflow-y: auto; flex: 1 1 auto; }
-        .modal-body::-webkit-scrollbar { width: 4px; }
-        .modal-body::-webkit-scrollbar-thumb { background: var(--v-gold); border-radius: 10px; }
-
-        /* Form Elements */
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #ffffff; margin-bottom: 6px; letter-spacing: 1px; }
-        .form-input {
-            width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px; padding: 12px; color: #ffffff; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; font-family: inherit;
-        }
-        .form-input:focus { outline: none; border-color: var(--v-gold); }
-        textarea.form-input { resize: vertical; min-height: 80px; }
-        .form-input:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Conditional Auth Sections */
-        #auth-section { display: none; }
-        .policy-box {
-            background: rgba(212, 175, 55, 0.05); border: 1px dashed rgba(212, 175, 55, 0.4);
-            border-radius: 8px; padding: 15px; margin: 20px 0;
-        }
-        .policy-box h3 { color: var(--v-gold); margin: 0 0 10px 0; font-size: 0.85rem; text-transform: uppercase; }
-        .policy-box p { color: #ffffff; font-size: 0.8rem; margin: 0 0 8px 0; line-height: 1.4; opacity: 0.9; }
-
-        .modal-footer { padding: 20px 25px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; flex: 0 0 auto; }
-        .btn-cancel { background: transparent; color: #ffffff; border: 1px solid rgba(255,255,255,0.3); flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-        .btn-cancel:hover { background: rgba(255,255,255,0.1); }
-        .btn-submit { background: var(--v-gold); color: #000; border: none; flex: 2; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 900; text-transform: uppercase; transition: 0.3s; }
-        .btn-submit:hover { background: #fff; }
-
-        #sys-msg { text-align: center; color: #f87171; font-size: 0.8rem; font-weight: bold; margin-top: 10px; min-height: 1.2em; }
-    </style>
 </head>
 <body>
+
+    <div class="universe-bg">
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
+    </div>
 
     <div class="viewport-wrapper">
         
@@ -162,61 +31,12 @@
             <p>Technology can be frustrating, but you are not alone. Vanguard is here to diagnose, repair, and optimize your systems so you can get back to what matters.</p>
         </section>
 
-        <section class="services-grid">
-            
-            <div class="glass-card">
-                <h3 class="tier-title">Essential Guidance</h3>
-                <p class="tier-price">Free</p>
-                <ul class="tier-features">
-                    <li>Remote Based</li>
-                    <li>30 min consultation</li>
-                    <li>Quick troubleshooting</li>
-                </ul>
-                <button class="btn-request" onclick="openModal('Essential Guidance', 'Free')">Request Help</button>
-            </div>
-
-            <div class="glass-card">
-                <h3 class="tier-title">Enhanced Care</h3>
-                <p class="tier-price">$25</p>
-                <ul class="tier-features">
-                    <li>Hands-on Support</li>
-                    <li>System updates</li>
-                    <li>Router setup</li>
-                    <li>7-day warranty</li>
-                </ul>
-                <button class="btn-request" onclick="openModal('Enhanced Care', '$25')">Request Help</button>
-            </div>
-
-            <div class="glass-card">
-                <h3 class="tier-title">Extended Resolution</h3>
-                <p class="tier-price">$55</p>
-                <ul class="tier-features">
-                    <li>Up to 90 Minutes</li>
-                    <li>Whole-home Wi-Fi</li>
-                    <li>PC upgrades</li>
-                    <li>14-day warranty</li>
-                </ul>
-                <button class="btn-request" onclick="openModal('Extended Resolution', '$55')">Request Help</button>
-            </div>
-
-            <div class="glass-card">
-                <h3 class="tier-title">Concierge Experience</h3>
-                <p class="tier-price">$75</p>
-                <ul class="tier-features">
-                    <li>2 Hours In-Home</li>
-                    <li>Shopping advice & home delivery</li>
-                    <li>Full setup</li>
-                </ul>
-                <p class="tier-footnote">*When available</p>
-                <button class="btn-request" onclick="openModal('Concierge Experience', '$75')">Request Help</button>
-            </div>
-
-        </section>
+        <section class="services-container" id="tiers-container">
+            </section>
     </div>
 
     <div class="modal-overlay" id="request-modal">
         <div class="modal-content">
-            
             <div class="modal-header">
                 <h2 id="modal-tier-title">Selected Tier</h2>
                 <p>Submitting will draft a secure email to a Vanguard Knight.</p>
@@ -264,127 +84,13 @@
                 <button class="btn-cancel" onclick="closeModal()">Cancel</button>
                 <button class="btn-submit" onclick="submitRequest()">Review Request</button>
             </div>
-
         </div>
     </div>
 
-    <script>
-        // --- 1. SUPABASE INITIALIZATION ---
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+    <footer class="vanguard-footer">
+        Powered by Vanguard Citizen Services &copy; <span id="current-year"></span>
+    </footer>
 
-        // --- 2. GLOBAL STATE ---
-        let currentSelection = { tier: '', price: '' };
-        let isUserSignedIn = false;
-
-        // --- 3. DYNAMIC AUTH LOGIC ---
-        async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const authSection = document.getElementById('auth-section');
-
-            if (session) {
-                isUserSignedIn = true;
-                authSection.style.display = 'block';
-
-                // Fetch Citizen Data to Auto-fill
-                const { data } = await supabaseClient.from('citizens').select('full_name').eq('auth_id', session.user.id).single();
-                
-                if(data && data.full_name) {
-                    document.getElementById('f-name').value = data.full_name;
-                }
-                document.getElementById('f-email').value = session.user.email;
-                
-                // Optional: Disable email input so they don't change their verified routing email
-                document.getElementById('f-email').disabled = true; 
-            } else {
-                isUserSignedIn = false;
-                authSection.style.display = 'none';
-            }
-        }
-
-        // --- 4. MODAL LOGIC ---
-        function openModal(tierName, price) {
-            currentSelection.tier = tierName;
-            currentSelection.price = price;
-            
-            document.getElementById('modal-tier-title').innerText = `${tierName} (${price})`;
-            document.getElementById('sys-msg').innerText = ''; // Clear old errors
-            document.getElementById('request-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('request-modal').style.display = 'none';
-            document.getElementById('sys-msg').innerText = '';
-        }
-
-        // --- 5. SUBMISSION LOGIC ---
-        function submitRequest() {
-            const name = document.getElementById('f-name').value.trim();
-            const email = document.getElementById('f-email').value.trim();
-            const phone = document.getElementById('f-phone').value.trim();
-            const issue = document.getElementById('f-issue').value.trim();
-            const sysMsg = document.getElementById('sys-msg');
-
-            // Basic Validation
-            if (!name || !email || !phone || !issue) {
-                sysMsg.innerText = "Error: Please fill out all standard fields.";
-                return;
-            }
-
-            let address = "";
-            let adultVerification = "";
-
-            // Advanced Validation if Signed In
-            if (isUserSignedIn) {
-                address = document.getElementById('f-address').value.trim();
-                adultVerification = document.getElementById('f-adult').value.trim().toUpperCase();
-
-                if (!address) {
-                    sysMsg.innerText = "Error: Verified Citizens must provide a Service Address.";
-                    return;
-                }
-                if (adultVerification !== "YES") {
-                    sysMsg.innerText = "Error: You must type 'YES' to confirm an adult will be present.";
-                    return;
-                }
-            }
-
-            // Construct Dispatch Log
-            let emailBody = `--- VANGUARD DISPATCH LOG ---\n`;
-            emailBody += `Requested Tier: ${currentSelection.tier} (${currentSelection.price})\n\n`;
-            
-            emailBody += `[CITIZEN DETAILS]\n`;
-            emailBody += `Name: ${name}\n`;
-            emailBody += `Email: ${email}\n`;
-            emailBody += `Phone: ${phone}\n\n`;
-
-            emailBody += `[ISSUE DESCRIPTION]\n`;
-            emailBody += `${issue}\n\n`;
-
-            // Append Advanced Details if Signed in
-            if (isUserSignedIn) {
-                emailBody += `[SERVICE LOGISTICS]\n`;
-                emailBody += `Address: ${address}\n`;
-                emailBody += `Adult Present Verified: ${adultVerification}\n`;
-                emailBody += `Policy Agreement Confirmed: YES\n`;
-            }
-            
-            emailBody += `\n--- END OF TRANSMISSION ---`;
-
-            // Mailto Execution
-            const subjectLine = encodeURIComponent(`Vanguard Support Request: ${currentSelection.tier}`);
-            const encodedBody = encodeURIComponent(emailBody);
-            const mailtoLink = `mailto:commandrq@gmail.com?subject=${subjectLine}&body=${encodedBody}`;
-
-            // Trigger Email Client and Close
-            window.location.href = mailtoLink;
-            closeModal();
-        }
-
-        // --- INIT ---
-        window.onload = checkAuth;
-
-    </script>
+    <script src="techhelp.js"></script>
 </body>
 </html>
