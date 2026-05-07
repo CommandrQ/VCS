@@ -33,10 +33,16 @@
         "price": "$75",
         "features": [
             "2 Hours In-Home",
-            "Shopping advice & home delivery",
-            "Full setup",
+            "In-depth tech overhaul",
             "14-day warranty"
         ],
-        "footnote": "*When available"
+        "footnote": "*When available",
+        "studentPromo": {
+            "active": true,
+            "price": "$50",
+            "deadline": "2026-06-01",
+            "label": "Student Special",
+            "desc": "Computer shopping, setup, and education session."
+        }
     }
 ]
