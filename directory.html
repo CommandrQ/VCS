@@ -28,6 +28,7 @@
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-main); padding: 15px 10px; border-radius: 12px; font-size: 0.85rem;
             font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center;
+            display: flex; justify-content: center; align-items: center;
         }
         .resource-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
@@ -90,12 +91,20 @@
 
             <hr style="width: 80%; border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
 
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">Network Resources</h3>
+            <h3 style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">Direct Access</h3>
             
-            <div class="resource-grid" id="resource-buttons">
-                <button class="resource-btn" onclick="openResourceModal('Tech Help')">Tech Help</button>
-                <button class="resource-btn" onclick="openResourceModal('Cyber Intel')">Cyber Intel</button>
+            <div class="resource-grid" id="internal-buttons">
+                <button class="resource-btn" onclick="window.location.href='support.html'">Customer Service</button>
+                <button class="resource-btn" onclick="window.location.href='settings.html'">Settings</button>
             </div>
+
+            <hr style="width: 80%; border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0 10px;">
+
+            <h3 style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">Partner Portals</h3>
+
+            <div class="resource-grid" id="modal-buttons">
+                <button class="resource-btn" onclick="openResourceModal('Tech Help')">Tech Help</button>
+                </div>
 
         </div>
     </main>
@@ -120,7 +129,7 @@
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         // ==========================================
-        // STEP 2: ADD YOUR LINKS AND DESCRIPTIONS HERE
+        // ADD MODAL LINKS AND DESCRIPTIONS HERE
         // ==========================================
         const INTERNAL_DATABASE = {
             "Tech Help": [
@@ -128,13 +137,6 @@
                     title: "Vanguard Support & Repair",
                     desc: "Simple tech help and support for local citizens.",
                     url: "https://vsr.vcscitizen.org"
-                }
-            ],
-            "Settings": [
-                {
-                    title: "User Settings",
-                    desc: "Sync your account and make changes.",
-                    url: "settings.html"
                 }
             ]
         };
@@ -201,7 +203,7 @@
                 } else {
                     modalBody.innerHTML = '<p style="text-align: center; color: #888;">No active resources in this sector.</p>';
                 }
-            }, 400); // 400ms fake load time for tactical feel
+            }, 400); // 400ms fake load time
         }
 
         function closeModal(event) {
