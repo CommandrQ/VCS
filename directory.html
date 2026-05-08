@@ -10,7 +10,6 @@
     <style>
         :root { --gold: #d4af37; --v-curve: cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* --- CORE ENGINE --- */
         html, body {
             margin: 0; padding: 0;
             height: 100dvh; width: 100vw;
@@ -30,64 +29,68 @@
 
         /* --- TERMINAL WINDOW --- */
         .directory-terminal {
-            width: 100%; max-width: 1000px; /* Slightly wider for 4-card layout */
+            width: 100%; max-width: 1000px;
             height: 85vh; display: flex; flex-direction: column;
             background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
             overflow: hidden;
         }
 
-        .terminal-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .pop-label { color: var(--gold); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; }
-        .pop-count { font-size: 2.5rem; font-weight: 900; margin: 5px 0; }
+        .terminal-header { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
+        /* PERSONALIZED GREETING */
+        .greeting-text { 
+            color: #fff; font-size: 1.2rem; font-weight: 300; margin-bottom: 5px; 
+            letter-spacing: 1px; opacity: 0.9;
+        }
 
-        /* --- SCROLLABLE CATEGORY MENU --- */
+        .pop-label { color: var(--gold); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; display: block; }
+        .pop-count { font-size: 2rem; font-weight: 900; margin: 0; color: #fff; }
+
+        /* --- CATEGORY MENU --- */
         .category-menu {
             display: flex; gap: 10px; padding: 15px;
             overflow-x: auto; white-space: nowrap;
-            scrollbar-width: none; /* Firefox */
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            scrollbar-width: none; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .category-menu::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .category-menu::-webkit-scrollbar { display: none; }
 
         .cat-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);
             color: #fff; padding: 8px 18px; border-radius: 50px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; cursor: pointer;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s;
         }
-        .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+        .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
 
-        /* --- SCROLLABLE CARD ENGINE --- */
+        /* --- CONTENT SCROLLING --- */
         .directory-content {
-            flex: 1; overflow-y: auto; padding: 20px;
-            display: grid; gap: 15px;
-            /* Default: Mobile 1 column */
+            flex: 1; overflow-y: auto; padding: 25px;
+            display: grid; gap: 20px;
             grid-template-columns: 1fr;
             justify-items: center; align-content: start;
         }
 
-        /* Desktop: Exactly 4 mini-columns */
         @media (min-width: 850px) {
-            .directory-content {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .directory-content { grid-template-columns: repeat(4, 1fr); }
         }
 
         .link-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 20px 15px; width: 100%; max-width: 220px;
+            border-radius: 12px; padding: 20px 15px; width: 100%; max-width: 210px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
             transition: 0.3s var(--v-curve);
         }
         .link-card:hover { border-color: var(--gold); background: rgba(255,255,255,0.07); transform: translateY(-3px); }
 
-        .card-title { font-size: 0.9rem; font-weight: 800; color: #fff; margin: 0 0 10px; text-transform: uppercase; }
-        .card-desc { font-size: 0.75rem; color: #aaa; line-height: 1.4; margin: 0 0 15px; flex-grow: 1; }
+        .card-title { font-size: 0.85rem; font-weight: 800; color: #fff; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-desc { font-size: 0.7rem; color: #aaa; line-height: 1.4; margin: 0 0 15px; flex-grow: 1; }
         
         .card-btn {
-            color: var(--gold); font-size: 0.7rem; font-weight: 900; text-transform: uppercase;
+            color: var(--gold); font-size: 0.65rem; font-weight: 900; text-transform: uppercase;
             text-decoration: none; border: 1px solid var(--gold); padding: 6px 20px; border-radius: 20px;
+            transition: 0.2s;
         }
+        .card-btn:hover { background: var(--gold); color: #000; }
 
         /* --- FOOTER --- */
         .vanguard-footer {
@@ -95,7 +98,7 @@
             display: flex; align-items: center; justify-content: center;
             background: #000; border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .footer-text { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .footer-text { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -105,7 +108,8 @@
     <div class="viewport-wrapper">
         <article class="directory-terminal">
             <header class="terminal-header">
-                <div class="pop-label">Sanctuary Population</div>
+                <div id="user-greeting" class="greeting-text">Welcome, Citizen</div>
+                <span class="pop-label">Sanctuary Population</span>
                 <div id="population-count" class="pop-count">...</div>
             </header>
 
@@ -124,27 +128,43 @@
         const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- EASILY ADD/DELETE CATEGORIES HERE ---
+        // DATA ARCHITECTURE
         const directoryData = {
             "Help and Support": [
                 { title: "Tech Consulting", desc: "Digital or in-person help understanding and connecting with technology.", url: "vsr/techhelp.html" },
-                { title: "Hardware Repair", desc: "Medium-tier fixes for phones and computers.", url: "#" }
+                { title: "Device Repair", desc: "Medium-tier fixes for phones and computers by our local partners.", url: "#" }
             ],
-            "Media & Games": [
-                { title: "Cinema", desc: "Original films and comedies by the Knights.", url: "#" },
-                { title: "The Arena", desc: "Fighting and card games for the community.", url: "#" }
+            "Media Projects": [
+                { title: "Coming Soon", desc: "The Vanguard Knights are currently in the archives preparing new media for the community.", url: "#" }
+            ],
+            "Settings": [
+                { title: "Citizen Profile", desc: "Manage your connection and sanctuary preferences.", url: "settings.html" }
             ]
         };
 
         const ui = {
+            greeting: document.getElementById('user-greeting'),
             pop: document.getElementById('population-count'),
             catBar: document.getElementById('category-bar'),
             dirList: document.getElementById('directory-list')
         };
 
         async function init() {
+            checkUser();
             fetchPop();
             renderHub();
+        }
+
+        // AUTH GREETING LOGIC
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                // Tries to find a full_name in user_metadata, otherwise defaults to Citizen
+                const name = user.user_metadata?.full_name || user.email.split('@')[0];
+                ui.greeting.innerText = `Welcome, ${name}`;
+            } else {
+                ui.greeting.innerText = "Welcome, Citizen";
+            }
         }
 
         async function fetchPop() {
@@ -163,13 +183,12 @@
         window.showCat = (name, btn) => {
             document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            // Auto-scroll the button into view on mobile
             btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 
             ui.dirList.innerHTML = directoryData[name].map(card => `
                 <div class="link-card">
                     <h3 class="card-title">${card.title}</h3>
-                    <p class="card-desc">${card.description || card.desc}</p>
+                    <p class="card-desc">${card.desc}</p>
                     <a href="${card.url}" class="card-btn">Open</a>
                 </div>
             `).join('');
