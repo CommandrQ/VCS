@@ -233,7 +233,6 @@
         ui.signOutBtn.addEventListener('click', async () => {
             localStorage.clear();
             await supabaseClient.auth.signOut();
-            window.location.href = 'directory.html';
         });
 
         window.onload = init;
