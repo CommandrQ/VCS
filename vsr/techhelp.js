@@ -1,76 +1,87 @@
-/* =========================================
-   MODAL LOGIC (REQUEST A COACH)
-   ========================================= */
-
 document.addEventListener("DOMContentLoaded", () => {
+    const tiersContainer = document.getElementById("tiers-container");
     const modal = document.getElementById("request-modal");
-    const closeBtn = document.getElementById("close-btn");
-    const reviewDraftBtn = document.getElementById("review-draft-btn");
+    const step1 = document.getElementById("modal-step-1");
+    const step2 = document.getElementById("modal-step-2");
     
-    // REPLACE THIS with your actual Vanguard business email address
-    const vanguardEmail = "support@yourdomain.com"; 
+    let selectedPackageName = "";
 
-    // Function to open the modal (can be called globally)
-    window.openModal = function() {
-        modal.classList.add("active");
-    };
+    // 1. FETCH AND RENDER CARDS FROM JSON
+    fetch('tiers.json')
+        .then(response => response.json())
+        .then(data => {
+            renderTiers(data);
+        })
+        .catch(err => console.error("Error loading tiers:", err));
 
-    // Listen for clicks on dynamically generated "Request Help" buttons inside your tiers container
-    document.getElementById("tiers-container").addEventListener("click", function(e) {
-        // If the clicked element or its parent has a class or ID indicating it's the request button
-        // (Adjust the class name 'btn-request-help' below to match the actual class on your tier buttons)
-        if (e.target.closest(".btn-request-help")) {
-            e.preventDefault();
-            window.openModal();
+    function renderTiers(tiers) {
+        tiersContainer.innerHTML = tiers.map(tier => `
+            <div class="service-card">
+                <h3>${tier.title}</h3>
+                <p class="tier-price">${tier.price || ''}</p>
+                <button class="btn-request-help" 
+                        data-title="${tier.title}" 
+                        data-desc="${tier.description}">
+                    Request Help
+                </button>
+            </div>
+        `).join('');
+    }
+
+    // 2. MODAL NAVIGATION LOGIC
+    tiersContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-request-help");
+        if (btn) {
+            selectedPackageName = btn.getAttribute("data-title");
+            const description = btn.getAttribute("data-desc");
+
+            // Populate Modal Step 1
+            document.getElementById("modal-package-title").innerText = selectedPackageName;
+            document.getElementById("modal-package-description").innerText = description;
+
+            // Show Step 1, Hide Step 2, Open Modal
+            step1.style.display = "block";
+            step2.style.display = "none";
+            modal.classList.add("active");
         }
     });
 
-    // Close the modal when clicking the X
-    closeBtn.addEventListener("click", () => {
+    document.getElementById("btn-continue-to-form").addEventListener("click", () => {
+        step1.style.display = "none";
+        step2.style.display = "block";
+    });
+
+    document.getElementById("btn-go-back").addEventListener("click", () => {
         modal.classList.remove("active");
     });
 
-    // Close modal if user clicks outside the card
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            modal.classList.remove("active");
-        }
+    document.getElementById("close-btn").addEventListener("click", () => {
+        modal.classList.remove("active");
     });
 
-    // Handle the Draft generation when they click "Review Draft"
-    reviewDraftBtn.addEventListener("click", () => {
+    // 3. EMAIL GENERATION
+    document.getElementById("review-draft-btn").addEventListener("click", () => {
         const name = document.getElementById("req-name").value.trim();
         const email = document.getElementById("req-email").value.trim();
-        const phone = document.getElementById("req-phone").value.trim();
         const goal = document.getElementById("req-goal").value.trim();
-        const adultPresent = document.getElementById("req-adult").checked;
+        const adult = document.getElementById("req-adult").checked;
 
-        // Validation check
-        if (!name || !email || !goal || !adultPresent) {
-            alert("Please fill out your Name, Email, your Goal, and agree to the Adult Presence requirement before continuing.");
+        if (!name || !email || !adult) {
+            alert("Please complete all required fields and check the adult presence box.");
             return;
         }
 
-        // Format the email subject and body
-        const subject = encodeURIComponent(`Tech Coaching Request: ${name}`);
-        const bodyText = 
-            `Name: ${name}\n` +
-            `Email: ${email}\n` +
-            `Phone: ${phone || "Not provided"}\n\n` +
-            `--- WHAT I WOULD LIKE TO ACHIEVE ---\n` +
-            `${goal}\n\n` +
-            `------------------------------------\n` +
-            `* I confirm that an adult (18+) will be present for the duration of the in-person appointment.`;
+        const vanguardEmail = "support@yourvanguard.com"; // UPDATE THIS
+        const subject = encodeURIComponent(`Coaching Request: ${selectedPackageName}`);
+        const body = encodeURIComponent(
+            `I am interested in the ${selectedPackageName} package.\n\n` +
+            `Client: ${name}\n` +
+            `Email: ${email}\n\n` +
+            `Message: ${goal}\n\n` +
+            `* Adult presence confirmed.`
+        );
 
-        const body = encodeURIComponent(bodyText);
-
-        // Open the user's email client
         window.location.href = `mailto:${vanguardEmail}?subject=${subject}&body=${body}`;
-        
-        // Close the modal after generating the draft
         modal.classList.remove("active");
-        
-        // Optional: clear the form so it's empty if they open it again
-        document.getElementById("tech-request-form").reset();
     });
 });
