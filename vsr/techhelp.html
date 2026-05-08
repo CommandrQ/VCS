@@ -38,7 +38,50 @@
     <footer class="vanguard-footer">Powered by Vanguard Citizen Services &copy; <span id="current-year"></span></footer>
 
     <div class="modal-overlay" id="request-modal">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h2>Request a Coach</h2>
+                <button type="button" class="close-modal" id="close-btn">&times;</button>
+            </header>
+            
+            <div class="modal-body">
+                <div class="modal-notice">
+                    <p><strong>Heads up:</strong> Clicking the "Review Draft" button below will securely open your device's email app and generate a prefilled message. You can review it before sending!</p>
+                    <p>A Vanguard Knight will get back to you as soon as possible.</p>
+                    <p class="cs-note">Not sure where to start or have other questions? <a href="vsrsupport.html">Contact Customer Service.</a></p>
+                </div>
+
+                <form id="tech-request-form">
+                    <div class="form-group">
+                        <label for="req-name">Your Name</label>
+                        <input type="text" id="req-name" required placeholder="e.g., Jane Doe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="req-email">Your Email</label>
+                        <input type="email" id="req-email" required placeholder="e.g., jane@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="req-phone">Phone Number</label>
+                        <input type="tel" id="req-phone" placeholder="(Optional) Best number to reach you">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="req-goal">What would you like to achieve today?</label>
+                        <textarea id="req-goal" rows="4" required placeholder="e.g., I need help setting up my new iPad and making sure my home Wi-Fi is secure."></textarea>
+                    </div>
+
+                    <div class="agreement-group">
+                        <input type="checkbox" id="req-adult" required>
+                        <label for="req-adult">I agree that an adult (18+) will be present for the duration of the appointment.</label>
+                    </div>
+
+                    <button type="button" id="review-draft-btn" class="btn-primary">Review Draft</button>
+                </form>
+            </div>
         </div>
+    </div>
 
     <script src="techhelp.js"></script>
 </body>
