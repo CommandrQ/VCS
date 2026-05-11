@@ -1,5 +1,5 @@
 // ==========================================
-// VANGUARD COMMAND LOGIC v3.1
+// VANGUARD COMMAND LOGIC v3.2
 // ==========================================
 
 // 1. SUPABASE INITIALIZATION
@@ -12,11 +12,11 @@ const directoryDataRaw = {
     "Vanguard Tech Lab": [
         { 
             title: "Tech Consulting", 
-            desc: "Easy tech support sessions and classes.", 
-            url: "#" 
+            desc: "Expert strategy and support sessions for seniors, parents, and high-performance individuals.", 
+            url: "vsr/techhelp.html" 
         }
     ],
-    "System": [
+    "System Settings": [
         { 
             title: "Support Terminal", 
             desc: "Connect directly with Vanguard support for technical help or general inquiries.", 
@@ -30,34 +30,82 @@ const directoryDataRaw = {
     ]
 };
 
-// 3. RENDER THE HUB
-function renderHub(category = Object.keys(directoryDataRaw)[0], filterText = "") {
+// 3. RENDER & OMNI-SEARCH LOGIC
+let currentCategory = Object.keys(directoryDataRaw)[0];
+
+function renderHub(category = currentCategory, filterText = "") {
     const nav = document.getElementById('category-bar');
     const list = document.getElementById('directory-list');
     if (!nav || !list) return;
 
-    // Render Navigation (Enlarged Buttons)
-    nav.innerHTML = Object.keys(directoryDataRaw).map(cat => `
-        <button class="cat-btn ${cat === category ? 'active' : ''}" 
-                onclick="renderHub('${cat}')">${cat}</button>
-    `).join('');
+    // Check if the user is typing in the search bar
+    if (filterText.trim() === "") {
+        // --- NORMAL CATEGORY MODE ---
+        currentCategory = category; // Save their place
+        nav.style.display = 'flex'; // Show navigation tabs
+        
+        // Render Tabs
+        nav.innerHTML = Object.keys(directoryDataRaw).map(cat => `
+            <button class="cat-btn ${cat === currentCategory ? 'active' : ''}" 
+                    onclick="renderHub('${cat}')">${cat}</button>
+        `).join('');
 
-    // Filter and Render Cards
-    const items = directoryDataRaw[category].filter(item => 
-        item.title.toLowerCase().includes(filterText.toLowerCase()) || 
-        item.desc.toLowerCase().includes(filterText.toLowerCase())
-    );
+        // Render Category Cards
+        const items = directoryDataRaw[currentCategory];
+        list.innerHTML = items.map(item => `
+            <div class="link-card">
+                <h3 class="card-title">${item.title}</h3>
+                <p class="card-desc">${item.desc}</p>
+                <a href="${item.url}" class="card-btn">Go</a>
+            </div>
+        `).join('');
 
-    list.innerHTML = items.map(item => `
-        <div class="link-card">
-            <h3 class="card-title">${item.title}</h3>
-            <p class="card-desc">${item.desc}</p>
-            <a href="${item.url}" class="card-btn">Go</a>
-        </div>
-    `).join('');
+    } else {
+        // --- OMNI-SEARCH MODE ---
+        nav.style.display = 'none'; // Hide tabs to prevent confusion
+        
+        // Flatten all categories into one master list
+        let allItems = [];
+        for (let cat in directoryDataRaw) {
+            allItems = allItems.concat(directoryDataRaw[cat]);
+        }
+
+        // Filter the master list by the search keyword
+        const matched = allItems.filter(item => 
+            item.title.toLowerCase().includes(filterText.toLowerCase()) || 
+            item.desc.toLowerCase().includes(filterText.toLowerCase())
+        );
+
+        // Render Results or Empty State
+        if (matched.length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; margin-top: 60px; opacity: 0.6;">
+                    <p style="color: var(--gold); font-weight: 800; letter-spacing: 3px;">NO SYSTEMS FOUND</p>
+                    <p style="font-size: 0.8rem; color: #fff;">Adjust your search parameters.</p>
+                </div>
+            `;
+        } else {
+            list.innerHTML = matched.map(item => `
+                <div class="link-card">
+                    <h3 class="card-title">${item.title}</h3>
+                    <p class="card-desc">${item.desc}</p>
+                    <a href="${item.url}" class="card-btn">Go</a>
+                </div>
+            `).join('');
+        }
+    }
 }
 
-// 4. AUTH & IDENTITY GREETING
+// 4. SEARCH BAR EVENT LISTENER
+const searchInput = document.getElementById('hub-search');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        // Triggers the render loop instantly on every keystroke
+        renderHub(currentCategory, e.target.value);
+    });
+}
+
+// 5. AUTH & IDENTITY GREETING
 async function updateUI() {
     const greeting = document.getElementById('user-greeting');
     const toast = document.getElementById('login-toast');
@@ -67,11 +115,9 @@ async function updateUI() {
     const cached = JSON.parse(localStorage.getItem('vanguard_profile'));
 
     if (user) {
-        // Use the name they registered with, otherwise default to Citizen
         const displayName = (cached && cached.name) ? cached.name : "Citizen";
         greeting.innerText = `Welcome, ${displayName}`;
 
-        // Trigger Success Notification if just arriving from Magic Link
         if (sessionStorage.getItem('just_logged_in') === 'true') {
             if (toast) {
                 toast.innerText = "Uplink Established: Signed In";
@@ -82,33 +128,18 @@ async function updateUI() {
         }
     } else {
         greeting.innerText = "Welcome";
-        // Do not clear cache if they are just guest browsing
     }
-}
-
-// 5. SEARCH SYSTEM
-const searchInput = document.getElementById('hub-search');
-if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-        // Keep current active category and filter cards
-        const activeBtn = document.querySelector('.cat-btn.active');
-        const currentCat = activeBtn ? activeBtn.innerText : Object.keys(directoryDataRaw)[0];
-        renderHub(currentCat, e.target.value);
-    });
 }
 
 // 6. SYSTEM BOOTSTRAP
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for Magic Link token in URL
     if (window.location.hash.includes('access_token')) {
         sessionStorage.setItem('just_logged_in', 'true');
     }
 
-    // Set Footer Year
     const yearSpan = document.getElementById('current-year');
     if (yearSpan) yearSpan.innerText = new Date().getFullYear();
 
-    // Start UI
     updateUI();
-    renderHub();
+    renderHub(); // Boot up the Hub with default view
 });
