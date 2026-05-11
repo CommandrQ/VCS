@@ -3,81 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Project V | Command Center</title>
+    <title>Vanguard | Your Settings</title>
     
-    <!-- Persistence & Style -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Supabase Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- LAYER 1: Deep Canvas (Persistent Starfield) -->
     <div id="vanguard-universe" aria-hidden="true">
         <div class="gold-star-layer"></div>
     </div>
 
-    <!-- LAYER 2: App Container (Centered & Wide) -->
     <main id="app-wrapper">
 
-        <!-- LAYER 3: Sticky Glass Header -->
+        <!-- HEADER -->
         <header id="top-glass-panel" class="glass-module">
             <div class="citizen-status">
-                <a href="hub.html" class="back-btn">← RETURN TO HUB</a>
+                <a href="hub.html" class="back-btn">← GO BACK</a>
                 <h1 id="user-greeting">Settings</h1>
             </div>
         </header>
 
-        <!-- LAYER 4: Modular Command Tiles -->
+        <!-- THE UNIFIED SCENE -->
         <section id="directory-core">
             <div id="directory-list">
                 
-                <!-- IDENTITY MODULE -->
+                <!-- YOUR NAME -->
                 <div class="link-card">
-                    <h3 class="card-title">Identity</h3>
+                    <h3 class="card-title">Who are you?</h3>
                     <p class="card-desc" id="profile-info">
-                        Citizen Name: Loading...<br>
-                        Connection: Synchronizing...
+                        Name: Loading...<br>
+                        Email: Loading...
                     </p>
-                    <input type="text" id="new-name" placeholder="Update Hero Name" class="settings-input">
-                    <button onclick="updateName()" class="card-btn">Update Identity</button>
+                    <input type="text" id="new-name" placeholder="Type a new name..." class="settings-input">
+                    <button onclick="updateName()" class="card-btn">Save Name</button>
                 </div>
 
-                <!-- SECURITY MODULE -->
+                <!-- SECURITY -->
                 <div class="link-card">
-                    <h3 class="card-title">Security</h3>
-                    <p class="card-desc">Manage your encrypted connection and sanctuary access keys.</p>
+                    <h3 class="card-title">Keep it safe</h3>
+                    <p class="card-desc">Need to get back in or leave for a while?</p>
                     <div class="button-group">
-                        <button onclick="sendRestoreLink()" class="card-btn">Restore Link</button>
+                        <button onclick="sendRestoreLink()" class="card-btn">Email Login Link</button>
                         <button onclick="signOut()" class="card-btn secondary">Sign Out</button>
                     </div>
                 </div>
 
-                <!-- MAINTENANCE MODULE -->
+                <!-- FIXING STUFF -->
                 <div class="link-card">
-                    <h3 class="card-title">Maintenance</h3>
-                    <p class="card-desc">If the interface feels unstable or localized data is desynced, use the protocols below.</p>
+                    <h3 class="card-title">Is it broken?</h3>
+                    <p class="card-desc">If the app looks weird or things aren't loading right, try these.</p>
                     <div class="button-group">
-                        <button onclick="clearCache()" class="card-btn">Purify Cache</button>
-                        <button onclick="fullReset()" class="card-btn danger">Clean Slate</button>
+                        <button onclick="clearCache()" class="card-btn">Fix My App</button>
+                        <button onclick="fullReset()" class="card-btn danger">Start Over</button>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <!-- LAYER 5: System Footer -->
+        <!-- SYSTEM FOOTER -->
         <footer id="bottom-glass-panel" class="glass-module">
             <div class="footer-container">
-                <p class="footer-msg active">Project V Build: 1.0.4 &copy; <span id="current-year"></span></p>
+                <p class="footer-msg active">Vanguard Version 1.0.4 &copy; <span id="current-year"></span></p>
             </div>
         </footer>
 
     </main>
 
-    <!-- Unified Logic Script -->
     <script src="app.js"></script>
 </body>
 </html>
