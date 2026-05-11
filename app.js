@@ -39,7 +39,6 @@ function initHub() {
             { title: "Tech Consulting", desc: "Digital or in-person help understanding and connecting with technology.", url: "vsr/techhelp.html" }
         ],
         "System Settings": [
-            { title: "Citizen Profile", desc: "Manage your connection and preferences here.", url: "settings.html" },
             { title: "Legal Documents", desc: "Review the current Terms of Use and Privacy Policy.", url: "legal.html" },
             { title: "Support", desc: "Contact support for further help.", url: "support.html" }
         ]
