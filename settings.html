@@ -149,11 +149,10 @@
             const { error } = await supabaseClient.auth.signInWithOtp({
                 email: email,
                 options: { 
-                    // Redirects them to the Hub once they click the email link
-                    emailRedirectTo: window.location.origin + '/hub.html',
+                    emailRedirectTo: window.location.origin + '/signedin.html', // New route
                     data: { full_name: fullname } 
-                }
-            });
+    }
+});
 
             if(error) {
                 msg.innerText = "Error: " + error.message;
