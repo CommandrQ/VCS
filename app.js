@@ -13,7 +13,7 @@ const directoryDataRaw = {
         { 
             title: "Tech Consulting", 
             desc: "Easy tech support sessions and classes.", 
-            url: "vsr/techhelp.html" 
+            url: "#" 
         }
     ],
     "System": [
