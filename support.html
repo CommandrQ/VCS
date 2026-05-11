@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Project V | Support</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -16,8 +19,10 @@
     <main id="app-wrapper">
         <header id="top-glass-panel" class="glass-module">
             <div class="citizen-status">
-                <a href="hub.html" class="back-btn">← HUB</a>
+                <!-- TEXT ON LEFT -->
                 <h1>Support</h1>
+                <!-- BIGGER BUTTON ON RIGHT -->
+                <a href="hub.html" class="back-btn">HUB →</a>
             </div>
         </header>
 
@@ -28,7 +33,6 @@
                     <h3 class="card-title">Talk to us</h3>
                     <p class="card-desc">Need help? Send a message and we'll get back to you at your frequency.</p>
                     
-                    <!-- TOPIC -->
                     <div class="form-group" style="width: 100%; text-align: left; margin-bottom: 20px;">
                         <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">TOPIC</label>
                         <select id="f-category" class="settings-input" style="margin-top: 8px;">
@@ -38,19 +42,16 @@
                         </select>
                     </div>
 
-                    <!-- NAME -->
                     <div class="form-group" style="width: 100%; text-align: left; margin-bottom: 20px;">
                         <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">YOUR NAME</label>
                         <input type="text" id="f-name" class="settings-input" style="margin-top: 8px;" placeholder="Identify yourself...">
                     </div>
 
-                    <!-- EMAIL CAPTURE -->
                     <div class="form-group" style="width: 100%; text-align: left; margin-bottom: 20px;">
                         <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">RETURN EMAIL</label>
                         <input type="email" id="f-email" class="settings-input" style="margin-top: 8px;" placeholder="Where can we reach you?">
                     </div>
 
-                    <!-- MESSAGE -->
                     <div class="form-group" style="width: 100%; text-align: left; margin-bottom: 25px;">
                         <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">MESSAGE</label>
                         <textarea id="f-msg" class="settings-input" style="margin-top: 8px; height: 180px; text-align: left;" placeholder="What's happening?"></textarea>
@@ -102,7 +103,6 @@
             const destination = "support@vcscitizen.org";
             const subject = encodeURIComponent(`[${cat}] Uplink from ${name}`);
             
-            // Format the body to clearly show the email for the business owner
             const body = encodeURIComponent(
 `CITIZEN ID: ${name}
 RETURN FREQUENCY: ${email}
