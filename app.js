@@ -12,7 +12,7 @@ const directoryDataRaw = {
     "Vanguard Tech Lab": [
         { 
             title: "Tech Consulting", 
-            desc: "Expert strategy and support sessions for seniors, parents, and high-performance individuals.", 
+            desc: "Simple tech help and advice.", 
             url: "vsr/techhelp.html" 
         }
     ],
