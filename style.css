@@ -1,48 +1,144 @@
+/* ==========================================
+   VANGUARD CORE DESIGN SYSTEM
+   ========================================== */
+
 :root { 
     --gold: #d4af37; 
-    --dark-gold: rgba(212, 175, 55, 0.4);
-    --glass-bg: rgba(15, 15, 15, 0.65);
+    --dark-gold: rgba(212, 175, 55, 0.3);
+    --glass-bg: rgba(15, 15, 15, 0.7);
     --glass-border: rgba(212, 175, 55, 0.15);
     --v-curve: cubic-bezier(0.25, 1, 0.5, 1); 
+    --danger: #ff4d4d;
+    --onyx: rgba(0, 0, 0, 0.6);
 }
 
+/* --- FOUNDATION --- */
 html, body {
-    margin: 0; padding: 0; height: 100dvh; width: 100vw;
+    margin: 0; padding: 0; 
+    height: 100dvh; width: 100vw;
     background: #000; color: #fff;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     overflow: hidden; 
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- LAYER 1: STARFIELD --- */
+/* --- LAYER 1: THE DEEP CANVAS (STARFIELD) --- */
 #vanguard-universe {
     position: fixed; inset: 0; z-index: -1;
     background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
 }
+
 .gold-star-layer {
     position: absolute; inset: -500px;
-    background-image: radial-gradient(1.5px 1.5px at 20px 30px, var(--dark-gold), transparent),
-                      radial-gradient(1px 1px at 80px 70px, rgba(255,255,255,0.1), transparent);
+    background-image: 
+        radial-gradient(1.5px 1.5px at 20px 30px, var(--dark-gold), transparent),
+        radial-gradient(1px 1px at 80px 70px, rgba(255,255,255,0.1), transparent);
     background-size: 250px 250px;
     animation: drift 120s linear infinite;
 }
+
 @keyframes drift { 
     from { transform: translateY(0); } 
     to { transform: translateY(500px); } 
 }
 
-/* --- GATE LAYOUT --- */
-.gate-body { display: flex; justify-content: center; align-items: center; }
-#gate-interface { text-align: center; z-index: 10; animation: simpleFadeIn 1.5s ease-out; }
-.vanguard-logo {
-    width: 220px; height: auto;
-    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
-    animation: logoPulse 4s infinite ease-in-out; margin-bottom: 50px;
+/* --- LAYER 2: THE APP ARCHITECTURE --- */
+#app-wrapper {
+    display: flex; flex-direction: column;
+    height: 100dvh; width: 100%; 
+    max-width: 650px; /* ENHANCED DESKTOP WIDTH */
+    margin: 0 auto; position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.2);
 }
-@keyframes logoPulse {
-    0%, 100% { filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4)); transform: scale(1); }
-    50% { filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8)); transform: scale(1.02); }
+
+/* --- GLASS MORPHISM COMPONENTS --- */
+.glass-module {
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px); 
+    -webkit-backdrop-filter: blur(25px);
+    border-bottom: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-border); 
+    z-index: 10;
 }
+
+#top-glass-panel { padding: 30px; flex-shrink: 0; }
+#bottom-glass-panel { position: absolute; bottom: 0; width: 100%; height: 60px; }
+
+/* --- TYPOGRAPHY --- */
+#user-greeting { font-size: 1.6rem; font-weight: 700; color: var(--gold); margin: 0; letter-spacing: 0.5px; }
+.back-btn { text-decoration: none; color: var(--gold); font-weight: 800; font-size: 0.9rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- THE ONYX INPUT SYSTEM --- */
+.settings-input, .form-input, #hub-search {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--onyx) !important;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s var(--v-curve);
+    appearance: none;
+}
+
+.settings-input:focus, #hub-search:focus {
+    border-color: var(--gold);
+    background: rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.settings-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+select.settings-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 18px;
+    padding-right: 45px;
+}
+
+/* --- SCROLLABLE CONTENT (DIRECTORY CORE) --- */
+#directory-core {
+    flex-grow: 1; overflow-y: auto; overflow-x: hidden;
+    padding-bottom: 100px; -webkit-overflow-scrolling: touch;
+}
+
+#directory-list { display: flex; flex-direction: column; gap: 20px; padding: 30px; }
+
+/* --- CARDS (CENTERED UNIFIED SCENE) --- */
+.link-card {
+    background: rgba(20, 20, 20, 0.5); 
+    backdrop-filter: blur(10px); 
+    border: 1px solid var(--glass-border); 
+    border-radius: 20px;
+    padding: 30px; 
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+    animation: terminalFade 0.5s var(--v-curve) forwards;
+}
+
+.card-title { font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 1px; }
+.card-desc { font-size: 1.05rem; color: rgba(255,255,255,0.7); line-height: 1.6; margin: 0 0 20px; }
+
+/* --- BUTTONS --- */
+.card-btn {
+    cursor: pointer; color: var(--gold); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+    text-decoration: none; background: rgba(212, 175, 55, 0.1); padding: 12px 30px;
+    border-radius: 10px; border: 1px solid var(--gold); transition: 0.3s;
+}
+
+.card-btn:hover { background: var(--gold); color: #000; }
+.card-btn.secondary { border-color: rgba(255,255,255,0.3); color: #fff; }
+.card-btn.danger { border-color: var(--danger); color: var(--danger); }
+.card-btn.danger:hover { background: var(--danger); color: #fff; }
+
+.button-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* --- GATE BUTTON (SLOW FILL) --- */
 .gate-button {
     position: relative; display: inline-block; padding: 22px 50px;
     font-size: 1.1rem; font-weight: 800; text-transform: uppercase;
@@ -50,60 +146,44 @@ html, body {
     border: 1px solid var(--gold); border-radius: 4px;
     background: transparent; overflow: hidden; transition: color 0.8s ease; z-index: 1;
 }
+
 .gate-button::before {
     content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%;
     background: var(--gold); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: -1;
 }
+
 .gate-button:hover::before { width: 100%; }
 .gate-button:hover { color: #000; box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+
+/* --- GATE BODY SPECIFICS --- */
+.gate-body { display: flex; justify-content: center; align-items: center; }
+#gate-interface { text-align: center; z-index: 10; animation: simpleFadeIn 1.5s ease-out; }
+.vanguard-logo { width: 220px; filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6)); margin-bottom: 50px; }
+
+/* --- TRANSITIONS & OVERLAYS --- */
 #fade-overlay {
     position: fixed; inset: 0; background: #000; opacity: 0;
     pointer-events: none; z-index: 9999; transition: opacity 1s ease-in-out;
 }
 #fade-overlay.active { opacity: 1; pointer-events: all; }
+
+@keyframes terminalFade {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes simpleFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- APP LAYOUT (Wider & Larger Text) --- */
-#app-wrapper {
-    display: flex; flex-direction: column;
-    height: 100dvh; width: 100%; 
-    max-width: 650px; /* INCREASED WIDTH */
-    margin: 0 auto; position: relative;
-    box-shadow: 0 0 60px rgba(0,0,0,0.9);
-    background: rgba(0,0,0,0.2);
-}
-.glass-module {
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    border-bottom: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-border); z-index: 10;
-}
-#top-glass-panel { padding: 30px 30px 20px; flex-shrink: 0; }
-.citizen-status { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
-#user-greeting { font-size: 1.6rem; font-weight: 700; color: var(--gold); margin: 0; letter-spacing: 0.5px; text-align: left; }
-.population-tracker { text-align: right; }
-.population-tracker .label { font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6; display: block; }
-#population-count { font-size: 1.4rem; font-weight: 800; }
-
-.search-module input {
-    width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.3); padding: 16px 20px; text-align: center;
-    border-radius: 12px; color: #fff; font-size: 1.1rem; outline: none; transition: 0.3s ease;
-}
-.search-module input:focus { border-color: var(--gold); background: rgba(0,0,0,0.5); }
-
-#directory-core {
-    flex-grow: 1; overflow-y: auto; overflow-x: hidden;
-    padding-bottom: 100px; -webkit-overflow-scrolling: touch;
-}
+/* --- CATEGORY BAR (HUB) --- */
 #category-bar {
     display: flex; gap: 15px; padding: 20px 30px; overflow-x: auto; justify-content: center;
     white-space: nowrap; -webkit-overflow-scrolling: touch; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 #category-bar::-webkit-scrollbar { display: none; }
+
 .cat-btn {
     background: rgba(255,255,255,0.05); border: 1px solid transparent;
     color: #fff; padding: 10px 22px; border-radius: 25px;
@@ -111,28 +191,7 @@ html, body {
 }
 .cat-btn.active { background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid var(--gold); }
 
-#directory-list { display: flex; flex-direction: column; gap: 20px; padding: 30px; }
-.link-card {
-    background: rgba(20, 20, 20, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border); border-radius: 20px;
-    padding: 30px; display: flex; flex-direction: column;
-    align-items: center; text-align: center;
-    animation: terminalFade 0.4s var(--v-curve) forwards;
-}
-.link-card:active { transform: scale(0.98); }
-.card-title { font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-.card-desc { font-size: 1.05rem; color: rgba(255,255,255,0.7); line-height: 1.6; margin: 0 0 20px; flex-grow: 1; }
-.card-btn {
-    align-self: center;
-    color: var(--gold); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; text-decoration: none;
-    background: rgba(212, 175, 55, 0.1); padding: 10px 30px; border-radius: 10px; border: 1px solid var(--gold); transition: 0.2s;
-}
-@keyframes terminalFade {
-    0% { opacity: 0; transform: translateY(15px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-#bottom-glass-panel { position: absolute; bottom: 0; width: 100%; height: 60px; }
+/* --- FOOTER LOGIC --- */
 .footer-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
 .footer-msg {
     position: absolute; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
