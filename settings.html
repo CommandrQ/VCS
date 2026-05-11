@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Your Settings</title>
+    <title>Vanguard | Sanctuary Access</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="stylesheet" href="style.css">
     
+    <!-- Supabase Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -22,7 +23,7 @@
         <header id="top-glass-panel" class="glass-module">
             <div class="citizen-status">
                 <a href="hub.html" class="back-btn">← GO BACK</a>
-                <h1 id="user-greeting">Settings</h1>
+                <h1 id="settings-title">Settings</h1>
             </div>
         </header>
 
@@ -30,31 +31,40 @@
         <section id="directory-core">
             <div id="directory-list">
                 
-                <!-- YOUR NAME -->
-                <div class="link-card">
-                    <h3 class="card-title">Who are you?</h3>
-                    <p class="card-desc" id="profile-info">
-                        Name: Loading...<br>
-                        Email: Loading...
-                    </p>
-                    <input type="text" id="new-name" placeholder="Type a new name..." class="settings-input">
-                    <button onclick="updateName()" class="card-btn">Save Name</button>
+                <!-- STATE A: GUEST (Show if NOT logged in) -->
+                <div id="guest-view" class="link-card" style="display: none;">
+                    <h3 class="card-title">Join the Sanctuary</h3>
+                    <p class="card-desc">Enter your email to receive a secure login link. No passwords needed.</p>
+                    <input type="email" id="auth-email" placeholder="Your email address..." class="settings-input">
+                    <button onclick="handleAuth()" class="card-btn">Send Access Link</button>
+                    <div id="auth-msg" style="margin-top: 15px; font-size: 0.85rem; color: var(--gold); font-weight: 700;"></div>
                 </div>
 
-                <!-- SECURITY -->
-                <div class="link-card">
-                    <h3 class="card-title">Keep it safe</h3>
-                    <p class="card-desc">Need to get back in or leave for a while?</p>
-                    <div class="button-group">
-                        <button onclick="sendRestoreLink()" class="card-btn">Email Login Link</button>
-                        <button onclick="signOut()" class="card-btn secondary">Sign Out</button>
+                <!-- STATE B: CITIZEN (Show if logged in) -->
+                <div id="citizen-view" style="display: none;">
+                    <!-- IDENTITY -->
+                    <div class="link-card">
+                        <h3 class="card-title">Who are you?</h3>
+                        <p class="card-desc" id="profile-info">Loading Profile...</p>
+                        <input type="text" id="new-name" placeholder="Type a new name..." class="settings-input">
+                        <button onclick="updateName()" class="card-btn">Save Name</button>
+                    </div>
+
+                    <!-- SECURITY -->
+                    <div class="link-card" style="margin-top: 20px;">
+                        <h3 class="card-title">Keep it safe</h3>
+                        <p class="card-desc">Manage your access or leave the sanctuary for a while.</p>
+                        <div class="button-group">
+                            <button onclick="sendRestoreLink()" class="card-btn">Email Login Link</button>
+                            <button onclick="signOut()" class="card-btn secondary">Sign Out</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- FIXING STUFF -->
-                <div class="link-card">
+                <!-- PERSISTENT: MAINTENANCE (Always show) -->
+                <div class="link-card" style="margin-top: 20px;">
                     <h3 class="card-title">Is it broken?</h3>
-                    <p class="card-desc">If the app looks weird or things aren't loading right, try these.</p>
+                    <p class="card-desc">If things look weird, try fixing the app or starting fresh.</p>
                     <div class="button-group">
                         <button onclick="clearCache()" class="card-btn">Fix My App</button>
                         <button onclick="fullReset()" class="card-btn danger">Start Over</button>
@@ -74,5 +84,60 @@
     </main>
 
     <script src="app.js"></script>
+    <script>
+        // --- PAGE SPECIFIC AUTH DETECTION ---
+        async function checkAuthState() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const guestView = document.getElementById('guest-view');
+            const citizenView = document.getElementById('citizen-view');
+            const title = document.getElementById('settings-title');
+
+            if (user) {
+                guestView.style.display = 'none';
+                citizenView.style.display = 'block';
+                title.innerText = "Settings";
+                
+                // Populate Identity
+                const cached = JSON.parse(localStorage.getItem('vanguard_profile')) || {};
+                document.getElementById('profile-info').innerHTML = 
+                    `Name: ${cached.name || user.email.split('@')[0]}<br>Email: ${user.email}`;
+            } else {
+                guestView.style.display = 'flex';
+                citizenView.style.display = 'none';
+                title.innerText = "Connect";
+            }
+        }
+
+        // --- MAGIC LINK HANDLER ---
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const msg = document.getElementById('auth-msg');
+
+            if (!email) {
+                msg.innerText = "Please provide an email.";
+                return;
+            }
+
+            msg.innerText = "Sending secure link...";
+            
+            const { error } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: {
+                    emailRedirectTo: window.location.origin + '/hub.html',
+                },
+            });
+
+            if (error) {
+                msg.innerText = "Error: " + error.message;
+                msg.style.color = "#ff4d4d";
+            } else {
+                msg.innerText = "Check your email for the access link!";
+                msg.style.color = "#4ade80";
+            }
+        }
+
+        // Initialize state on load
+        window.addEventListener('DOMContentLoaded', checkAuthState);
+    </script>
 </body>
 </html>
