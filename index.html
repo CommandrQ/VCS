@@ -3,52 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Project V | The Awakening</title>
-    <!-- CSS will be linked here -->
+    <title>Vanguard | Enter Fort Toward</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="gate-body">
 
-    <!-- LAYER 1: The Persistent Starfield -->
+    <div id="fade-overlay"></div>
+
     <div id="vanguard-universe" aria-hidden="true">
         <div class="gold-star-layer"></div>
     </div>
 
-    <!-- LAYER 2: The Cinematic Story Container -->
-    <main id="intro-sequence">
+    <main id="gate-interface">
+        <div class="logo-container">
+            <img src="images/vanguardorglogo.png" alt="Vanguard Logo" class="vanguard-logo">
+        </div>
 
-        <!-- SECTION 1: The Hook -->
-        <section class="story-block terminal-boot">
-            <h1 class="hero-headline">The System is Squeezing You.</h1>
-            <p class="hero-subtext">Hardin County is losing a million dollars a year to an invisible tax. It's time to reclaim your mastery.</p>
-            <div class="scroll-indicator">Scroll to Initialize</div>
-        </section>
-
-        <!-- SECTION 2: The Problem (Glass Panel) -->
-        <section class="story-block">
-            <div class="glass-manifesto">
-                <h2 class="gold-accent">The 21st Century Glitch</h2>
-                <p>We are told to produce more with less. The result? A workforce of passive bystanders drained by chronic stress, complex local laws, and a lack of support.</p>
-            </div>
-        </section>
-
-        <!-- SECTION 3: The Solution (Glass Panel) -->
-        <section class="story-block">
-            <div class="glass-manifesto">
-                <h2 class="gold-accent">The Vanguard Blueprint</h2>
-                <p>We are connecting a guild of local experts to build the manual for a self-sufficient life. From mastering the "Legal 30" to eliminating burnout, we turn passive residents into community heroes.</p>
-            </div>
-        </section>
-
-        <!-- SECTION 4: The Threshold (Call to Action) -->
-        <section class="story-block final-threshold">
-            <div class="launch-console glass-module">
-                <h3>Your Sanctuary is Ready.</h3>
-                <!-- This link takes them to your directory app -->
-                <a href="hub.html" class="action-button primary-gold">Enter Project V</a>
-            </div>
-        </section>
-
+        <div class="action-zone">
+            <a href="hub.html" id="enter-btn" class="gate-button">Enter Fort Toward</a>
+        </div>
     </main>
 
+    <script src="app.js"></script>
 </body>
 </html>
