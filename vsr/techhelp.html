@@ -3,57 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Consumer Consulting</title>
+    <title>Vanguard | Tech Lab</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <!-- Pathing back to your root CSS -->
     <link rel="stylesheet" href="../style.css">
     
     <style>
         /* Persona Grid */
         .persona-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
             margin-bottom: 30px;
         }
 
         .persona-btn {
             background: rgba(15,15,15,0.9);
             border: 1px solid var(--glass-border);
-            color: rgba(255,255,255,0.7);
-            padding: 20px 10px;
-            border-radius: 16px;
+            color: rgba(255,255,255,0.6);
+            padding: 15px 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 800;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s var(--v-curve);
         }
 
-        .persona-btn:hover { border-color: rgba(212, 175, 55, 0.5); }
         .persona-btn.active {
             border-color: var(--gold);
             color: var(--gold);
             background: rgba(212, 175, 55, 0.1);
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
         }
 
-        .price-tag { font-size: 1.5rem; color: var(--gold); font-weight: 900; margin: 15px 0; }
+        /* Guarantee Shield Badge */
+        .warranty-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            color: #4ade80;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .price-tag { font-size: 1.6rem; color: var(--gold); font-weight: 900; margin: 10px 0; }
         
-        .service-features {
-            list-style: none; padding: 0; margin: 20px 0;
-            text-align: left; border-top: 1px solid var(--glass-border); padding-top: 15px;
+        /* Modal Logic */
+        .tos-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
         }
 
-        .service-features li {
-            font-size: 0.9rem; margin-bottom: 10px;
-            color: rgba(255,255,255,0.7);
-            display: flex; align-items: flex-start; gap: 10px;
+        .tos-content {
+            background: #0a0a0a;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            width: 100%; max-width: 500px;
+            padding: 35px;
+            max-height: 85vh;
+            overflow-y: auto;
         }
-        .service-features li::before { content: '•'; color: var(--gold); font-weight: bold; }
+
+        .tos-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.6;
+            text-align: left;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 0;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -63,7 +94,6 @@
     </div>
 
     <main id="app-wrapper">
-
         <header id="top-glass-panel" class="glass-module">
             <div class="citizen-status" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <h1>Tech Lab</h1>
@@ -74,114 +104,92 @@
         <section id="directory-core" style="flex-grow: 1; overflow-y: auto;">
             <div id="directory-list" style="padding: 20px;">
                 
-                <h3 class="card-title" style="text-align: center; margin-bottom: 20px; font-size: 1rem;">Identify Your Identity</h3>
-                
-                <!-- The Identity Selection -->
                 <div class="persona-grid" id="persona-controls">
                     <button class="persona-btn active" onclick="loadPersona('senior')">The Senior</button>
                     <button class="persona-btn" onclick="loadPersona('parent')">The Parent</button>
                     <button class="persona-btn" onclick="loadPersona('student')">The Student</button>
                     <button class="persona-btn" onclick="loadPersona('gamer')">The Gamer</button>
-                    <button class="persona-btn" onclick="window.location.href='commercial.html'" style="border-color: #4ade80; color: #4ade80;">Commercial →</button>
+                    <button class="persona-btn" onclick="window.location.href='commercial.html'" style="border-color: #4ade80; color: #4ade80;">Comm →</button>
                 </div>
 
-                <!-- Dynamic Packages Inject Here -->
                 <div id="packages-container"></div>
-
             </div>
         </section>
-
     </main>
 
+    <!-- THE LIABILITY MODAL -->
+    <div class="tos-overlay" id="tos-modal">
+        <div class="tos-content">
+            <h2 style="color: var(--gold); margin: 0; text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px;">Citizen Agreement</h2>
+            
+            <div class="tos-text">
+                <strong>Liability Waiver:</strong> Vanguard Citizen Services provides technical consulting. By proceeding, you agree that Vanguard is not liable for data loss or pre-existing hardware failure. It is your responsibility to back up data prior to the session.
+                <br><br>
+                <strong>14-Day Guarantee:</strong> All workmanship is warranted for 14 days. If a service error occurs, we will provide a one-time follow-up at no cost. This does not cover new issues, malware, or hardware failure.
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeTOS()" class="card-btn secondary" style="flex: 1;">Cancel</button>
+                <button onclick="acceptAndGo()" class="gate-button" style="flex: 2; padding: 12px !important; font-size: 1rem !important;">I Agree & Go</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Data Structure for Hardin County Adjusted Rates
         const packageData = {
             senior: [
-                {
-                    title: "Basic Diagnostic",
-                    desc: "Quick troubleshooting for frozen devices, password resets, or checking a suspicious message.",
-                    price: "$20 flat",
-                    features: ["15-30 Minute Session", "Password & Account Recovery", "Scam / Phishing Verification"]
-                },
-                {
-                    title: "The Golden Protocol",
-                    desc: "A comprehensive hour of patience. We set up your device to be easy, readable, and highly secure.",
-                    price: "$50 flat",
-                    features: ["60 Minute Deep-Dive", "Text size & visibility tuning", "Video call mastery", "Security lockdown"]
-                }
+                { title: "Basic Diagnostic", desc: "Quick unblocks, password resets, or checking suspicious messages.", price: "$20 flat", features: ["15-30 Minute Session", "Account Recovery", "Scam Verification"] },
+                { title: "The Golden Protocol", desc: "A full hour of patience. Setup for ease, visibility, and total security.", price: "$50 flat", features: ["60 Minute Deep-Dive", "Text size & visibility tuning", "Security lockdown"] }
             ],
             parent: [
-                {
-                    title: "Basic Setup",
-                    desc: "Quickly lock down a single device or check your current router safety.",
-                    price: "$30 flat",
-                    features: ["15-30 Minute Session", "Single-device content filter", "Quick safety Q&A"]
-                },
-                {
-                    title: "The Digital Household",
-                    desc: "Whole-house network sweep and comprehensive family digital boundaries.",
-                    price: "$75 flat",
-                    features: ["60-90 Minute Strategy", "Network-wide safety sweep", "Screen-time automation", "Microsoft Family Safety setup"]
-                }
+                { title: "Basic Setup", desc: "Quickly lock down a single device or check router safety.", price: "$30 flat", features: ["30 Minute Check", "Single-device filters", "Safety Q&A"] },
+                { title: "The Digital Household", desc: "Whole-house network sweep and comprehensive family boundaries.", price: "$75 flat", features: ["90 Minute Strategy", "Network-wide safety", "Screen-time automation"] }
             ],
             student: [
-                {
-                    title: "Basic Unblock",
-                    desc: "Affordable triage for campus network issues or software formatting bugs.",
-                    price: "$20 flat",
-                    features: ["15-30 Minute Session", "Software / Formatting fixes", "Campus Wi-Fi routing"]
-                },
-                {
-                    title: "The Scholar Uplink",
-                    desc: "Deep workflow optimization to keep you focused and prevent data loss.",
-                    price: "$45 flat",
-                    features: ["60 Minute Session", "Automated cloud backups", "Workflow optimization", "Hardware lifespan extension"]
-                }
+                { title: "Basic Unblock", desc: "Affordable triage for campus networks or software bugs.", price: "$20 flat", features: ["30 Minute Session", "Software / Formatting fixes"] },
+                { title: "The Scholar Uplink", desc: "Workflow optimization to keep you focused and secure your data.", price: "$45 flat", features: ["60 Minute Session", "Automated backups", "Efficiency tuning"] }
             ],
             gamer: [
-                {
-                    title: "Basic Diagnostic",
-                    desc: "Quick checks for latency, ping drops, or Discord routing issues.",
-                    price: "$35 flat",
-                    features: ["30 Minute Check", "Ping / Latency diagnostics", "Discord / Comm setup"]
-                },
-                {
-                    title: "The Competitor's Edge",
-                    desc: "Advanced hardware and OS optimization for maximum frame rates and zero latency.",
-                    price: "$85 flat",
-                    features: ["60-90 Minute Deep-Dive", "OS stripping for max FPS", "Stream-lab configuration", "Deep network optimization"]
-                }
+                { title: "Basic Diagnostic", desc: "Quick diagnostics for latency, ping, or Discord issues.", price: "$35 flat", features: ["30 Minute Check", "Ping / Latency diagnostics"] },
+                { title: "The Competitor's Edge", desc: "Advanced hardware and OS stripping for maximum frame rates.", price: "$85 flat", features: ["90 Minute Deep-Dive", "OS stripping for max FPS", "Network optimization"] }
             ]
         };
 
-        function loadPersona(type) {
-            // Update Active Button Style
-            document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        let selectedPackage = "";
 
-            // Render the cards
+        function loadPersona(type) {
+            document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+            if(event) event.target.classList.add('active');
+
             const container = document.getElementById('packages-container');
-            const data = packageData[type];
-            
-            container.innerHTML = data.map(pkg => `
-                <div class="link-card" style="animation: fadeUp 0.4s ease;">
+            container.innerHTML = packageData[type].map(pkg => `
+                <div class="link-card">
+                    <div class="warranty-badge">🛡️ 14-Day Guarantee</div>
                     <h3 class="card-title">${pkg.title}</h3>
                     <p class="card-desc">${pkg.desc}</p>
                     <div class="price-tag">${pkg.price}</div>
-                    <ul class="service-features">
-                        ${pkg.features.map(f => `<li>${f}</li>`).join('')}
+                    <ul class="service-features" style="list-style: none; padding: 0;">
+                        ${pkg.features.map(f => `<li style="margin-bottom:8px; font-size:0.85rem; opacity:0.8;">• ${f}</li>`).join('')}
                     </ul>
-                    <a href="../support.html" class="gate-button" style="display: block; text-decoration: none; padding: 15px !important; margin-top: 10px;">Select</a>
+                    <button onclick="openTOS('${pkg.title}')" class="gate-button" style="width: 100%; padding: 15px !important; font-size: 1rem !important;">Go</button>
                 </div>
             `).join('');
         }
 
-        // Add a simple fade-up animation to the CSS dynamically
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`;
-        document.head.appendChild(style);
+        function openTOS(title) {
+            selectedPackage = title;
+            document.getElementById('tos-modal').style.display = 'flex';
+        }
 
-        // Auto-load Senior on boot
+        function closeTOS() {
+            document.getElementById('tos-modal').style.display = 'none';
+        }
+
+        function acceptAndGo() {
+            // Encode the package title to pass it to the support page
+            window.location.href = `../support.html?package=${encodeURIComponent(selectedPackage)}`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => loadPersona('senior'));
     </script>
 </body>
