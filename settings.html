@@ -3,81 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Sanctuary Access</title>
+    <title>Project V | Command Center</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Supabase Integration -->
+    <!-- Supabase Core -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+    <!-- LAYER 1: Deep Canvas -->
     <div id="vanguard-universe" aria-hidden="true">
         <div class="gold-star-layer"></div>
     </div>
 
+    <!-- LAYER 2: App Wrapper -->
     <main id="app-wrapper">
 
         <!-- HEADER -->
         <header id="top-glass-panel" class="glass-module">
             <div class="citizen-status">
-                <a href="hub.html" class="back-btn">← GO BACK</a>
-                <h1 id="settings-title">Settings</h1>
+                <h1 id="command-title">Settings</h1>
+                <a href="hub.html" class="back-btn">HUB →</a>
             </div>
         </header>
 
-        <!-- THE UNIFIED SCENE -->
+        <!-- SCROLLABLE CORE -->
         <section id="directory-core">
             <div id="directory-list">
                 
-                <!-- STATE A: GUEST (Show if NOT logged in) -->
-                <div id="guest-view" class="link-card" style="display: none;">
-                    <h3 class="card-title">Join the Sanctuary</h3>
-                    <p class="card-desc">Enter your email to receive a secure login link. No passwords needed.</p>
-                    <input type="email" id="auth-email" placeholder="Your email address..." class="settings-input">
-                    <button onclick="handleAuth()" class="card-btn">Send Access Link</button>
-                    <div id="auth-msg" style="margin-top: 15px; font-size: 0.85rem; color: var(--gold); font-weight: 700;"></div>
-                </div>
-
-                <!-- STATE B: CITIZEN (Show if logged in) -->
-                <div id="citizen-view" style="display: none;">
-                    <!-- IDENTITY -->
-                    <div class="link-card">
-                        <h3 class="card-title">Who are you?</h3>
-                        <p class="card-desc" id="profile-info">Loading Profile...</p>
-                        <input type="text" id="new-name" placeholder="Type a new name..." class="settings-input">
-                        <button onclick="updateName()" class="card-btn">Save Name</button>
-                    </div>
-
-                    <!-- SECURITY -->
-                    <div class="link-card" style="margin-top: 20px;">
-                        <h3 class="card-title">Keep it safe</h3>
-                        <p class="card-desc">Manage your access or leave the sanctuary for a while.</p>
-                        <div class="button-group">
-                            <button onclick="sendRestoreLink()" class="card-btn">Email Login Link</button>
-                            <button onclick="signOut()" class="card-btn secondary">Sign Out</button>
+                <!-- 1. CONNECTION STATUS (Registration / Login) -->
+                <div id="auth-zone" class="link-card">
+                    <h3 class="card-title">Sanctuary Access</h3>
+                    <p class="card-desc" id="auth-desc">Enter your email to connect to the Vanguard network.</p>
+                    
+                    <div id="guest-fields" style="width: 100%;">
+                        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+                            <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">CITIZEN EMAIL</label>
+                            <input type="email" id="auth-email" class="settings-input" style="margin-top: 10px;" placeholder="frequency@example.com">
                         </div>
+                        <button onclick="handleAuth()" class="gate-button">Send Access Link</button>
+                    </div>
+
+                    <div id="citizen-fields" style="width: 100%; display: none;">
+                        <button onclick="signOut()" class="gate-button" style="border-color: var(--danger); color: var(--danger);">Disconnect / Logout</button>
+                    </div>
+                    
+                    <div id="auth-msg" style="margin-top: 20px; font-size: 0.9rem; font-weight: 700;"></div>
+                </div>
+
+                <!-- 2. IDENTITY (Profile Updates) -->
+                <div id="identity-zone" class="link-card" style="display: none;">
+                    <h3 class="card-title">Who are you?</h3>
+                    <p class="card-desc">Update your hero name and account credentials.</p>
+                    
+                    <div class="form-group" style="width: 100%; text-align: left; margin-bottom: 20px;">
+                        <label style="font-size: 0.8rem; color: var(--gold); font-weight: 800; letter-spacing: 2px;">HERO NAME</label>
+                        <input type="text" id="new-name" class="settings-input" style="margin-top: 10px;" placeholder="Update name...">
+                    </div>
+
+                    <div class="button-group">
+                        <button onclick="updateName()" class="card-btn">Save Identity</button>
+                        <button onclick="sendRestoreLink()" class="card-btn secondary">Email Restore Link</button>
                     </div>
                 </div>
 
-                <!-- PERSISTENT: MAINTENANCE (Always show) -->
-                <div class="link-card" style="margin-top: 20px;">
+                <!-- 3. MAINTENANCE (Cache & System Reset) -->
+                <div class="link-card">
                     <h3 class="card-title">Is it broken?</h3>
-                    <p class="card-desc">If things look weird, try fixing the app or starting fresh.</p>
+                    <p class="card-desc">If the hub feels unstable, use these protocols to repair your connection.</p>
+                    
                     <div class="button-group">
                         <button onclick="clearCache()" class="card-btn">Fix My App</button>
-                        <button onclick="fullReset()" class="card-btn danger">Start Over</button>
+                        <button onclick="fullReset()" class="card-btn danger">Clean Slate / Reset</button>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <!-- SYSTEM FOOTER -->
+        <!-- FOOTER -->
         <footer id="bottom-glass-panel" class="glass-module">
             <div class="footer-container">
-                <p class="footer-msg active">Vanguard Version 1.0.4 &copy; <span id="current-year"></span></p>
+                <p class="footer-msg active">Vanguard Security Core &copy; <span id="current-year"></span></p>
             </div>
         </footer>
 
@@ -85,59 +94,96 @@
 
     <script src="app.js"></script>
     <script>
-        // --- PAGE SPECIFIC AUTH DETECTION ---
-        async function checkAuthState() {
+        // --- SMART STATE LOGIC ---
+        async function checkSession() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            const guestView = document.getElementById('guest-view');
-            const citizenView = document.getElementById('citizen-view');
-            const title = document.getElementById('settings-title');
+            const guestFields = document.getElementById('guest-fields');
+            const citizenFields = document.getElementById('citizen-fields');
+            const identityZone = document.getElementById('identity-zone');
+            const title = document.getElementById('command-title');
+            const authDesc = document.getElementById('auth-desc');
 
             if (user) {
-                guestView.style.display = 'none';
-                citizenView.style.display = 'block';
-                title.innerText = "Settings";
+                // User is Logged In
+                guestFields.style.display = 'none';
+                citizenFields.style.display = 'block';
+                identityZone.style.display = 'flex';
+                title.innerText = "Citizen Settings";
+                authDesc.innerText = `Connected as: ${user.email}`;
                 
-                // Populate Identity
                 const cached = JSON.parse(localStorage.getItem('vanguard_profile')) || {};
-                document.getElementById('profile-info').innerHTML = 
-                    `Name: ${cached.name || user.email.split('@')[0]}<br>Email: ${user.email}`;
+                if(cached.name) document.getElementById('new-name').value = cached.name;
             } else {
-                guestView.style.display = 'flex';
-                citizenView.style.display = 'none';
+                // User is a Guest
+                guestFields.style.display = 'block';
+                citizenFields.style.display = 'none';
+                identityZone.style.display = 'none';
                 title.innerText = "Connect";
             }
         }
 
-        // --- MAGIC LINK HANDLER ---
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+        });
+
+        // --- ACTION HANDLERS ---
         async function handleAuth() {
             const email = document.getElementById('auth-email').value;
             const msg = document.getElementById('auth-msg');
-
-            if (!email) {
-                msg.innerText = "Please provide an email.";
-                return;
-            }
-
-            msg.innerText = "Sending secure link...";
+            if(!email) return alert("Enter your email.");
             
             const { error } = await supabaseClient.auth.signInWithOtp({
                 email: email,
-                options: {
-                    emailRedirectTo: window.location.origin + '/hub.html',
-                },
+                options: { emailRedirectTo: window.location.origin + '/hub.html' }
             });
 
-            if (error) {
+            if(error) {
                 msg.innerText = "Error: " + error.message;
-                msg.style.color = "#ff4d4d";
+                msg.style.color = "var(--danger)";
             } else {
-                msg.innerText = "Check your email for the access link!";
+                msg.innerText = "Access link sent! Check your inbox.";
                 msg.style.color = "#4ade80";
             }
         }
 
-        // Initialize state on load
-        window.addEventListener('DOMContentLoaded', checkAuthState);
+        async function updateName() {
+            const newName = document.getElementById('new-name').value;
+            const cached = JSON.parse(localStorage.getItem('vanguard_profile')) || {};
+            cached.name = newName;
+            localStorage.setItem('vanguard_profile', JSON.stringify(cached));
+            alert("Identity Saved.");
+            location.reload();
+        }
+
+        async function sendRestoreLink() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(user.email);
+            alert(error ? error.message : "Restore link sent to your email.");
+        }
+
+        function clearCache() {
+            // Clears site data but keeps login session
+            const profile = localStorage.getItem('vanguard_profile');
+            localStorage.clear();
+            if(profile) localStorage.setItem('vanguard_profile', profile);
+            alert("App Fixed. Interface refreshed.");
+            location.reload();
+        }
+
+        function fullReset() {
+            if(confirm("This will log you out and wipe all local settings. Continue?")) {
+                localStorage.clear();
+                signOut();
+            }
+        }
+
+        async function signOut() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('vanguard_profile');
+            window.location.href = 'index.html';
+        }
     </script>
 </body>
 </html>
