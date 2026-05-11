@@ -3,237 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fort Toward | Citizen Records</title>
+    <title>Project V | Command Center</title>
     
+    <!-- Persistence & Style -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Supabase Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root { --gold: #d4af37; --v-curve: cubic-bezier(0.4, 0, 0.2, 1); }
-
-        html, body {
-            margin: 0; padding: 0; height: 100dvh; width: 100vw;
-            overflow: hidden; background: #000; color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; flex-direction: column;
-        }
-
-        .universe-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%); }
-        .star-layer { position: absolute; inset: -500px; background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent); background-size: 300px 300px; animation: drift 180s linear infinite; opacity: 0.2; }
-        @keyframes drift { from { transform: translateY(0); } to { transform: translateY(500px); } }
-
-        .viewport-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 15px; box-sizing: border-box; }
-
-        .settings-terminal {
-            width: 100%; max-width: 550px; max-height: 90vh; display: flex; flex-direction: column;
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,1);
-        }
-
-        .terminal-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .greeting-text { color: var(--gold); font-size: 1.6rem; font-weight: 800; text-transform: uppercase; margin: 0; }
-        .sub-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-top: 5px; }
-        .citizen-id-badge { display: none; background: rgba(212, 175, 55, 0.15); color: var(--gold); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; border: 1px solid var(--gold); }
-
-        .settings-content { padding: 30px; overflow-y: auto; }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; color: #fff; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 900; }
-        .form-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 14px; color: #fff; font-size: 1rem; box-sizing: border-box; transition: 0.3s; }
-        .form-input:focus { outline: none; border-color: var(--gold); background: rgba(255, 255, 255, 0.1); }
-
-        .btn-gold { width: 100%; background: var(--gold); color: #000; border: none; padding: 16px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); }
-
-        .restore-link { display: block; text-align: center; margin-top: 20px; color: var(--gold); font-size: 0.8rem; cursor: pointer; text-decoration: underline; font-weight: bold; }
-        
-        .btn-outline { width: 100%; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 14px; border-radius: 50px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; font-size: 0.8rem; text-decoration: none; display: block; text-align: center; margin-top: 10px; }
-
-        /* MODAL */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: #111; border: 1px solid var(--gold); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; text-align: center; }
-
-        .status-msg { margin-top: 15px; font-size: 0.85rem; text-align: center; min-height: 1.2rem; font-weight: bold; }
-    </style>
 </head>
 <body>
 
-    <div class="universe-bg"><div class="star-layer"></div></div>
+    <!-- LAYER 1: Deep Canvas (Persistent Starfield) -->
+    <div id="vanguard-universe" aria-hidden="true">
+        <div class="gold-star-layer"></div>
+    </div>
 
-    <div class="viewport-wrapper">
-        <article class="settings-terminal">
-            <header class="terminal-header">
-                <h1 id="header-title" class="greeting-text">Sanctuary Records</h1>
-                <div id="sub-title" class="sub-label">Verify Your Residency</div>
-                <div id="citizen-tag" class="citizen-id-badge">Citizen #----</div>
-            </header>
+    <!-- LAYER 2: App Container (Centered & Wide) -->
+    <main id="app-wrapper">
 
-            <div class="settings-content">
-                <div id="status-msg" class="status-msg"></div>
-
-                <form id="main-form">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="full-name" class="form-input" placeholder="Your Name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="email-address" class="form-input" placeholder="Email@Example.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Citizen Handle</label>
-                        <input type="text" id="citizen-handle" class="form-input" placeholder="@Handle" required>
-                    </div>
-
-                    <button type="submit" id="action-btn" class="btn-gold">Register Residency</button>
-                    
-                    <div id="guest-options">
-                        <span class="restore-link" onclick="toggleModal(true)">Need to restore access?</span>
-                    </div>
-
-                    <a href="directory.html" class="btn-outline" style="margin-top: 30px;">Return to Hub</a>
-                    
-                    <button type="button" id="btn-logout" class="btn-outline" style="border-color: #f87171; color: #f87171; display: none;">Exit Account & Reset</button>
-                </form>
+        <!-- LAYER 3: Sticky Glass Header -->
+        <header id="top-glass-panel" class="glass-module">
+            <div class="citizen-status">
+                <a href="hub.html" class="back-btn">← RETURN TO HUB</a>
+                <h1 id="user-greeting">Settings</h1>
             </div>
-        </article>
-    </div>
+        </header>
 
-    <div id="restore-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h2 style="color: var(--gold); margin-top: 0; text-transform: uppercase;">Restore Access</h2>
-            <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 20px;">Enter the email you used to register. We will send you a Magic Link to sign back in securely.</p>
-            <input type="email" id="restore-email" class="form-input" placeholder="Enter your email" style="margin-bottom: 15px;">
-            <button class="btn-gold" onclick="sendMagicLink()" style="margin-top: 0;">Send Magic Link</button>
-            <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
-            <div id="modal-status" class="status-msg"></div>
-        </div>
-    </div>
-
-    <script>
-        const SB_URL = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
-        const SB_KEY = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-        const ui = {
-            form: document.getElementById('main-form'),
-            name: document.getElementById('full-name'),
-            email: document.getElementById('email-address'),
-            handle: document.getElementById('citizen-handle'),
-            btn: document.getElementById('action-btn'),
-            guestOpts: document.getElementById('guest-options'),
-            logout: document.getElementById('btn-logout'),
-            status: document.getElementById('status-msg'),
-            header: document.getElementById('header-title'),
-            sub: document.getElementById('sub-title'),
-            citizenTag: document.getElementById('citizen-tag')
-        };
-
-        // Cache helpers
-        function setCache(data) { localStorage.setItem('vanguard_profile', JSON.stringify(data)); }
-        function getCache() { return JSON.parse(localStorage.getItem('vanguard_profile')); }
-
-        async function init() {
-            // Instant Cache Load
-            const cached = getCache();
-            if (cached) {
-                ui.name.value = cached.name || "";
-                ui.email.value = cached.email || "";
-                ui.handle.value = cached.handle || "";
-            }
-
-            const { data: { user } } = await supabaseClient.auth.getUser();
-
-            if (user) {
-                // LOGGED IN STATE
-                ui.header.innerText = "Citizen Profile";
-                ui.sub.innerText = "Update Sanctuary Records";
-                ui.btn.innerText = "Apply Changes";
-                ui.email.readOnly = true;
-                ui.email.style.opacity = "0.5";
-                ui.guestOpts.style.display = "none";
-                ui.logout.style.display = "block";
-                ui.citizenTag.style.display = "inline-block";
-
-                // Fetch database specific row (if table is built, else fallback to Auth Meta)
-                const { data: dbProfile } = await supabaseClient.from('citizens').select('citizen_number, role').eq('user_id', user.id).single();
-
-                const role = dbProfile?.role || user.user_metadata?.role || "Citizen";
-                const num = dbProfile?.citizen_number || "Verified";
+        <!-- LAYER 4: Modular Command Tiles -->
+        <section id="directory-core">
+            <div id="directory-list">
                 
-                ui.citizenTag.innerText = `Status: ${role} (#${num})`;
-                ui.name.value = user.user_metadata?.full_name || "";
-                ui.email.value = user.email;
-                ui.handle.value = user.user_metadata?.handle || "";
+                <!-- IDENTITY MODULE -->
+                <div class="link-card">
+                    <h3 class="card-title">Identity</h3>
+                    <p class="card-desc" id="profile-info">
+                        Citizen Name: Loading...<br>
+                        Connection: Synchronizing...
+                    </p>
+                    <input type="text" id="new-name" placeholder="Update Hero Name" class="settings-input">
+                    <button onclick="updateName()" class="card-btn">Update Identity</button>
+                </div>
 
-                // Update Cache silently
-                setCache({ name: ui.name.value, email: ui.email.value, handle: ui.handle.value });
-            }
-        }
+                <!-- SECURITY MODULE -->
+                <div class="link-card">
+                    <h3 class="card-title">Security</h3>
+                    <p class="card-desc">Manage your encrypted connection and sanctuary access keys.</p>
+                    <div class="button-group">
+                        <button onclick="sendRestoreLink()" class="card-btn">Restore Link</button>
+                        <button onclick="signOut()" class="card-btn secondary">Sign Out</button>
+                    </div>
+                </div>
 
-        ui.form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            
-            ui.status.innerText = "Processing...";
-            ui.status.style.color = "#fff";
+                <!-- MAINTENANCE MODULE -->
+                <div class="link-card">
+                    <h3 class="card-title">Maintenance</h3>
+                    <p class="card-desc">If the interface feels unstable or localized data is desynced, use the protocols below.</p>
+                    <div class="button-group">
+                        <button onclick="clearCache()" class="card-btn">Purify Cache</button>
+                        <button onclick="fullReset()" class="card-btn danger">Clean Slate</button>
+                    </div>
+                </div>
 
-            if (!user) {
-                // REGISTER LOGIC (Guest)
-                const { error } = await supabaseClient.auth.signUp({
-                    email: ui.email.value,
-                    password: 'vanguard-placeholder-1234', // Dummy pass for Magic Link setup
-                    options: { data: { full_name: ui.name.value, handle: ui.handle.value, role: 'Citizen' } }
-                });
+            </div>
+        </section>
 
-                if (error) { ui.status.innerText = error.message; ui.status.style.color = "#f87171"; }
-                else { ui.status.innerText = "Registration Sent! Check your email to verify."; ui.status.style.color = "#4ade80"; }
-            } else {
-                // UPDATE LOGIC (Citizen)
-                const { error: authError } = await supabaseClient.auth.updateUser({
-                    data: { full_name: ui.name.value, handle: ui.handle.value }
-                });
+        <!-- LAYER 5: System Footer -->
+        <footer id="bottom-glass-panel" class="glass-module">
+            <div class="footer-container">
+                <p class="footer-msg active">Project V Build: 1.0.4 &copy; <span id="current-year"></span></p>
+            </div>
+        </footer>
 
-                // Also attempt to sync to Citizens table
-                const { error: dbError } = await supabaseClient.from('citizens').update({ full_name: ui.name.value }).eq('user_id', user.id);
+    </main>
 
-                if (authError) { ui.status.innerText = authError.message; ui.status.style.color = "#f87171"; }
-                else { 
-                    ui.status.innerText = "Records Updated."; ui.status.style.color = "#4ade80";
-                    setCache({ name: ui.name.value, email: ui.email.value, handle: ui.handle.value });
-                }
-            }
-        });
-
-        // --- RESTORE LOGIC ---
-        window.toggleModal = function(show) { document.getElementById('restore-modal').classList.toggle('active', show); }
-
-        window.sendMagicLink = async function() {
-            const email = document.getElementById('restore-email').value;
-            const mStatus = document.getElementById('modal-status');
-            
-            if (!email) { mStatus.innerText = "Enter an email first."; return; }
-            mStatus.innerText = "Requesting link..."; mStatus.style.color = "#fff";
-
-            const { error } = await supabaseClient.auth.signInWithOtp({ email });
-
-            if (error) { mStatus.innerText = error.message; mStatus.style.color = "#f87171"; } 
-            else { mStatus.innerText = "Magic Link Sent. Check your inbox."; mStatus.style.color = "#4ade80"; }
-        }
-
-        ui.logout.addEventListener('click', async () => {
-            localStorage.clear();
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        });
-
-        window.onload = init;
-    </script>
+    <!-- Unified Logic Script -->
+    <script src="app.js"></script>
 </body>
 </html>
