@@ -40,7 +40,8 @@ function initHub() {
         ],
         "System Settings": [
             { title: "Citizen Profile", desc: "Manage your connection and preferences here.", url: "settings.html" },
-            { title: "Legal Documents", desc: "Review the current Terms of Use and Privacy Policy.", url: "legal.html" }
+            { title: "Legal Documents", desc: "Review the current Terms of Use and Privacy Policy.", url: "legal.html" },
+            { title: "Support", desc: "Contact support for further help.", url: "support.html" }
         ]
     };
 
