@@ -1,5 +1,5 @@
 // ==========================================
-// VANGUARD COMMAND LOGIC v3.3
+// VANGUARD COMMAND LOGIC v3.4
 // ==========================================
 
 // 1. SUPABASE INITIALIZATION
@@ -7,7 +7,7 @@ const supabaseUrl = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
 const supabaseKey = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// 2. THE RESOURCE DIRECTORY (Renamed System Settings -> System)
+// 2. THE RESOURCE DIRECTORY (Redundancy Purged)
 const directoryDataRaw = {
     "Vanguard Tech Lab": [
         { 
@@ -16,7 +16,7 @@ const directoryDataRaw = {
             url: "vsr/techhelp.html" 
         }
     ],
-    "System": [ // Renamed for a sleeker interface
+    "System": [
         { 
             title: "Support Terminal", 
             desc: "Connect directly with Vanguard support for technical help or general inquiries.", 
@@ -25,7 +25,7 @@ const directoryDataRaw = {
         { 
             title: "Legal Documents", 
             desc: "Review our Citizen Agreements, Privacy Protocols, and Service Terms.", 
-            url: "legal.html"
+            url: "legal.html" 
         }
     ]
 };
