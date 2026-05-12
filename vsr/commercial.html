@@ -5,237 +5,231 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | Commercial Businesses</title>
     
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <link rel="stylesheet" href="../style.css">
-    
     <style>
-        /* Synced Persona Grid from Tech Lab */
-        .persona-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 30px;
-            justify-content: center;
+        :root {
+            --gold: #D4AF37;
+            --white: #ffffff;
+            --glass-panel: rgba(10, 10, 12, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            --commercial-green: #4ade80;
         }
 
+        /* --- FOUNDATION --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body, html {
+            height: 100%;
+            background: #030303;
+            color: var(--white);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow: hidden;
+            font-size: 16px;
+        }
+
+        /* --- DESKTOP SCALING --- */
+        @media (min-width: 1024px) {
+            body, html { font-size: 18px; }
+            .glass-window { max-width: 850px !important; padding: 60px !important; }
+        }
+
+        /* --- THE STARFIELD --- */
+        #vanguard-universe { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+        .star-layer {
+            position: absolute; inset: -50%; width: 200%; height: 200%;
+            background-image: 
+                radial-gradient(2px 2px at 40px 60px, var(--gold), transparent),
+                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent);
+            background-size: 400px 400px;
+            animation: orbital-rotation 240s linear infinite;
+        }
+        @keyframes orbital-rotation { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- UI WRAPPER --- */
+        #app-wrapper {
+            position: relative; z-index: 10; height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-y: auto; scrollbar-width: none;
+        }
+        #app-wrapper::-webkit-scrollbar { display: none; }
+
+        /* --- MAIN GLASS WINDOW --- */
+        .glass-window {
+            width: 92%; max-width: 700px; margin: 40px 0;
+            background: var(--glass-panel);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 40px 25px; text-align: center;
+            animation: fadeIn 0.8s var(--v-curve) forwards, gold-pulse-window 4s infinite ease-in-out;
+        }
+
+        /* --- NAVIGATION --- */
+        .persona-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0; justify-content: center; }
         .persona-btn {
-            background: rgba(15,15,15,0.9);
-            border: 1px solid var(--glass-border);
-            color: rgba(255,255,255,0.6);
-            padding: 15px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s var(--v-curve);
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.6); padding: 12px 18px; border-radius: 8px;
+            cursor: pointer; font-weight: 800; font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 1px; transition: 0.3s;
         }
+        .persona-btn.active { border-color: var(--commercial-green); color: var(--commercial-green); background: rgba(74, 222, 128, 0.1); }
 
-        .persona-btn.active {
-            border-color: #4ade80; /* Commercial Green Highlight */
-            color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
-        }
+        /* --- SERVICE CARDS --- */
+        .package-card { border-top: 1px solid var(--glass-border); padding: 45px 0; text-align: center; }
+        .package-title { color: var(--white); font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
+        .package-desc { color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .price-tag { font-size: 1.6rem; color: var(--gold); font-weight: 900; margin-bottom: 25px; display: block; }
 
-        .commercial-header {
-            text-align: left; margin-bottom: 30px; padding-bottom: 25px;
-            border-bottom: 1px solid var(--glass-border);
+        /* --- BUTTONS --- */
+        .go-btn {
+            display: inline-block; width: 100%; max-width: 250px;
+            padding: 16px; background: transparent; border: 1px solid var(--gold);
+            color: var(--gold); text-decoration: none; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.3s;
         }
-        
-        .tier-label {
-            display: inline-block; background: rgba(212, 175, 55, 0.15);
-            color: var(--gold); padding: 6px 14px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 15px;
-        }
+        .go-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
 
-        .comm-price { font-size: 1.8rem; color: #fff; font-weight: 900; margin: 10px 0 20px; }
-
-        .advantage-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 30px 0;
-        }
-        .advantage-item {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            padding: 15px; border-radius: 12px; text-align: left;
-        }
-        .advantage-item h4 { color: var(--gold); font-size: 0.75rem; margin: 0 0 5px; letter-spacing: 1px; }
-        .advantage-item p { font-size: 0.7rem; margin: 0; opacity: 0.7; }
-
-        /* Intake Modal UI */
-        .intake-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.96);
+        /* --- MODAL SYSTEM --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.94);
             backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center;
             z-index: 1000; padding: 20px;
         }
-
-        .intake-content {
-            background: #0a0a0a; border: 1px solid var(--glass-border);
-            border-radius: 24px; width: 100%; max-width: 600px;
-            padding: 35px; max-height: 85vh; overflow-y: auto; text-align: left;
+        .modal-content {
+            background: var(--glass-panel); border: 1px solid var(--gold);
+            border-radius: 12px; width: 100%; max-width: 600px; padding: 35px;
         }
 
-        .intake-group { margin-bottom: 15px; }
-        .intake-group label {
-            display: block; font-size: 0.7rem; color: var(--gold);
-            font-weight: 800; letter-spacing: 2px; margin-bottom: 8px;
-        }
-        
+        /* --- FORM STYLING --- */
+        .intake-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; text-align: left; }
+        .intake-form label { font-size: 0.65rem; color: var(--gold); font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
+        .form-group { display: flex; flex-direction: column; }
+        .full-width { grid-column: 1 / -1; }
         .intake-input, .intake-select {
-            width: 100%; background: var(--onyx); border: 1px solid var(--glass-border);
-            border-radius: 10px; padding: 12px; color: #fff; font-size: 0.9rem;
-            outline: none; box-sizing: border-box; font-family: inherit;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            border-radius: 4px; padding: 12px; color: white; font-family: inherit; font-size: 0.9rem;
         }
-        .intake-input:focus, .intake-select:focus { border-color: var(--gold); }
+        .intake-input:focus { border-color: var(--gold); outline: none; }
 
-        .tos-text {
-            font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.5;
-            border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);
-            padding: 15px 0; margin: 20px 0;
-        }
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes gold-pulse-window { 0%, 100% { border-color: rgba(212, 175, 55, 0.2); } 50% { border-color: rgba(212, 175, 55, 0.6); } }
+
+        footer { width: 100%; padding: 40px; text-align: center; font-size: 0.65rem; color: var(--white); letter-spacing: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div id="vanguard-universe" aria-hidden="true">
-        <div class="gold-star-layer"></div>
-    </div>
+    <div id="vanguard-universe"><div class="star-layer"></div></div>
 
     <main id="app-wrapper">
+        <article class="glass-window">
+            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h1 style="letter-spacing: 5px; text-transform: uppercase;">Business Hub</h1>
+                <a href="../hub.html" style="color: white; text-decoration: none; font-size: 0.7rem; border: 1px solid white; padding: 8px 15px;">HUB →</a>
+            </header>
 
-        <header id="top-glass-panel" class="glass-module">
-            <div class="citizen-status" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <h1>Tech Lab</h1>
-                <a href="../hub.html" class="back-btn">HUB →</a>
-            </div>
-        </header>
+            <p style="opacity: 0.6; font-size: 0.85rem; margin-bottom: 20px;">Local fortification for Hardin County businesses. Your first consultation is on us.</p>
 
-        <section id="directory-core" style="flex-grow: 1; overflow-y: auto;">
-            <div id="directory-list" style="padding: 20px;">
-                
-                <!-- Unified Navigation Bar -->
-                <div class="persona-grid">
-                    <button class="persona-btn" onclick="window.location.href='techhelp.html'">Seniors</button>
-                    <button class="persona-btn" onclick="window.location.href='techhelp.html'">Parents</button>
-                    <button class="persona-btn" onclick="window.location.href='techhelp.html'">Students</button>
-                    <button class="persona-btn" onclick="window.location.href='techhelp.html'">Gamers</button>
-                    <button class="persona-btn active">Commercial Businesses</button>
-                </div>
+            <nav class="persona-grid">
+                <button class="persona-btn" onclick="window.location.href='techhelp.html'">Seniors</button>
+                <button class="persona-btn" onclick="window.location.href='techhelp.html'">Everyday</button>
+                <button class="persona-btn" onclick="window.location.href='techhelp.html'">Students</button>
+                <button class="persona-btn" onclick="window.location.href='techhelp.html'">Gamers</button>
+                <button class="persona-btn active">Businesses</button>
+            </nav>
 
-                <div class="commercial-header">
-                    <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-size: 1.3rem; margin: 0 0 10px;">Operational Fortification</h2>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.6; margin: 0;">
-                        Professional-grade infrastructure audits and educational workshops for the Hardin County business corridor. We provide local accountability that national service providers cannot match.
-                    </p>
-                </div>
+            <!-- TIER 1 -->
+            <section class="package-card">
+                <h3 class="package-title">The Community Workshop</h3>
+                <p style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">Group Education</p>
+                <p class="package-desc">Engaging, high-impact presentations for your team or organization. We cover scam defense, digital safety, and modern productivity tools.</p>
+                <span class="price-tag">$150 <span style="font-size: 0.8rem; opacity: 0.5;">/ EVENT</span></span>
+                <button onclick="openTOS('Community Workshop')" class="go-btn">Request Workshop</button>
+            </section>
 
-                <!-- Advantage Grid -->
-                <div class="advantage-grid">
-                    <div class="advantage-item">
-                        <h4>Local On-Site</h4>
-                        <p>Rapid physical response for Radcliff, E-town, and Ft. Knox.</p>
-                    </div>
-                    <div class="advantage-item">
-                        <h4>14-Day Shield</h4>
-                        <p>Full workmanship guarantee on all audits and configurations.</p>
-                    </div>
-                </div>
+            <!-- TIER 2 -->
+            <section class="package-card">
+                <h3 class="package-title">Micro-Business Audit</h3>
+                <p style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">Security & Efficiency</p>
+                <p class="package-desc">A deep-dive sweep of your retail or office site. We harden your network, verify your backups, and ensure your hardware is working for you, not against you.</p>
+                <span class="price-tag">$95 <span style="font-size: 0.8rem; opacity: 0.5;">/ SITE</span></span>
+                <button onclick="openTOS('Micro-Business Audit')" class="go-btn">Request Audit</button>
+            </section>
 
-                <!-- Tier 1: Workshop -->
-                <div class="link-card" style="text-align: left; border-left: 4px solid var(--gold);">
-                    <span class="tier-label">ONE-TO-MANY</span>
-                    <h3 class="card-title" style="color: #fff;">Community Workshop</h3>
-                    <p class="card-desc">Educational, high-impact presentations designed for groups at the YMCA, schools, or community centers.</p>
-                    <div class="comm-price">$150 <span style="font-size: 0.8rem; opacity: 0.5;">/ EVENT</span></div>
-                    <ul style="color: rgba(255,255,255,0.7); font-size: 0.85rem; padding-left: 15px; line-height: 1.6; margin-bottom: 25px;">
-                        <li>Identity Protection & Scam Defense for Seniors</li>
-                        <li>Digital Safety & Boundaries for Teens/Parents</li>
-                        <li>Includes live Q&A and printed resource guides</li>
-                    </ul>
-                    <button onclick="openIntake('Community Workshop')" class="gate-button" style="width: 100%; padding: 15px !important;">Request Workshop</button>
-                </div>
+            <!-- TIER 3 -->
+            <section class="package-card">
+                <h3 class="package-title">Strategic Retainer</h3>
+                <p style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">Ongoing Admin</p>
+                <p class="package-desc">For growing organizations that need a dedicated technical architect. Ongoing support, journey mapping, and customized infrastructure.</p>
+                <span class="price-tag">Custom Quote</span>
+                <button onclick="openTOS('Strategic Retainer')" class="go-btn">Initiate Consultation</button>
+            </section>
 
-                <!-- Tier 2: Audit -->
-                <div class="link-card" style="text-align: left; border-left: 4px solid var(--gold);">
-                    <span class="tier-label">AUDIT & SECURE</span>
-                    <h3 class="card-title" style="color: #fff;">Micro-Business Audit</h3>
-                    <p class="card-desc">A deep-dive efficiency and security sweep for local retail, office, or small-scale service sites.</p>
-                    <div class="comm-price">$95 <span style="font-size: 0.8rem; opacity: 0.5;">/ SITE</span></div>
-                    <ul style="color: rgba(255,255,255,0.7); font-size: 0.85rem; padding-left: 15px; line-height: 1.6; margin-bottom: 25px;">
-                        <li>Network hardening & Router security review</li>
-                        <li>Data backup protocol & Disaster recovery audit</li>
-                        <li>Hardware lifecycle & Operational efficiency report</li>
-                    </ul>
-                    <button onclick="openIntake('Micro-Business Audit')" class="gate-button" style="width: 100%; padding: 15px !important;">Request Audit</button>
-                </div>
-
-                <!-- Tier 3: Retainer -->
-                <div class="link-card" style="text-align: left; border-left: 4px solid #fff;">
-                    <span class="tier-label">STRATEGIC</span>
-                    <h3 class="card-title" style="color: #fff;">Strategic Retainer</h3>
-                    <p class="card-desc">Ongoing system administration, digital journey mapping, and customized infrastructure for growing organizations.</p>
-                    <div class="comm-price">Custom Quote</div>
-                    <button onclick="openIntake('Strategic Retainer')" class="card-btn" style="width: 100%; margin-top: 10px;">Initiate Consultation</button>
-                </div>
-
-            </div>
-        </section>
-
+            <button onclick="window.location.href='../support.html'" class="persona-btn" style="margin-top: 40px; border-color: var(--white); color: var(--white); width: 100%; max-width: 300px;">Specific B2B Questions? →</button>
+        </article>
+        <footer>Vanguard Citizen Services &copy; <span id="year"></span></footer>
     </main>
 
-    <!-- COMMERCIAL INTAKE WINDOW -->
-    <div class="intake-overlay" id="intake-modal">
-        <div class="intake-content">
-            <h2 id="intake-title" style="color: var(--gold); margin: 0 0 20px; text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px;">Commercial Intake</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="intake-group" style="grid-column: 1 / -1;">
-                    <label>ORGANIZATION / BUSINESS NAME</label>
-                    <input type="text" id="biz-name" class="intake-input" placeholder="Enter business name...">
-                </div>
-                
-                <div class="intake-group">
-                    <label>POINT OF CONTACT</label>
-                    <input type="text" id="biz-poc" class="intake-input" placeholder="Full Name">
-                </div>
-
-                <div class="intake-group">
-                    <label>BUSINESS PHONE</label>
-                    <input type="tel" id="biz-phone" class="intake-input" placeholder="(502) 555-0199">
-                </div>
+    <!-- MODAL 1: AGREEMENT -->
+    <div class="modal-overlay" id="tos-modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-align: center;">B2B Agreement</h2>
+            <div style="font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.8); margin-bottom: 25px; text-align: left;">
+                <strong>Professional Accountability:</strong> We provide expert consulting and labor. Vanguard is not liable for pre-existing vulnerabilities, hardware failure, or external breaches. 
+                <br><br>
+                <strong>The Shield:</strong> Our 14-day warranty covers the specific configurations performed during our session. We recommend all businesses maintain independent, encrypted backups.
             </div>
-
-            <div class="intake-group">
-                <label>BUSINESS EMAIL</label>
-                <input type="email" id="biz-email" class="intake-input" placeholder="contact@organization.com">
-            </div>
-
-            <div class="intake-group">
-                <label>PHYSICAL ADDRESS (FOR ON-SITE)</label>
-                <input type="text" id="biz-address" class="intake-input" placeholder="Street Address, City, Zip">
-            </div>
-
-            <div class="intake-group">
-                <label>SCALE & SCOPE</label>
-                <select id="biz-size" class="intake-select">
-                    <option value="1-5">1 - 5 Devices/Employees</option>
-                    <option value="6-15">6 - 15 Devices/Employees</option>
-                    <option value="16+">16+ Devices/Employees</option>
-                    <option value="Workshop Audience">Workshop: Group Presentation</option>
-                </select>
-            </div>
-
-            <div class="intake-group">
-                <label>PRIMARY OBJECTIVE</label>
-                <textarea id="biz-notes" class="intake-input" style="height: 80px; resize: none;" placeholder="Briefly describe what you are looking to secure or improve..."></textarea>
-            </div>
-
-            <div class="tos-text">
-                <strong>Commercial Agreement:</strong> Vanguard Citizen Services provides professional consulting. We are not liable for pre-existing vulnerabilities, hardware failure, or external breaches. Organizations must maintain independent data backups. Our 14-day warranty covers the specific configuration performed during the session.
-            </div>
-
             <div style="display: flex; gap: 10px;">
-                <button onclick="closeIntake()" class="card-btn secondary" style="flex: 1;">Cancel</button>
-                <button onclick="transmitCommercial()" class="gate-button" style="flex: 2; padding: 12px !important; font-size: 1rem !important;">Agree & Transmit</button>
+                <button onclick="closeModals()" class="persona-btn" style="flex: 1;">Cancel</button>
+                <button onclick="acceptTOS()" class="go-btn" style="flex: 2; font-size: 0.8rem;">Agree & Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: B2B INTAKE -->
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; text-align: center;">Business Intake</h2>
+            <p id="selected-service-name" style="font-size: 0.7rem; text-transform: uppercase; color: var(--white); opacity: 0.5; margin-bottom: 15px; text-align: center;"></p>
+            
+            <div class="intake-form">
+                <div class="form-group full-width">
+                    <label>Business / Organization Name</label>
+                    <input type="text" id="biz-name" class="intake-input" placeholder="Organization Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Point of Contact</label>
+                    <input type="text" id="biz-poc" class="intake-input" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Business Email</label>
+                    <input type="email" id="biz-email" class="intake-input" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="biz-phone" class="intake-input" placeholder="(270) 555-0100">
+                </div>
+                <div class="form-group">
+                    <label>Team Size</label>
+                    <select id="biz-size" class="intake-select" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); padding: 12px; border-radius: 4px;">
+                        <option value="1-5">1-5 Employees</option>
+                        <option value="6-15">6-15 Employees</option>
+                        <option value="16+">16+ Employees</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Physical Address</label>
+                    <input type="text" id="biz-address" class="intake-input" placeholder="Street, City, Zip">
+                </div>
+                <div class="form-group full-width">
+                    <label>Primary Objective</label>
+                    <textarea id="biz-message" class="intake-input" rows="3" placeholder="Tell us about your technical goals..."></textarea>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeModals()" class="persona-btn" style="flex: 1; border-color: #ff4d4d; color: #ff4d4d;">Abort</button>
+                <button onclick="transmitCommercial()" class="go-btn" style="flex: 2; font-size: 0.8rem;">Review & Transmit</button>
             </div>
         </div>
     </div>
@@ -243,57 +237,43 @@
     <script>
         let selectedService = "";
 
-        // Open the window and set the dynamic title
-        function openIntake(serviceName) {
+        function openTOS(serviceName) {
             selectedService = serviceName;
-            document.getElementById('intake-title').innerText = `Request: ${serviceName}`;
-            document.getElementById('intake-modal').style.display = 'flex';
+            document.getElementById('tos-modal').style.display = 'flex';
         }
 
-        function closeIntake() {
-            document.getElementById('intake-modal').style.display = 'none';
+        function acceptTOS() {
+            document.getElementById('tos-modal').style.display = 'none';
+            document.getElementById('selected-service-name').innerText = selectedService;
+            document.getElementById('form-modal').style.display = 'flex';
         }
 
-        // Gather form data and send directly to commandrq@gmail.com
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
         function transmitCommercial() {
-            const bizName = document.getElementById('biz-name').value.trim();
-            const poc = document.getElementById('biz-poc').value.trim();
-            const phone = document.getElementById('biz-phone').value.trim();
-            const email = document.getElementById('biz-email').value.trim();
-            const address = document.getElementById('biz-address').value.trim();
+            const bizName = document.getElementById('biz-name').value;
+            const poc = document.getElementById('biz-poc').value;
+            const email = document.getElementById('biz-email').value;
+            const phone = document.getElementById('biz-phone').value;
+            const address = document.getElementById('biz-address').value;
             const size = document.getElementById('biz-size').value;
-            const notes = document.getElementById('biz-notes').value.trim();
+            const message = document.getElementById('biz-message').value;
 
             if(!bizName || !poc || !email) {
-                return alert("Business Name, Point of Contact, and Email are required to proceed.");
+                alert("Please complete the Business Name, POC, and Email fields.");
+                return;
             }
 
-            const subject = `[Vanguard B2B] Request: ${selectedService} - ${bizName}`;
+            const body = `Vanguard B2B Request\n\nService: ${selectedService}\nBusiness: ${bizName}\nContact: ${poc}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${address}\nTeam Size: ${size}\n\nObjectives:\n${message}`;
+            const mailtoLink = `mailto:commandrq@gmail.com?subject=[B2B] Request from ${bizName}&body=${encodeURIComponent(body)}`;
             
-            const body = 
-`--- COMMERCIAL INTAKE FORM ---
-SERVICE REQUESTED: ${selectedService}
-
-ORGANIZATION INFO:
-Business Name: ${bizName}
-Point of Contact: ${poc}
-Email: ${email}
-Phone: ${phone || "Not Provided"}
-Address: ${address || "Not Provided"}
-Scale: ${size}
-
-PRIMARY OBJECTIVE:
-${notes || "No specific details provided."}
-
----------------------------------
-System: Vanguard Authorized Transmission`;
-
-            // Open Mail Client
-            window.location.href = `mailto:commandrq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // Close Modal
-            closeIntake();
+            window.location.href = mailtoLink;
+            closeModals();
         }
+
+        document.getElementById('year').innerText = new Date().getFullYear();
     </script>
 </body>
 </html>
