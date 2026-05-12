@@ -3,69 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Central Hub</title>
+    <title>Vanguard | Terminal Hub</title>
     
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <link rel="stylesheet" href="style.css">
-    
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <style>
+        :root {
+            --gold: #D4AF37;
+            --glass: rgba(0, 0, 0, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --white: #ffffff;
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- FOUNDATION --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            height: 100%;
+            background: #000;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- ANIMATED GOLDEN STARFIELD --- */
+        #vanguard-universe {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .star-layer {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(2px 2px at 40px 60px, var(--gold), transparent),
+                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent),
+                radial-gradient(2.5px 2.5px at 300px 100px, var(--gold), transparent);
+            background-size: 400px 400px;
+            animation: orbital-rotation 240s linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes orbital-rotation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- UI WRAPPER (CENTERED) --- */
+        #app-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* --- GLASS WINDOWS --- */
+        .glass-window {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1#user-greeting {
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--white);
+            animation: pulse-white 4s infinite ease-in-out;
+        }
+
+        .config-btn {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--white);
+            padding: 10px 24px;
+            transition: 0.3s;
+        }
+
+        .config-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* --- NAVIGATION --- */
         #category-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: none;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            width: 100%;
         }
-        
-        #category-bar::-webkit-scrollbar {
-            display: none;
-        }
-        
+
         .cat-btn {
-            background: rgba(15,15,15,0.9);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.6);
-            padding: 10px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 800;
+            background: transparent;
+            border: 1px solid var(--white);
+            color: var(--white);
+            padding: 12px 25px;
             font-size: 0.75rem;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 1px;
-            white-space: nowrap;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: 0.4s;
         }
 
         .cat-btn.active {
-            border-color: #D4AF37;
-            color: #D4AF37;
+            border-color: var(--gold);
+            color: var(--gold);
             background: rgba(212, 175, 55, 0.1);
+            animation: pulse-gold-border 3s infinite;
+        }
+
+        /* --- DIRECTORY WINDOWS --- */
+        #directory-list {
+            flex-grow: 1;
+            width: 90%;
+            max-width: 550px;
+            overflow-y: auto;
+            padding-bottom: 60px;
+            scrollbar-width: none;
+        }
+
+        #directory-list::-webkit-scrollbar { display: none; }
+
+        .service-card {
+            padding: 45px 30px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-title {
+            color: var(--gold);
+            font-size: 1.3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        .card-desc {
+            color: var(--white);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            max-width: 400px;
+        }
+
+        .access-btn {
+            width: 100%;
+            max-width: 240px;
+            padding: 16px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .access-btn:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            width: 100%;
+            padding: 25px;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--white);
+            background: rgba(0,0,0,0.5);
+            animation: pulse-white 3s infinite;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse-white { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes pulse-gold-border { 
+            0%, 100% { border-color: var(--gold); box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+            50% { border-color: #fff; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
         }
     </style>
 </head>
 <body>
 
-    <div id="vanguard-universe" aria-hidden="true">
-        <div class="gold-star-layer"></div>
+    <div id="vanguard-universe">
+        <div class="star-layer"></div>
     </div>
 
-    <main id="app-wrapper" style="display: flex; flex-direction: column; height: 100vh;">
-        <header id="top-glass-panel" style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <h1 id="user-greeting" style="font-size: 1.2rem; color: #fff; margin: 0;">Welcome</h1>
-                <a href="settings.html" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px;">⚙️ SETTINGS</a>
-            </div>
+    <main id="app-wrapper">
+        <header class="glass-window">
+            <h1 id="user-greeting">Welcome, Citizen</h1>
+            <a href="settings.html" class="config-btn">⚙️ Config Terminal</a>
         </header>
 
-        <section id="directory-core" style="flex-grow: 1; overflow-y: auto; padding: 25px;">
-            <nav id="category-bar"></nav>
-            <div id="directory-list"></div>
-        </section>
+        <nav id="category-bar"></nav>
+
+        <section id="directory-list"></section>
+
+        <footer>
+            Vanguard Citizen Services &copy; <span id="year"></span>
+        </footer>
     </main>
 
-    <script src="app.js"></script>
+    <script>
+        /* --- SUPABASE SETUP --- */
+        const supabaseUrl = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const supabaseKey = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let directoryData = {};
+        let currentCategory = "";
+
+        /* --- DATA ENGINE --- */
+        async function loadDirectory() {
+            try {
+                const response = await fetch('directory.json');
+                directoryData = await response.json();
+                currentCategory = Object.keys(directoryData)[0];
+                renderUI();
+            } catch (err) {
+                console.error("Critical System Error: Could not load directory.json", err);
+            }
+        }
+
+        function renderUI() {
+            // Render Navigation
+            const nav = document.getElementById('category-bar');
+            nav.innerHTML = Object.keys(directoryData).map(cat => `
+                <button class="cat-btn ${cat === currentCategory ? 'active' : ''}" 
+                        onclick="switchCategory('${cat}')">${cat}</button>
+            `).join('');
+
+            // Render Services
+            const list = document.getElementById('directory-list');
+            const items = directoryData[currentCategory];
+            
+            list.innerHTML = items.map(item => `
+                <div class="service-card glass-window">
+                    <h2 class="card-title">${item.title}</h2>
+                    <p class="card-desc">${item.desc}</p>
+                    <a href="${item.url}" class="access-btn">Initiate Access</a>
+                </div>
+            `).join('');
+        }
+
+        function switchCategory(cat) {
+            currentCategory = cat;
+            renderUI();
+        }
+
+        /* --- AUTHENTICATION & GREETING --- */
+        async function updateGreeting() {
+            const el = document.getElementById('user-greeting');
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (user) {
+                // Queries the specific 'citizens' table for the verified full name
+                const { data: profile } = await supabaseClient
+                    .from('citizens')
+                    .select('full_name')
+                    .eq('id', user.id)
+                    .single();
+
+                el.innerText = `Welcome, ${profile?.full_name || "Citizen"}`;
+            } else {
+                el.innerText = "Welcome, Citizen";
+            }
+        }
+
+        /* --- INITIALIZATION --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').innerText = new Date().getFullYear();
+            updateGreeting();
+            loadDirectory();
+        });
+    </script>
 </body>
 </html>
