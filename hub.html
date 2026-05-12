@@ -4,31 +4,307 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | Central Hub</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
+    <!-- Supabase Core -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        #category-bar { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-        .cat-btn { background: rgba(15,15,15,0.9); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); padding: 10px 18px; border-radius: 20px; cursor: pointer; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; white-space: nowrap; }
-        .cat-btn.active { border-color: #D4AF37; color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
-        #login-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #4ade80; padding: 10px 20px; border-radius: 20px; font-weight: 800; opacity: 0; transition: 0.5s; z-index: 2000; }
-        #login-toast.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+        /* --- CORE THEME --- */
+        :root {
+            --gold: #D4AF37;
+            --glass-bg: rgba(10, 10, 10, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            height: 100%;
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- VANGUARD UNIVERSE (STARFIELD) --- */
+        #vanguard-universe {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
+        .gold-star-layer {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, rgba(212, 175, 55, 0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 100px 150px, rgba(255, 255, 255, 0.4), rgba(0,0,0,0));
+            background-size: 250px 250px;
+            animation: drift 150s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- PULSING ANIMATIONS --- */
+        @keyframes goldPulse {
+            0%, 100% { border-color: rgba(212, 175, 55, 0.3); box-shadow: 0 0 5px rgba(212, 175, 55, 0.1); }
+            50% { border-color: rgba(212, 175, 55, 1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        }
+
+        /* --- LAYOUT --- */
+        #app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            padding: 20px 25px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .settings-btn {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border: 1px solid var(--glass-border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .settings-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* --- NAVIGATION --- */
+        #category-bar {
+            display: flex;
+            gap: 12px;
+            padding: 20px 25px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        #category-bar::-webkit-scrollbar { display: none; }
+
+        .cat-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            color: rgba(255,255,255,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+
+        .cat-btn.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            animation: goldPulse 3s infinite ease-in-out;
+        }
+
+        /* --- DIRECTORY LIST --- */
+        #directory-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 25px 40px 25px;
+        }
+
+        .link-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: slideIn 0.5s var(--v-curve);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-title {
+            color: var(--gold);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-btn {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .card-btn:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        footer {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.4;
+            background: rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-    <div id="vanguard-universe"><div class="gold-star-layer"></div></div>
-    <main id="app-wrapper" style="display: flex; flex-direction: column; height: 100vh;">
-        <header id="top-glass-panel" style="padding: 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <h1 id="user-greeting" style="font-size: 1.2rem; color: #fff; margin: 0;">Welcome</h1>
-                <a href="settings.html" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px;">⚙️ SETTINGS</a>
-            </div>
+
+    <div id="vanguard-universe">
+        <div class="gold-star-layer"></div>
+    </div>
+
+    <main id="app-wrapper">
+        <header>
+            <h1 id="user-greeting">Welcome, Citizen</h1>
+            <a href="settings.html" class="settings-btn">⚙️ Settings</a>
         </header>
-        <section id="directory-core" style="flex-grow: 1; overflow-y: auto; padding: 25px;">
-            <nav id="category-bar"></nav>
-            <div id="directory-list"></div>
-        </section>
+
+        <nav id="category-bar"></nav>
+
+        <section id="directory-list"></section>
+
+        <footer>
+            Vanguard Citizen Services &copy; <span id="year"></span>
+        </footer>
     </main>
-    <div id="login-toast"></div>
-    <script src="app.js"></script>
+
+    <script>
+        /* --- DIRECTORY JSON DATA --- */
+        const HUB_DIRECTORY = {
+            "Vanguard Tech Lab": [
+                { 
+                    title: "Tech Consulting", 
+                    desc: "Professional strategy and support sessions for seniors, parents, and high-performance individuals. We focus on security and system health.", 
+                    url: "vsr/techhelp.html" 
+                }
+            ],
+            "System": [
+                { 
+                    title: "About Vanguard", 
+                    desc: "Learn about our mission, our history in the military and tech sectors, and our commitment to Hardin County.", 
+                    url: "about.html" 
+                },
+                { 
+                    title: "Support Terminal", 
+                    desc: "Connect directly with our team for technical assistance or service inquiries.", 
+                    url: "support.html" 
+                },
+                { 
+                    title: "Legal Documents", 
+                    desc: "Review our Citizen Agreements, Privacy Protocols, and operational terms.", 
+                    url: "legal.html" 
+                }
+            ]
+        };
+
+        /* --- SUPABASE SETUP --- */
+        const supabaseUrl = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const supabaseKey = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        /* --- CORE ENGINE --- */
+        let activeCategory = Object.keys(HUB_DIRECTORY)[0];
+
+        function renderDirectory(category = activeCategory) {
+            activeCategory = category;
+            
+            // Update Nav
+            const nav = document.getElementById('category-bar');
+            nav.innerHTML = Object.keys(HUB_DIRECTORY).map(cat => `
+                <button class="cat-btn ${cat === activeCategory ? 'active' : ''}" 
+                        onclick="renderDirectory('${cat}')">${cat}</button>
+            `).join('');
+
+            // Update Cards
+            const list = document.getElementById('directory-list');
+            const items = HUB_DIRECTORY[activeCategory];
+            
+            list.innerHTML = items.map(item => `
+                <div class="link-card">
+                    <h3 class="card-title">${item.title}</h3>
+                    <p class="card-desc">${item.desc}</p>
+                    <a href="${item.url}" class="card-btn">Open Terminal</a>
+                </div>
+            `).join('');
+        }
+
+        async function updateGreeting() {
+            const greetingEl = document.getElementById('user-greeting');
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (user) {
+                const name = user.user_metadata?.full_name || "Citizen";
+                greetingEl.innerText = `Welcome, ${name}`;
+            } else {
+                greetingEl.innerText = "Welcome, Citizen";
+            }
+        }
+
+        /* --- INITIALIZATION --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').innerText = new Date().getFullYear();
+            updateGreeting();
+            renderDirectory();
+        });
+    </script>
 </body>
 </html>
