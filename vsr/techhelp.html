@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vanguard | Tech Lab</title>
     
-    <!-- Supabase or External Scripts can go here -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
             --gold: #D4AF37;
             --white: #ffffff;
-            --glass-panel: rgba(10, 10, 12, 0.85);
+            --glass-panel: rgba(10, 10, 12, 0.88);
             --glass-border: rgba(255, 255, 255, 0.1);
             --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
             --success: #4ade80;
         }
 
         /* --- FOUNDATION --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html {
             height: 100%;
@@ -39,283 +31,148 @@
         @media (min-width: 1024px) {
             body, html { font-size: 18px; }
             .glass-window { max-width: 850px !important; padding: 60px !important; }
-            h1 { font-size: 2.2rem !important; }
         }
 
         /* --- THE STARFIELD --- */
-        #vanguard-universe {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-        }
-
+        #vanguard-universe { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
         .star-layer {
-            position: absolute;
-            inset: -50%;
-            width: 200%;
-            height: 200%;
+            position: absolute; inset: -50%; width: 200%; height: 200%;
             background-image: 
                 radial-gradient(2px 2px at 40px 60px, var(--gold), transparent),
-                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent),
-                radial-gradient(2px 2px at 300px 100px, rgba(212, 175, 55, 0.3), transparent);
+                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent);
             background-size: 350px 350px;
             animation: orbital-rotation 200s linear infinite;
         }
-
-        @keyframes orbital-rotation {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes orbital-rotation { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* --- UI WRAPPER --- */
         #app-wrapper {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-y: auto;
-            scrollbar-width: none;
+            position: relative; z-index: 10; height: 100vh; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-y: auto; scrollbar-width: none;
         }
 
-        #app-wrapper::-webkit-scrollbar { display: none; }
-
-        /* --- THE MAIN GLASS MODULE --- */
+        /* --- MAIN GLASS WINDOW --- */
         .glass-window {
-            width: 92%;
-            max-width: 700px;
-            margin: 40px 0;
+            width: 92%; max-width: 700px; margin: 40px 0;
             background: var(--glass-panel);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 40px 25px;
-            text-align: center;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 40px 25px; text-align: center;
             animation: fadeIn 0.8s var(--v-curve) forwards, gold-pulse-window 4s infinite ease-in-out;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
         }
 
-        /* --- PERSONA NAV --- */
-        .persona-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 30px 0;
-            justify-content: center;
-        }
-
+        /* --- NAVIGATION --- */
+        .persona-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0; justify-content: center; }
         .persona-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: rgba(255, 255, 255, 0.6);
-            padding: 12px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s var(--v-curve);
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.6); padding: 12px 18px; border-radius: 8px;
+            cursor: pointer; font-weight: 800; font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 1px; transition: 0.3s;
         }
-
-        .persona-btn.active {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-            animation: gold-pulse-text 3s infinite;
-        }
+        .persona-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
         /* --- SERVICE CARDS --- */
-        .package-card {
-            border-top: 1px solid var(--glass-border);
-            padding: 40px 0;
-            text-align: left;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .warranty-badge {
-            display: inline-block;
-            background: rgba(74, 222, 128, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
-
-        .package-title {
-            color: var(--white);
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-        }
-
-        .package-desc {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-
-        .price-tag {
-            font-size: 1.5rem;
-            color: var(--gold);
-            font-weight: 900;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .feature-list {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .feature-list li {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .feature-list li::before {
-            content: "✦";
-            color: var(--gold);
-        }
+        .package-card { border-top: 1px solid var(--glass-border); padding: 45px 0; text-align: center; }
+        .package-title { color: var(--white); font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
+        .package-desc { color: rgba(255, 255, 255, 0.7); line-height: 1.8; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .price-tag { font-size: 1.6rem; color: var(--gold); font-weight: 900; margin-bottom: 25px; display: block; animation: gold-pulse-text 3s infinite; }
 
         /* --- BUTTONS --- */
         .go-btn {
-            display: block;
-            width: 100%;
-            max-width: 200px;
-            padding: 15px;
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            text-decoration: none;
-            text-align: center;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 4px;
-            transition: 0.3s;
+            display: inline-block; width: 100%; max-width: 220px;
+            padding: 16px; background: transparent; border: 1px solid var(--gold);
+            color: var(--gold); text-decoration: none; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 3px; border-radius: 4px; cursor: pointer; transition: 0.3s;
         }
+        .go-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
 
-        .go-btn:hover {
-            background: var(--gold);
-            color: #000;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-        }
-
-        .back-btn {
-            color: var(--white);
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 4px;
-        }
-
-        /* --- MODAL --- */
-        .tos-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(15px);
-            display: none; align-items: center; justify-content: center;
+        /* --- MODAL SYSTEM --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center;
             z-index: 1000; padding: 20px;
         }
-
-        .tos-content {
-            background: var(--glass-panel);
-            border: 1px solid var(--gold);
-            border-radius: 12px;
-            width: 100%; max-width: 500px;
-            padding: 40px;
-            text-align: center;
+        .modal-content {
+            background: var(--glass-panel); border: 1px solid var(--gold);
+            border-radius: 12px; width: 100%; max-width: 500px; padding: 35px;
         }
+
+        /* --- FORM STYLING --- */
+        .intake-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .intake-form input, .intake-form textarea {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            border-radius: 4px; padding: 12px; color: white; font-family: inherit;
+        }
+        .intake-form input:focus, .intake-form textarea:focus { border-color: var(--gold); outline: none; }
+        .form-actions { display: flex; gap: 10px; margin-top: 10px; }
 
         /* --- ANIMATIONS --- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes gold-pulse-window { 0%, 100% { border-color: rgba(212, 175, 55, 0.2); } 50% { border-color: rgba(212, 175, 55, 0.6); } }
+        @keyframes gold-pulse-text { 0%, 100% { text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); } 50% { text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); } }
 
-        @keyframes gold-pulse-window {
-            0%, 100% { border-color: rgba(212, 175, 55, 0.2); }
-            50% { border-color: rgba(212, 175, 55, 0.6); box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 20px rgba(212, 175, 55, 0.1); }
-        }
-
-        @keyframes gold-pulse-text {
-            0%, 100% { text-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
-            50% { text-shadow: 0 0 15px rgba(212, 175, 55, 0.6); }
-        }
-
-        footer {
-            width: 100%; padding: 40px; text-align: center;
-            font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
-            color: var(--white); opacity: 0.8;
-        }
+        footer { width: 100%; padding: 40px; text-align: center; font-size: 0.65rem; color: var(--white); letter-spacing: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div id="vanguard-universe">
-        <div class="star-layer"></div>
-    </div>
+    <div id="vanguard-universe"><div class="star-layer"></div></div>
 
     <main id="app-wrapper">
-        
         <article class="glass-window">
-            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1 style="letter-spacing: 5px; text-transform: uppercase; font-weight: 900;">Tech Lab</h1>
-                <a href="../hub.html" class="back-btn">HUB →</a>
+            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h1 style="letter-spacing: 5px; text-transform: uppercase;">Tech Lab</h1>
+                <a href="../hub.html" style="color: white; text-decoration: none; font-size: 0.7rem; border: 1px solid white; padding: 8px 15px;">HUB →</a>
             </header>
 
-            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; letter-spacing: 1px;">Select your profile to see tailored support packages.</p>
+            <p style="opacity: 0.6; font-size: 0.85rem; margin-bottom: 20px;">Every neighbor gets a free 15-minute consultation to find the right path.</p>
 
-            <nav class="persona-grid" id="persona-controls">
+            <nav class="persona-grid">
                 <button class="persona-btn active" onclick="loadPersona('senior')">Seniors</button>
                 <button class="persona-btn" onclick="loadPersona('standard')">Everyday</button>
                 <button class="persona-btn" onclick="loadPersona('student')">Students</button>
                 <button class="persona-btn" onclick="loadPersona('gamer')">Gamers</button>
-                <button class="persona-btn" onclick="window.location.href='commercial.html'" style="border-color: var(--success); color: var(--success);">Business →</button>
             </nav>
 
-            <div id="packages-container">
-                <!-- Dynamic Content Loads Here -->
-            </div>
+            <div id="packages-container"></div>
         </article>
-
-        <footer>
-            Vanguard Citizen Services &copy; <span id="year"></span>
-        </footer>
+        <footer>Vanguard Citizen Services &copy; <span id="year"></span></footer>
     </main>
 
-    <!-- AGREEMENT MODAL -->
-    <div class="tos-overlay" id="tos-modal">
-        <div class="tos-content">
-            <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">Citizen Agreement</h2>
-            <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 30px; color: rgba(255,255,255,0.8); text-align: left;">
-                <strong>Peace of Mind:</strong> We warrant our work for 14 days. If the same issue returns, we'll fix it for free. 
+    <!-- STEP 1: AGREEMENT MODAL -->
+    <div class="modal-overlay" id="tos-modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-align: center;">Citizen Agreement</h2>
+            <div style="font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.8); margin-bottom: 25px; text-align: left;">
+                <strong>14-Day Neighbor Warranty:</strong> If the exact same issue returns within two weeks, we fix it for free. 
                 <br><br>
-                <strong>Safety First:</strong> We are consultants, not liable for pre-existing hardware deaths. Please back up your photos and files before we dive in!
-            </p>
-            <div style="display: flex; gap: 15px;">
-                <button onclick="closeTOS()" class="persona-btn" style="flex: 1;">Cancel</button>
-                <button onclick="acceptAndGo()" class="go-btn" style="flex: 2;">Accept & Go</button>
+                <strong>The Fine Print:</strong> We are consultants. We aren't liable for hardware that was already failing or data that wasn't backed up. We'll help you back up if you're worried!
+            </div>
+            <div class="form-actions">
+                <button onclick="closeModals()" class="persona-btn" style="flex: 1;">Cancel</button>
+                <button onclick="acceptTOS()" class="go-btn" style="flex: 2; font-size: 0.8rem;">Accept & Go</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: INTAKE FORM MODAL -->
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; text-align: center;">Service Intake</h2>
+            <p id="selected-service-name" style="font-size: 0.7rem; text-transform: uppercase; color: var(--white); opacity: 0.5; margin-bottom: 15px; text-align: center;"></p>
+            
+            <div class="intake-form">
+                <input type="text" id="form-name" placeholder="Full Name" required>
+                <input type="email" id="form-email" placeholder="Email Address" required>
+                <input type="tel" id="form-phone" placeholder="Phone Number">
+                <input type="text" id="form-address" placeholder="Physical Address (for on-site)">
+                <textarea id="form-message" rows="4" placeholder="Tell us more about what's happening..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button onclick="closeModals()" class="persona-btn" style="flex: 1; border-color: #ff4d4d; color: #ff4d4d;">Abort</button>
+                <button onclick="sendDraft()" class="go-btn" style="flex: 2; font-size: 0.8rem;">Review Draft</button>
             </div>
         </div>
     </div>
@@ -323,60 +180,20 @@
     <script>
         const packageData = {
             senior: [
-                { 
-                    title: "The Quick Fix", 
-                    desc: "Frustrated by a password that won't work or a weird message on your screen? We’ll sit down with you, clear the roadblock, and make sure you're safe from scammers.", 
-                    price: "$20", 
-                    features: ["30 Minutes of patient help", "Password & Account recovery", "Scam-proof verification"] 
-                },
-                { 
-                    title: "Digital Peace of Mind", 
-                    desc: "Make your tablet or computer easy to see and hear. We’ll secure your accounts and set everything up so it 'just works' without the headaches.", 
-                    price: "$50", 
-                    features: ["Full hour 1-on-1 session", "Bigger text & Clearer sound", "Advanced security setup"] 
-                }
+                { title: "The Hand-Hold", desc: "Patient help for passwords, tablet setup, or spotting scams. Perfect for staying connected without the stress.", price: "$20", type: "Basic Help (60 min)" },
+                { title: "The Golden Guardian", desc: "A deep dive into your privacy and visibility. We'll set up your security and make your tech easier to see and use.", price: "$50", type: "Full Protocol (2 hours)" }
             ],
             standard: [
-                { 
-                    title: "The Digital Tune-Up", 
-                    desc: "Is your computer feeling sluggish? We'll clean out the 'digital dust,' remove unwanted junk, and get your machine running like it's brand new again.", 
-                    price: "$30", 
-                    features: ["Speed optimization", "Junk & Bloatware removal", "Security health check"] 
-                },
-                { 
-                    title: "The Home Command Center", 
-                    desc: "The ultimate setup for a busy house. We'll automate your backups and set up family safety features so the kids stay safe and your data never gets lost.", 
-                    price: "$75", 
-                    features: ["90 Minute deep dive", "Parental controls setup", "Automatic cloud backups"] 
-                }
+                { title: "Digital Dusting", desc: "Clean out the junk and speed up your computer. Ideal for making a slow PC feel brand new again.", price: "$30", type: "Basic Help (60 min)" },
+                { title: "Home Command Center", desc: "Automate your backups and set up family safety. We ensure your house is secure and your memories are safe.", price: "$75", type: "Full Protocol (2 hours)" }
             ],
             student: [
-                { 
-                    title: "The Deadline Savior", 
-                    desc: "Software acting up right before a project is due? WiFi won't connect? We'll jump in and fix the technical glitch so you can get back to work.", 
-                    price: "$20", 
-                    features: ["Fast technical triage", "App & File formatting fixes", "Campus WiFi troubleshooting"] 
-                },
-                { 
-                    title: "The Scholar Uplink", 
-                    desc: "Don't lose your thesis to a crash. We'll optimize your laptop for speed and set up 'set-and-forget' backups so your hard work is always safe.", 
-                    price: "$45", 
-                    features: ["Performance boosting", "Proactive backup systems", "Battery life optimization"] 
-                }
+                { title: "The Tech Triage", desc: "Emergency help for software bugs or campus WiFi issues. Get back to your project before the deadline hits.", price: "$20", type: "Basic Help (60 min)" },
+                { title: "Scholar Uplink", desc: "Maximum speed and automatic backup setup. We optimize your machine so it survives the semester.", price: "$45", type: "Full Protocol (2 hours)" }
             ],
             gamer: [
-                { 
-                    title: "The Performance Check", 
-                    desc: "Struggling with lag or low FPS? We’ll check your network path and discord routing to ensure you have the lowest latency possible.", 
-                    price: "$35", 
-                    features: ["Latency & Ping diagnostics", "Discord audio optimization", "Network pathing check"] 
-                },
-                { 
-                    title: "The Competitor's Edge", 
-                    desc: "Maximum frames. Zero distractions. We'll strip your Windows OS of every useless process and tune your hardware for peak performance.", 
-                    price: "$85", 
-                    features: ["OS 'Stripping' for max FPS", "BIOS & Power tuning", "Hardware stress testing"] 
-                }
+                { title: "The Ping Check", desc: "Troubleshoot lag and optimize Discord. We verify your pathing for the smoothest connection possible.", price: "$35", type: "Basic Help (60 min)" },
+                { title: "Competitor's Edge", desc: "BIOS-level tuning and OS stripping. We maximize your frame-rates for a distraction-free gaming experience.", price: "$85", type: "Full Protocol (2 hours)" }
             ]
         };
 
@@ -390,14 +207,11 @@
             const container = document.getElementById('packages-container');
             container.innerHTML = packageData[type].map(pkg => `
                 <section class="package-card">
-                    <div class="warranty-badge">🛡️ 14-Day Guarantee</div>
                     <h3 class="package-title">${pkg.title}</h3>
+                    <p style="color: var(--gold); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px;">${pkg.type}</p>
                     <p class="package-desc">${pkg.desc}</p>
                     <span class="price-tag">${pkg.price} Flat</span>
-                    <ul class="feature-list">
-                        ${pkg.features.map(f => `<li>${f}</li>`).join('')}
-                    </ul>
-                    <button onclick="openTOS('${pkg.title}')" class="go-btn">Go</button>
+                    <button onclick="openTOS('${pkg.title} (${pkg.type})')" class="go-btn">Go</button>
                 </section>
             `).join('');
         }
@@ -407,12 +221,32 @@
             document.getElementById('tos-modal').style.display = 'flex';
         }
 
-        function closeTOS() {
+        function acceptTOS() {
             document.getElementById('tos-modal').style.display = 'none';
+            document.getElementById('selected-service-name').innerText = currentPackage;
+            document.getElementById('form-modal').style.display = 'flex';
         }
 
-        function acceptAndGo() {
-            window.location.href = `../support.html?package=${encodeURIComponent(currentPackage)}`;
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function sendDraft() {
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const phone = document.getElementById('form-phone').value;
+            const address = document.getElementById('form-address').value;
+            const message = document.getElementById('form-message').value;
+
+            if(!name || !email) {
+                alert("Please provide at least your name and email so we can help!");
+                return;
+            }
+
+            const body = `Vanguard Support Request\n\nService: ${currentPackage}\nClient: ${name}\nEmail: ${email}\nPhone: ${phone}\nAddress: ${address}\n\nDetails:\n${message}`;
+            const mailtoLink = `mailto:commandrq@gmail.com?subject=Vanguard Service Request: ${name}&body=${encodeURIComponent(body)}`;
+            
+            window.location.href = mailtoLink;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
