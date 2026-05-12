@@ -8,7 +8,7 @@ const directoryDataRaw = {
     "Vanguard Tech Lab": [
         { 
             title: "Tech Consulting", 
-            desc: "Expert technology support and and coaching for Hardin County.", 
+            desc: "Expert strategy and support sessions for seniors, parents, and high-performance individuals.", 
             url: "vsr/techhelp.html" 
         }
     ],
@@ -93,14 +93,6 @@ function renderHub(category = currentCategory, filterText = "") {
     }
 }
 
-/* --- SEARCH FUNCTIONALITY --- */
-const searchInput = document.getElementById('hub-search');
-if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-        renderHub(currentCategory, e.target.value);
-    });
-}
-
 /* --- USER INTERFACE & AUTH --- */
 async function updateUI() {
     const greeting = document.getElementById('user-greeting');
@@ -109,10 +101,12 @@ async function updateUI() {
     if (!greeting) return;
 
     const { data: { user } } = await supabaseClient.auth.getUser();
-    const cached = JSON.parse(localStorage.getItem('vanguard_profile'));
-
+    
     if (user) {
-        const displayName = (cached && cached.name) ? cached.name : "Citizen";
+        const metaName = user.user_metadata?.full_name;
+        const cached = JSON.parse(localStorage.getItem('vanguard_profile'));
+        const displayName = metaName || (cached && cached.name) || "Citizen";
+        
         greeting.innerText = `Welcome, ${displayName}`;
 
         if (sessionStorage.getItem('just_logged_in') === 'true') {
@@ -124,7 +118,7 @@ async function updateUI() {
             sessionStorage.removeItem('just_logged_in');
         }
     } else {
-        greeting.innerText = "Welcome";
+        greeting.innerText = "Welcome, Citizen";
     }
 }
 
