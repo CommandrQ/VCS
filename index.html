@@ -3,146 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | The Gate</title>
-    
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Supabase Core -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Vanguard | Citizen Entry</title>
     
     <style>
-        /* RADIANT LOGO EFFECT */
-        .vanguard-logo {
-            width: 180px;
-            height: auto;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6)) 
-                    drop-shadow(0 0 30px rgba(212, 175, 55, 0.2));
-            animation: pulseGlow 4s ease-in-out infinite;
+        /* --- CORE SYSTEM VARIABLES --- */
+        :root {
+            --gold: #D4AF37;
+            --glass-bg: rgba(10, 10, 10, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5)); }
-            50% { filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.8)); }
+        /* --- FOUNDATION --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* THE EVOLVED GATE BUTTON */
-        .gate-button {
-            position: relative;
-            overflow: hidden; /* Clips the fill effect */
-            background: #000 !important;
-            color: var(--gold) !important;
-            border: 2px solid var(--gold) !important; /* Slightly thicker border */
-            padding: 22px 50px !important; /* Increased size */
-            font-size: 1.2rem !important; /* Increased text size */
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            cursor: pointer;
-            border-radius: 4px; /* Sharper, professional edges */
-            transition: color 0.4s ease, transform 0.3s var(--v-curve), box-shadow 0.3s ease;
-            z-index: 1;
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* The Filling Liquid */
-        .gate-button::before {
-            content: '';
+        /* --- THE VANGUARD UNIVERSE --- */
+        #vanguard-universe {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
+        .gold-star-layer {
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: var(--gold);
-            transition: left 0.5s var(--v-curve);
-            z-index: -1; /* Sits behind the text */
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, rgba(212, 175, 55, 0.8), rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 100px 150px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 250px 50px, rgba(212, 175, 55, 0.4), rgba(0,0,0,0));
+            background-size: 300px 300px;
+            animation: drift 120s linear infinite;
         }
 
-        /* Hover State Logic */
-        .gate-button:hover {
-            color: #000 !important; /* Flips text color for contrast */
-            transform: scale(1.05); /* Slight size increase */
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        @keyframes drift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .gate-button:hover::before {
-            left: 0; /* Slides the fill into position */
+        /* --- CENTERED MODULE --- */
+        .entry-module {
+            width: 90%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s var(--v-curve);
         }
 
-        /* Transition Overlay */
-        #fade-overlay {
-            position: fixed; inset: 0;
-            background: #000;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 999;
-            transition: opacity 1s ease;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        #fade-overlay.active { opacity: 1; }
 
-        .gate-footer {
-            margin-top: 60px;
-            font-size: 0.7rem;
+        .logo-mark {
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 5px;
             color: var(--gold);
-            letter-spacing: 2px;
             text-transform: uppercase;
-            opacity: 0.6;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        /* --- ACTION CONTROLS --- */
+        .action-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s var(--v-curve);
+            text-decoration: none;
+            display: block;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            background: var(--gold);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: var(--glass-border);
+        }
+
+        .btn-secondary:active {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--gold);
+        }
+
+        /* --- FOOTER --- */
+        .footer-tag {
+            margin-top: 35px;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-height: 600px) {
+            .entry-module { padding: 30px 20px; }
+            h1 { font-size: 1.5rem; }
+            p.subtitle { margin-bottom: 20px; }
         }
     </style>
 </head>
-<body class="gate-body">
+<body>
 
-    <div id="vanguard-universe" aria-hidden="true">
+    <!-- Star Background -->
+    <div id="vanguard-universe">
         <div class="gold-star-layer"></div>
     </div>
 
-    <div id="fade-overlay"></div>
-
-    <main id="app-wrapper" style="justify-content: center; align-items: center; background: transparent; box-shadow: none;">
+    <!-- Centered Card -->
+    <div class="entry-module">
+        <span class="logo-mark">Vanguard</span>
+        <h1>Citizen Entry</h1>
+        <p class="subtitle">Hardin County Digital Services Portal</p>
         
-        <div id="gate-interface" style="text-align: center; padding: 40px; width: 100%;">
-            <!-- BRANDING -->
-            <div class="vanguard-branding" style="margin-bottom: 50px;">
-                <img src="images/vanguardorglogo.png" alt="Vanguard Logo" class="vanguard-logo">
-                <h1 style="font-size: 2.2rem; letter-spacing: 10px; color: var(--gold); margin: 0; font-weight: 900; text-transform: uppercase;">Vanguard</h1>
-                <p style="font-size: 0.75rem; letter-spacing: 4px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 5px;">Citizen Services</p>
-            </div>
-
-            <!-- ENLARGED FILL BUTTON -->
-            <div style="width: 100%; display: flex; justify-content: center;">
-                <button onclick="initiateUplink()" class="gate-button">
-                    Enter
-                </button>
-            </div>
-
-            <footer class="gate-footer">
-                Vanguard Citizen Services &copy; 2026
-            </footer>
+        <div class="action-stack">
+            <a href="settings.html" class="btn btn-primary">Access Terminal</a>
+            <a href="hub.html" class="btn btn-secondary">Enter as Guest</a>
         </div>
 
-    </main>
+        <div class="footer-tag">
+            Vanguard Citizen Services &copy; <span id="year"></span>
+        </div>
+    </div>
 
-    <script src="app.js"></script>
     <script>
-        function initiateUplink() {
-            const overlay = document.getElementById('fade-overlay');
-            const gate = document.getElementById('gate-interface');
-            
-            overlay.classList.add('active');
-            gate.style.opacity = '0';
-            gate.style.transform = 'scale(0.95)';
-            gate.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        // Automatic Year Sync
+        document.getElementById('year').innerText = new Date().getFullYear();
 
-            setTimeout(() => {
-                window.location.href = 'hub.html';
-            }, 1000);
-        }
-
-        window.onpageshow = function(event) {
-            if (event.persisted) {
-                document.getElementById('fade-overlay').classList.remove('active');
-                document.getElementById('gate-interface').style.opacity = '1';
-                document.getElementById('gate-interface').style.transform = 'scale(1)';
-            }
-        };
+        // Prevent zooming on mobile inputs if ever added
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
