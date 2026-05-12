@@ -3,34 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | About Us</title>
-    
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <link rel="stylesheet" href="style.css">
+    <title>Vanguard | Mission Briefing</title>
     
     <style>
-        .about-section {
-            margin-bottom: 40px;
-            text-align: left;
+        :root {
+            --gold: #D4AF37;
+            --glass: rgba(0, 0, 0, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --white: #ffffff;
+            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .about-section h2 {
-            color: var(--gold);
+        /* --- BASE RESET --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            height: 100%;
+            background: #000;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- THE GOLDEN STARFIELD --- */
+        #vanguard-universe {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .star-layer {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(2px 2px at 40px 60px, var(--gold), transparent),
+                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent),
+                radial-gradient(2px 2px at 300px 100px, var(--gold), transparent);
+            background-size: 400px 400px;
+            animation: orbital-rotation 240s linear infinite;
+        }
+
+        @keyframes orbital-rotation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- CENTERED INTERFACE --- */
+        #app-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            text-align: center;
+        }
+
+        header {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            margin-top: 25px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: pulse-gold-glow 4s infinite;
+        }
+
+        h1 {
+            font-size: 1.2rem;
             text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 900;
+        }
+
+        .back-btn {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 800;
             letter-spacing: 2px;
+            border: 1px solid var(--white);
+            padding: 8px 16px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* --- CONTENT WINDOWS --- */
+        #content-scroller {
+            flex-grow: 1;
+            width: 90%;
+            max-width: 600px;
+            overflow-y: auto;
+            padding: 20px 0 60px 0;
+            scrollbar-width: none;
+        }
+
+        #content-scroller::-webkit-scrollbar { display: none; }
+
+        .about-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            animation: fadeIn 0.8s var(--v-curve);
+        }
+
+        h2 {
+            color: var(--gold);
             font-size: 1.1rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-weight: 900;
         }
 
-        .about-section p {
+        p {
             font-size: 0.95rem;
-            line-height: 1.7;
-            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
             margin-bottom: 15px;
+            color: var(--white);
         }
 
+        /* --- IDENTITY GRID --- */
         .identity-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -38,115 +155,112 @@
             margin-top: 20px;
         }
 
-        .identity-card {
-            background: rgba(255, 255, 255, 0.03);
+        .id-pill {
             border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05);
             padding: 20px;
-            border-radius: 16px;
+            transition: 0.3s;
         }
 
-        .identity-card h3 {
+        .id-pill:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .id-pill h3 {
             color: var(--gold);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             margin-bottom: 8px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
-        .identity-card p {
-            font-size: 0.85rem;
-            margin: 0;
-            opacity: 0.7;
+        /* --- FOOTER --- */
+        footer {
+            width: 100%;
+            padding: 20px;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.8);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-gold-glow {
+            0%, 100% { border-bottom-color: var(--gold); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1); }
+            50% { border-bottom-color: #fff; box-shadow: 0 5px 30px rgba(212, 175, 55, 0.3); }
         }
     </style>
 </head>
 <body>
 
-    <div id="vanguard-universe" aria-hidden="true">
-        <div class="gold-star-layer"></div>
+    <div id="vanguard-universe">
+        <div class="star-layer"></div>
     </div>
 
     <main id="app-wrapper">
-        <header id="top-glass-panel" class="glass-module">
-            <div class="citizen-status" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <h1>Our Mission</h1>
-                <a href="hub.html" class="back-btn">HUB →</a>
-            </div>
+        <header>
+            <h1>Mission Brief</h1>
+            <a href="hub.html" class="back-btn">HUB →</a>
         </header>
 
-        <section id="directory-core" style="flex-grow: 1; overflow-y: auto;">
-            <div id="directory-list" style="padding: 25px;">
-                
-                <div class="about-section">
-                    <h2>Our Origin</h2>
-                    <p>
-                        Vanguard Citizen Services was founded by two friends who share a deep background in both the military and the technology sector. During our time in service, we learned the importance of discipline, technical precision, and looking out for those beside us. 
-                    </p>
-                    <p>
-                        We noticed that as digital tools became a mandatory part of everyday life, many people in the civilian world were being left behind or overwhelmed by the complexity of it all. We decided to bring our expertise home to help our community navigate this new landscape.
-                    </p>
-                </div>
+        <section id="content-scroller">
+            
+            <div class="about-card">
+                <h2>Our Origin</h2>
+                <p>Vanguard Citizen Services was founded by two friends with deep backgrounds in the military and technology world. During our service, we mastered discipline, technical precision, and the duty of care for those around us.</p>
+                <p>We realized that as digital tools became mandatory for daily life, many in our community were being overwhelmed. We brought our expertise home to ensure no neighbor is left behind in the digital landscape.</p>
+            </div>
 
-                <div class="about-section">
-                    <h2>Why Vanguard?</h2>
-                    <p>
-                        We chose the name Vanguard because it represents the part of an advancing group that leads the way and scouts the path ahead. In a digital world that changes every single day, we act as the scouts for the Radcliff and Elizabethtown area. 
-                    </p>
-                    <p>
-                        Our mission is to identify threats and build stable foundations so that our neighbors can move forward with total confidence. We believe that technology should be a tool for progress rather than a source of stress.
-                    </p>
-                </div>
+            <div class="about-card">
+                <h2>Why Vanguard?</h2>
+                <p>A "Vanguard" is the part of an advancing group that scouts the path ahead. In a rapidly changing digital world, we act as the scouts for the Radcliff and Elizabethtown area.</p>
+                <p>Our mission is to identify threats and build stable foundations so our neighbors can move forward with total confidence. Technology should be a tool for progress, not a source of stress.</p>
+            </div>
 
-                <div class="about-section">
-                    <h2>The Citizen Code</h2>
-                    <p>
-                        In our organization, we do not have customers or clients. Instead, we have Citizens. This choice of words is a reflection of our core philosophy. 
-                    </p>
-                    <p>
-                        Just as the knights of old held a sacred duty of care toward the people they served, we believe that our technical knowledge comes with a profound responsibility to our community. We are not just fixing computers. We are fulfilling a duty to protect and empower our fellow citizens in the digital age.
-                    </p>
-                </div>
+            <div class="about-card">
+                <h2>The Citizen Code</h2>
+                <p>We don't have customers or clients, we have Citizens. This reflects our core philosophy. Just as the knights of old held a sacred duty to the people they served, we believe our technical knowledge comes with a profound responsibility to our community.</p>
+            </div>
 
-                <div class="about-section">
-                    <h2>The Vanguard Identity</h2>
-                    <div class="identity-grid">
-                        <div class="identity-card">
-                            <h3>The Guardian</h3>
-                            <p>Standing watch against the scams and security breaches that target our community.</p>
-                        </div>
-                        <div class="identity-card">
-                            <h3>The Architect</h3>
-                            <p>Designing the digital hubs and systems that fuel local growth and business success.</p>
-                        </div>
-                        <div class="identity-card">
-                            <h3>The Mechanic</h3>
-                            <p>Getting under the hood to ensure your personal technology is always reliable and ready for action.</p>
-                        </div>
+            <div class="about-card">
+                <h2>The Identity</h2>
+                <div class="identity-grid">
+                    <div class="id-pill">
+                        <h3>The Guardian</h3>
+                        <p style="font-size: 0.85rem; margin:0;">Standing watch against security breaches targeting our community.</p>
+                    </div>
+                    <div class="id-pill">
+                        <h3>The Architect</h3>
+                        <p style="font-size: 0.85rem; margin:0;">Designing digital hubs and systems that fuel local growth.</p>
+                    </div>
+                    <div class="id-pill">
+                        <h3>The Mechanic</h3>
+                        <p style="font-size: 0.85rem; margin:0;">Ensuring your personal technology is always reliable and ready for action.</p>
                     </div>
                 </div>
-
-                <div class="about-section" style="margin-bottom: 60px;">
-                    <h2>The Hardin County Mission</h2>
-                    <p>
-                        The Radcliff and Elizabethtown corridor is a place where traditional everyday life is now permanently mixed with the digital world. We realize that while technology is everywhere, many of our neighbors are struggling with this transition. 
-                    </p>
-                    <p>
-                        Vanguard exists to bridge that gap. Whether we are securing a small business network or helping a senior navigate their first smartphone, we are committed to ensuring that the people of Hardin County are never left to face the digital frontier alone.
-                    </p>
-                </div>
-
             </div>
+
+            <div class="about-card">
+                <h2>Hardin County Mission</h2>
+                <p>The Radcliff and Elizabethtown corridor is where traditional life meets the digital frontier. Vanguard exists to bridge that gap. Whether securing a small business or helping a senior with their first smartphone, we ensure Hardin County never faces the frontier alone.</p>
+            </div>
+
         </section>
 
-        <footer id="bottom-nav-bar" class="glass-module">
-            <div style="font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px;">
-                Vanguard Citizen Services &copy; <span id="current-year"></span>
-            </div>
+        <footer>
+            Vanguard Citizen Services &copy; <span id="year"></span>
         </footer>
     </main>
 
     <script>
-        document.getElementById('current-year').innerText = new Date().getFullYear();
+        document.getElementById('year').innerText = new Date().getFullYear();
     </script>
 </body>
 </html>
