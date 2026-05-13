@@ -60,7 +60,11 @@
             width: 100%;
             text-align: center;
             background: transparent;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
+
+        #app-wrapper::-webkit-scrollbar { display: none; }
 
         header {
             width: 90%;
@@ -72,6 +76,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-bottom: 2px solid var(--gold);
+            border-radius: 4px;
         }
 
         h1 {
@@ -87,70 +92,70 @@
             text-decoration: none; 
             margin-top: 10px; 
             display: inline-block; 
-            opacity: 1;
             letter-spacing: 1px;
         }
 
-        /* --- CATEGORY BAR --- */
-        #category-bar {
+        /* --- TAB NAVIGATION --- */
+        #tab-nav {
             display: flex;
             justify-content: center; 
+            flex-wrap: wrap; /* Allows wrapping on very small screens */
             gap: 12px;
-            padding: 20px 40px; 
-            width: 100%;
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
+            padding: 20px; 
+            width: 90%;
+            max-width: 700px;
         }
 
-        #category-bar::-webkit-scrollbar { display: none; }
-
-        @media (max-width: 600px) {
-            #category-bar { justify-content: flex-start; }
-        }
-
-        .cat-btn {
-            flex-shrink: 0;
+        .tab-btn {
             background: transparent;
             border: 1px solid var(--white);
             color: var(--white);
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 0.7rem;
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
             transition: 0.3s;
+            border-radius: 4px;
+            flex-grow: 1; /* Makes buttons share space evenly */
         }
 
-        .cat-btn.active {
+        .tab-btn.active {
             border-color: var(--gold);
             color: var(--gold);
             background: rgba(212, 175, 55, 0.1);
         }
 
-        /* --- DIRECTORY LIST --- */
-        #directory-list {
-            flex-grow: 1;
+        /* --- CONTENT SECTIONS --- */
+        .content-section {
+            display: none; /* Hidden by default, JS handles visibility */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 60px;
+        }
+
+        .content-section.active {
+            display: flex;
+        }
+
+        /* --- SHARED CARDS (Projects, Knights, Mission) --- */
+        .window {
             width: 90%;
             max-width: 550px;
-            overflow-y: auto;
-            padding-bottom: 60px;
-            scrollbar-width: none;
-        }
-        #directory-list::-webkit-scrollbar { display: none; }
-
-        .service-card {
             background: var(--glass);
             backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            padding: 25px 20px; 
+            padding: 25px 20px;
             margin-bottom: 20px;
             border-radius: 4px;
+            text-align: left; /* Left align for readability */
         }
 
+        .center-text { text-align: center; }
+
         .card-title { color: var(--gold); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
-        .card-desc { font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
+        .card-desc { font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
         
         .action-link {
             display: inline-block;
@@ -161,29 +166,34 @@
             font-weight: 900;
             text-transform: uppercase;
             transition: 0.3s;
+            text-align: center;
         }
         .action-link:hover { background: var(--gold); color: #000; }
 
+        /* --- FOUNDER SPECIFICS --- */
+        .founder-role {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        .mission-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-style: italic;
+            color: #ddd;
+        }
+
         /* --- DESKTOP SPECIFIC IMPROVEMENTS --- */
         @media (min-width: 1024px) {
-            h1 { font-size: 1.8rem; } /* Larger Greeting */
-            
-            .cat-btn { 
-                font-size: 0.85rem; 
-                padding: 12px 30px; 
-            }
-
-            #directory-list { max-width: 650px; } /* Slightly wider container */
-            
-            .card-title { font-size: 1.5rem; } /* Larger Titles */
-            .card-desc { font-size: 1.05rem; } /* Larger Description */
-
-            .action-link {
-                padding: 15px 65px; 
-                font-size: 1.1rem;    
-            }
-
-            header a { font-size: 0.75rem; } /* Slightly larger Settings text */
+            h1 { font-size: 1.8rem; }
+            .tab-btn { font-size: 0.85rem; padding: 15px 30px; }
+            .window { max-width: 650px; padding: 35px 30px; }
+            .card-title { font-size: 1.5rem; }
+            .card-desc, .mission-text { font-size: 1.05rem; }
+            .action-link { padding: 15px 65px; font-size: 1.1rem; }
+            header a { font-size: 0.75rem; }
         }
 
         footer {
@@ -194,6 +204,7 @@
             letter-spacing: 2px;
             background: rgba(0,0,0,0.8);
             border-top: 1px solid var(--border);
+            margin-top: auto;
         }
     </style>
 </head>
@@ -207,9 +218,56 @@
             <a href="settings.html">⚙️ ACCOUNT SETTINGS</a>
         </header>
 
-        <nav id="category-bar"></nav>
+        <!-- CENTERED TAB NAVIGATION -->
+        <nav id="tab-nav">
+            <button class="tab-btn active" id="btn-vision" onclick="switchTab('vision')">Our Vision</button>
+            <button class="tab-btn" id="btn-projects" onclick="switchTab('projects')">Current Projects</button>
+            <button class="tab-btn" id="btn-knights" onclick="switchTab('knights')">Vanguard Knights</button>
+        </nav>
 
-        <section id="directory-list"></section>
+        <!-- SECTION 1: OUR VISION (Merged from About) -->
+        <section id="sec-vision" class="content-section active">
+            <div class="window center-text">
+                <h2 style="color: var(--gold); margin-bottom: 15px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">The Mission</h2>
+                <p class="mission-text">
+                    "To bridge the gap between digital accessibility and community resources, creating a hub where every citizen has the tools to succeed."
+                </p>
+            </div>
+
+            <div class="window">
+                <h2 class="card-title">Kona Agpalza</h2>
+                <div class="founder-role">Lead Developer & Strategist</div>
+                <p class="card-desc">
+                    The architect behind the Vanguard infrastructure. Kona focuses on building secure, fast, and community-driven digital tools that empower citizens to navigate the modern internet with ease.
+                </p>
+            </div>
+
+            <div class="window">
+                <h2 class="card-title">Quincy Jones</h2>
+                <div class="founder-role">Creative Director & Community Lead</div>
+                <p class="card-desc">
+                    The vision behind the Vanguard experience. Quincy ensures that every interaction within the network is intuitive, accessible, and aligned with our mission to serve the people.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CURRENT PROJECTS (JSON Driven) -->
+        <section id="sec-projects" class="content-section">
+            <!-- Project cards will be injected here by JavaScript -->
+        </section>
+
+        <!-- SECTION 3: VANGUARD KNIGHTS -->
+        <section id="sec-knights" class="content-section">
+            <div class="window">
+                <h2 class="card-title">Who are the Knights?</h2>
+                <p class="card-desc">
+                    The Vanguard Knights are the dedicated vanguard of our digital realm. Comprised of elite community contributors, developers, and strategists, the Knights protect our digital infrastructure and ensure our citizen services remain accessible, secure, and cutting-edge.
+                </p>
+                <p class="card-desc">
+                    Becoming a Knight means dedicating your skills to the betterment of the community network, safeguarding the user journey, and leading the charge in new technological frontiers.
+                </p>
+            </div>
+        </section>
 
         <footer>Vanguard &copy; <span id="year"></span></footer>
     </main>
@@ -220,37 +278,47 @@
             'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk'
         );
 
-        let hubData = {};
-        let activeCat = "";
+        // --- TAB SWITCHING LOGIC ---
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            // Deselect all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-        async function loadContent() {
+            // Show target section and activate target button
+            document.getElementById(`sec-${tabName}`).classList.add('active');
+            document.getElementById(`btn-${tabName}`).classList.add('active');
+        }
+
+        // --- JSON PROJECT LOADING ---
+        // Ensure you have a file named "projects.json" in the same folder formatted as an array:
+        // [ { "title": "Project X", "desc": "Info...", "url": "link.html" } ]
+        async function loadProjects() {
             try {
-                const response = await fetch('directory.json');
-                hubData = await response.json();
-                activeCat = Object.keys(hubData)[0];
-                render();
-            } catch (err) { console.error(err); }
+                const response = await fetch('projects.json');
+                const projects = await response.json();
+                
+                const projectContainer = document.getElementById('sec-projects');
+                
+                if (projects.length === 0) {
+                    projectContainer.innerHTML = `<div class="window center-text"><p class="card-desc">No active projects to display.</p></div>`;
+                    return;
+                }
+
+                projectContainer.innerHTML = projects.map(item => `
+                    <div class="window">
+                        <h2 class="card-title">${item.title}</h2>
+                        <p class="card-desc">${item.desc}</p>
+                        <a href="${item.url}" class="action-link">View Project</a>
+                    </div>
+                `).join('');
+            } catch (err) { 
+                console.error("Failed to load projects JSON:", err); 
+                document.getElementById('sec-projects').innerHTML = `<div class="window center-text"><p class="card-desc" style="color: #ff4d4d;">System Error: Unable to sync project database.</p></div>`;
+            }
         }
 
-        function render() {
-            const nav = document.getElementById('category-bar');
-            nav.innerHTML = Object.keys(hubData).map(cat => `
-                <button class="cat-btn ${cat === activeCat ? 'active' : ''}" 
-                        onclick="switchCat('${cat}')">${cat}</button>
-            `).join('');
-
-            const list = document.getElementById('directory-list');
-            list.innerHTML = hubData[activeCat].map(item => `
-                <div class="service-card">
-                    <h2 class="card-title">${item.title}</h2>
-                    <p class="card-desc">${item.desc}</p>
-                    <a href="${item.url}" class="action-link">Open</a>
-                </div>
-            `).join('');
-        }
-
-        function switchCat(cat) { activeCat = cat; render(); }
-
+        // --- IDENTITY FETCHING ---
         async function fetchName() {
             const { data: { user } } = await vanguardHub.auth.getUser();
             if (user) {
@@ -268,7 +336,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('year').innerText = new Date().getFullYear();
-            loadContent();
+            loadProjects();
             fetchName();
         });
     </script>
