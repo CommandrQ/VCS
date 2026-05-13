@@ -12,22 +12,25 @@
         :root {
             --gold: #D4AF37;
             --white: #ffffff;
-            --glass: rgba(0, 0, 0, 0.85);
-            --border: rgba(255, 255, 255, 0.15);
+            --apple-glass: rgba(28, 28, 30, 0.65);
+            --apple-border: rgba(255, 255, 255, 0.08);
+            --text-secondary: rgba(235, 235, 245, 0.6);
         }
 
-        /* --- BASIC SETUP --- */
+        /* --- BASIC SETUP & APPLE TYPOGRAPHY --- */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html {
             height: 100%;
             background: #000;
             color: var(--white);
-            font-family: 'Inter', sans-serif;
+            /* Native Apple System Font Stack */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            -webkit-font-smoothing: antialiased;
             overflow: hidden;
         }
 
-        /* --- THE GOLDEN STARS --- */
+        /* --- THE GOLDEN STARS (Background) --- */
         #vanguard-stars {
             position: fixed;
             inset: 0;
@@ -66,144 +69,166 @@
 
         #app-wrapper::-webkit-scrollbar { display: none; }
 
+        /* --- APPLE STYLE HEADER --- */
         header {
             width: 90%;
             max-width: 600px;
-            padding: 30px;
-            margin-top: 20px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-bottom: 2px solid var(--gold);
-            border-radius: 4px;
+            padding: 30px 20px;
+            margin-top: 40px;
         }
 
         h1 {
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.5px; /* Apple tight tracking for headers */
         }
 
-        header a {
-            color: var(--white); 
-            font-size: 0.6rem; 
-            text-decoration: none; 
-            margin-top: 10px; 
-            display: inline-block; 
-            letter-spacing: 1px;
-        }
-
-        /* --- TAB NAVIGATION --- */
+        /* --- APPLE SEGMENTED CONTROL (TABS) --- */
         #tab-nav {
             display: flex;
-            justify-content: center; 
-            flex-wrap: wrap; /* Allows wrapping on very small screens */
-            gap: 12px;
-            padding: 20px; 
+            background: rgba(118, 118, 128, 0.24); /* iOS Segmented Control background */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 100px;
+            padding: 4px;
+            margin: 10px 0 30px 0;
             width: 90%;
-            max-width: 700px;
+            max-width: 500px;
         }
 
         .tab-btn {
+            flex: 1;
             background: transparent;
-            border: 1px solid var(--white);
+            border: none;
             color: var(--white);
-            padding: 12px 20px;
-            font-size: 0.7rem;
-            font-weight: 900;
-            text-transform: uppercase;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
-            border-radius: 4px;
-            flex-grow: 1; /* Makes buttons share space evenly */
+            border-radius: 100px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .tab-btn.active {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
+            background: rgba(255, 255, 255, 0.15); /* Selected pill */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         /* --- CONTENT SECTIONS --- */
         .content-section {
-            display: none; /* Hidden by default, JS handles visibility */
+            display: none; 
             flex-direction: column;
             align-items: center;
             width: 100%;
             padding-bottom: 60px;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        .content-section.active {
-            display: flex;
+        .content-section.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- SHARED CARDS (Projects, Knights, Mission) --- */
+        /* --- APPLE STYLE CARDS (VIBRANCY) --- */
         .window {
             width: 90%;
             max-width: 550px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            padding: 25px 20px;
+            background: var(--apple-glass);
+            backdrop-filter: saturate(180%) blur(30px);
+            -webkit-backdrop-filter: saturate(180%) blur(30px);
+            border: 1px solid var(--apple-border);
+            padding: 32px 28px;
             margin-bottom: 20px;
-            border-radius: 4px;
-            text-align: left; /* Left align for readability */
+            border-radius: 24px; /* Apple "Squircle" Corner */
+            text-align: left;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
         .center-text { text-align: center; }
 
-        .card-title { color: var(--gold); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
-        .card-desc { font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
+        .card-title { 
+            color: var(--white); 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            letter-spacing: -0.3px;
+        }
         
+        .card-desc { 
+            font-size: 0.95rem; 
+            margin-bottom: 24px; 
+            line-height: 1.5; 
+            color: var(--text-secondary);
+        }
+        
+        /* --- APPLE STYLE BUTTONS --- */
         .action-link {
             display: inline-block;
-            padding: 12px 30px;
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            background: var(--white);
+            color: #000;
+            padding: 14px 0;
+            width: 100%; /* Full width inside card */
             text-decoration: none;
-            font-weight: 900;
-            text-transform: uppercase;
-            transition: 0.3s;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 14px; /* Native Apple Button Radius */
+            transition: transform 0.2s, background 0.2s;
             text-align: center;
         }
-        .action-link:hover { background: var(--gold); color: #000; }
+        
+        .action-link:hover { 
+            background: #e5e5ea; 
+            transform: scale(0.98); 
+        }
 
-        /* --- FOUNDER SPECIFICS --- */
+        .action-link.gold-btn {
+            background: var(--gold);
+            color: #000;
+        }
+        .action-link.gold-btn:hover { background: #b8972e; }
+
+        /* --- TEXT SPECIFICS --- */
         .founder-role {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gold);
+            margin-bottom: 16px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            color: #aaa;
+            letter-spacing: 1px;
         }
         .mission-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            font-style: italic;
-            color: #ddd;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: var(--white);
+            font-weight: 400;
+        }
+        .mission-header {
+            font-size: 0.8rem; 
+            color: var(--text-secondary); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
         /* --- DESKTOP SPECIFIC IMPROVEMENTS --- */
         @media (min-width: 1024px) {
-            h1 { font-size: 1.8rem; }
-            .tab-btn { font-size: 0.85rem; padding: 15px 30px; }
-            .window { max-width: 650px; padding: 35px 30px; }
-            .card-title { font-size: 1.5rem; }
-            .card-desc, .mission-text { font-size: 1.05rem; }
-            .action-link { padding: 15px 65px; font-size: 1.1rem; }
-            header a { font-size: 0.75rem; }
+            h1 { font-size: 2.2rem; }
+            #tab-nav { max-width: 600px; padding: 6px; }
+            .tab-btn { font-size: 1rem; padding: 10px 24px; }
+            .window { max-width: 650px; padding: 40px; border-radius: 30px; }
+            .card-title { font-size: 1.6rem; }
+            .card-desc, .mission-text { font-size: 1.1rem; }
+            .action-link { font-size: 1.1rem; padding: 16px 0; }
         }
 
         footer {
             width: 100%;
-            padding: 20px;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: rgba(0,0,0,0.8);
-            border-top: 1px solid var(--border);
+            padding: 30px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
             margin-top: auto;
         }
     </style>
@@ -214,21 +239,20 @@
 
     <main id="app-wrapper">
         <header>
-            <h1 id="user-greeting">Welcome, Citizen</h1>
-            <a href="settings.html">⚙️ ACCOUNT SETTINGS</a>
+            <h1 id="user-greeting">Welcome</h1>
         </header>
 
-        <!-- CENTERED TAB NAVIGATION -->
+        <!-- APPLE SEGMENTED CONTROL -->
         <nav id="tab-nav">
             <button class="tab-btn active" id="btn-vision" onclick="switchTab('vision')">Our Vision</button>
-            <button class="tab-btn" id="btn-projects" onclick="switchTab('projects')">Current Projects</button>
-            <button class="tab-btn" id="btn-knights" onclick="switchTab('knights')">Vanguard Knights</button>
+            <button class="tab-btn" id="btn-projects" onclick="switchTab('projects')">Projects</button>
+            <button class="tab-btn" id="btn-knights" onclick="switchTab('knights')">Knights</button>
         </nav>
 
-        <!-- SECTION 1: OUR VISION (Merged from About) -->
+        <!-- SECTION 1: OUR VISION -->
         <section id="sec-vision" class="content-section active">
             <div class="window center-text">
-                <h2 style="color: var(--gold); margin-bottom: 15px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">The Mission</h2>
+                <div class="mission-header">The Mission</div>
                 <p class="mission-text">
                     "To bridge the gap between digital accessibility and community resources, creating a hub where every citizen has the tools to succeed."
                 </p>
@@ -251,9 +275,9 @@
             </div>
         </section>
 
-        <!-- SECTION 2: CURRENT PROJECTS (JSON Driven) -->
+        <!-- SECTION 2: CURRENT PROJECTS -->
         <section id="sec-projects" class="content-section">
-            <!-- Project cards will be injected here by JavaScript -->
+            <!-- Project cards injected by JS -->
         </section>
 
         <!-- SECTION 3: VANGUARD KNIGHTS -->
@@ -278,21 +302,16 @@
             'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk'
         );
 
-        // --- TAB SWITCHING LOGIC ---
+        // --- NATIVE-FEELING TAB SWITCHING ---
         function switchTab(tabName) {
-            // Hide all sections
             document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-            // Deselect all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-            // Show target section and activate target button
             document.getElementById(`sec-${tabName}`).classList.add('active');
             document.getElementById(`btn-${tabName}`).classList.add('active');
         }
 
-        // --- JSON PROJECT LOADING ---
-        // Ensure you have a file named "projects.json" in the same folder formatted as an array:
-        // [ { "title": "Project X", "desc": "Info...", "url": "link.html" } ]
+        // --- JSON PROJECT LOADING WITH APPLE CARD STYLING ---
         async function loadProjects() {
             try {
                 const response = await fetch('projects.json');
@@ -309,12 +328,12 @@
                     <div class="window">
                         <h2 class="card-title">${item.title}</h2>
                         <p class="card-desc">${item.desc}</p>
-                        <a href="${item.url}" class="action-link">View Project</a>
+                        <a href="${item.url}" class="action-link gold-btn">View Project</a>
                     </div>
                 `).join('');
             } catch (err) { 
                 console.error("Failed to load projects JSON:", err); 
-                document.getElementById('sec-projects').innerHTML = `<div class="window center-text"><p class="card-desc" style="color: #ff4d4d;">System Error: Unable to sync project database.</p></div>`;
+                document.getElementById('sec-projects').innerHTML = `<div class="window center-text"><p class="card-desc" style="color: #ff3b30;">System Error: Unable to sync project database.</p></div>`;
             }
         }
 
