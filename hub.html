@@ -17,12 +17,7 @@
         }
 
         /* --- BASIC SETUP --- */
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html {
             height: 100%;
@@ -69,47 +64,54 @@
 
         header {
             width: 90%;
-            max-width: 800px;
+            max-width: 600px;
             padding: 30px;
             margin-top: 20px;
             background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-bottom: 2px solid var(--gold);
         }
 
         h1 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
         }
 
-        /* --- SWIPE-READY CATEGORY BAR --- */
+        /* --- CENTERED SWIPE BAR WITH HINT --- */
         #category-bar {
             display: flex;
-            justify-content: flex-start; /* Aligns items to the left to start scroll */
-            gap: 15px;
-            padding: 25px 5%; /* Padding on sides helps the "swipe" feel better */
+            /* "center" keeps them middle if they fit, "flex-start" allows scrolling */
+            justify-content: center; 
+            gap: 12px;
+            /* Side padding creates the "peek-a-boo" effect for the next item */
+            padding: 20px 40px; 
             width: 100%;
-            overflow-x: auto; /* The scroll magic */
-            white-space: nowrap; /* Keeps everything on one line */
-            scrollbar-width: none; /* Hides scrollbar on Firefox */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
 
-        #category-bar::-webkit-scrollbar {
-            display: none; /* Hides scrollbar on Chrome/Safari */
+        #category-bar::-webkit-scrollbar { display: none; }
+
+        /* Ensuring that if categories overflow, they align to the left so scrolling works */
+        @media (max-width: 600px) {
+            #category-bar {
+                justify-content: flex-start;
+            }
         }
 
         .cat-btn {
-            flex-shrink: 0; /* CRITICAL: Prevents buttons from squishing */
+            flex-shrink: 0; /* Prevents buttons from squishing */
             background: transparent;
             border: 1px solid var(--white);
             color: var(--white);
-            padding: 12px 25px;
-            font-size: 0.75rem;
+            padding: 10px 20px;
+            font-size: 0.7rem;
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
@@ -122,13 +124,13 @@
             background: rgba(212, 175, 55, 0.1);
         }
 
-        /* --- SERVICE CARDS --- */
+        /* --- DIRECTORY LIST --- */
         #directory-list {
             flex-grow: 1;
             width: 90%;
             max-width: 550px;
             overflow-y: auto;
-            padding-bottom: 80px;
+            padding-bottom: 60px;
             scrollbar-width: none;
         }
         #directory-list::-webkit-scrollbar { display: none; }
@@ -136,36 +138,34 @@
         .service-card {
             background: var(--glass);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            padding: 45px 25px;
-            margin-bottom: 25px;
+            padding: 40px 20px;
+            margin-bottom: 20px;
             border-radius: 4px;
         }
 
-        .card-title { color: var(--gold); font-size: 1.25rem; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; }
-        .card-desc { font-size: 0.95rem; margin-bottom: 30px; line-height: 1.7; opacity: 0.9; }
+        .card-title { color: var(--gold); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .card-desc { font-size: 0.9rem; margin-bottom: 25px; line-height: 1.6; }
         
         .action-link {
             display: inline-block;
-            padding: 14px 35px;
+            padding: 12px 30px;
             border: 1px solid var(--gold);
             color: var(--gold);
             text-decoration: none;
             font-weight: 900;
             text-transform: uppercase;
             transition: 0.3s;
-            letter-spacing: 1px;
         }
         .action-link:hover { background: var(--gold); color: #000; }
 
         footer {
             width: 100%;
-            padding: 25px;
-            font-size: 0.65rem;
+            padding: 20px;
+            font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            background: rgba(0,0,0,0.9);
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.8);
             border-top: 1px solid var(--border);
         }
     </style>
@@ -177,7 +177,7 @@
     <main id="app-wrapper">
         <header>
             <h1 id="user-greeting">Welcome, Citizen</h1>
-            <a href="settings.html" style="color: var(--white); font-size: 0.65rem; text-decoration: none; margin-top: 12px; display: inline-block; opacity: 0.5; letter-spacing: 2px;">⚙️ ACCOUNT CONFIG</a>
+            <a href="settings.html" style="color: var(--white); font-size: 0.6rem; text-decoration: none; margin-top: 10px; display: inline-block; opacity: 0.5;">⚙️ ACCOUNT SETTINGS</a>
         </header>
 
         <nav id="category-bar"></nav>
@@ -188,7 +188,6 @@
     </main>
 
     <script>
-        // Database Connection
         const vanguardHub = supabase.createClient(
             'https://dvyjupytbwbrcoyouxpf.supabase.co', 
             'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk'
@@ -197,46 +196,37 @@
         let hubData = {};
         let activeCat = "";
 
-        // 1. CONTENT LOADING
-        async function loadDirectory() {
+        async function loadContent() {
             try {
                 const response = await fetch('directory.json');
                 hubData = await response.json();
                 activeCat = Object.keys(hubData)[0];
-                renderUI();
-            } catch (err) { console.error("Data Load Error:", err); }
+                render();
+            } catch (err) { console.error(err); }
         }
 
-        function renderUI() {
-            // Render Categories (Horizontal Bar)
+        function render() {
             const nav = document.getElementById('category-bar');
             nav.innerHTML = Object.keys(hubData).map(cat => `
                 <button class="cat-btn ${cat === activeCat ? 'active' : ''}" 
-                        onclick="updateActiveCategory('${cat}')">${cat}</button>
+                        onclick="switchCat('${cat}')">${cat}</button>
             `).join('');
 
-            // Render Service Cards
             const list = document.getElementById('directory-list');
             list.innerHTML = hubData[activeCat].map(item => `
                 <div class="service-card">
                     <h2 class="card-title">${item.title}</h2>
                     <p class="card-desc">${item.desc}</p>
-                    <a href="${item.url}" class="action-link">Access Terminal</a>
+                    <a href="${item.url}" class="action-link">Open</a>
                 </div>
             `).join('');
         }
 
-        function updateActiveCategory(cat) { 
-            activeCat = cat; 
-            renderUI(); 
-        }
+        function switchCat(cat) { activeCat = cat; render(); }
 
-        // 2. IDENTITY LOOKUP (Fixed)
-        async function fetchIdentity() {
+        async function fetchName() {
             const { data: { user } } = await vanguardHub.auth.getUser();
-
             if (user) {
-                // Same Email-based lookup used in Settings
                 const { data: profile } = await vanguardHub
                     .from('citizens')
                     .select('full_name')
@@ -251,8 +241,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('year').innerText = new Date().getFullYear();
-            loadDirectory();
-            fetchIdentity();
+            loadContent();
+            fetchName();
         });
     </script>
 </body>
