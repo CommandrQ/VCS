@@ -9,38 +9,27 @@
         :root {
             --gold: #D4AF37;
             --white: #ffffff;
-            --glass-panel: rgba(10, 10, 12, 0.80); /* Deep dark glass */
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            --glass: rgba(0, 0, 0, 0.85);
+            --border: rgba(255, 255, 255, 0.15);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* --- FOUNDATION --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body {
-            background-color: #030303;
-            color: var(--white);
-            font-family: 'Inter', system-ui, sans-serif;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- THE STARFIELD --- */
-        #vanguard-universe {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        body, html {
             height: 100%;
-            z-index: 0;
+            background: #000;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
+        }
+
+        /* --- THE GOLDEN STARS --- */
+        #vanguard-stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: #000;
         }
 
         .star-layer {
@@ -50,173 +39,181 @@
             height: 200%;
             background-image: 
                 radial-gradient(2px 2px at 40px 60px, var(--gold), transparent),
-                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent),
-                radial-gradient(2px 2px at 300px 100px, rgba(212, 175, 55, 0.5), transparent),
-                radial-gradient(1px 1px at 200px 300px, var(--white), transparent);
-            background-size: 350px 350px;
-            animation: orbital-rotation 180s linear infinite;
+                radial-gradient(1.5px 1.5px at 150px 200px, var(--white), transparent);
+            background-size: 400px 400px;
+            animation: rotate-stars 240s linear infinite;
         }
 
-        @keyframes orbital-rotation {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes rotate-stars { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* --- THE UI WRAPPER --- */
+        /* --- UI WRAPPER --- */
         #app-wrapper {
             position: relative;
             z-index: 10;
-            height: 100%;
-            width: 100%;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        #app-wrapper::-webkit-scrollbar { 
-            display: none; /* Chrome/Safari */
-        }
-
-        /* --- THE MAIN GLASS WINDOW --- */
-        .glass-window {
-            width: 90%;
-            max-width: 700px;
-            margin: auto; /* Centers perfectly in the flex wrapper */
-            margin-top: 60px;
-            margin-bottom: 60px;
-            background: var(--glass-panel);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 50px 40px;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
             text-align: center;
-            animation: fadeIn 1s var(--v-curve) forwards, gold-pulse-window 4s infinite ease-in-out;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            background: transparent;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        #app-wrapper::-webkit-scrollbar { display: none; }
+
+        header {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            margin-top: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-bottom: 2px solid var(--gold);
         }
 
-        /* --- TYPOGRAPHY --- */
         h1 {
-            color: var(--white);
-            text-transform: uppercase;
-            letter-spacing: 6px;
+            font-size: 1.4rem;
             font-weight: 900;
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 3px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            animation: gold-pulse-text 3s infinite ease-in-out;
         }
 
-        .subtitle {
-            font-size: 0.8rem;
-            letter-spacing: 4px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
-
-        p {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 20px;
-        }
-
-        /* --- TEXT HIGHLIGHTS --- */
-        p strong {
-            color: var(--gold);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-size: 0.95rem;
-            animation: gold-pulse-text 3s infinite ease-in-out;
-            margin-right: 5px;
-        }
-
-        /* --- CONTROLS --- */
-        .back-btn {
-            display: inline-block;
-            margin-top: 30px;
-            color: var(--white);
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        /* --- CONTENT BOXES --- */
+        .window {
+            width: 90%;
+            max-width: 550px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 30px 25px;
+            margin: 20px 0;
             border-radius: 4px;
-            padding: 12px 24px;
-            transition: all 0.3s ease;
         }
 
-        .back-btn:hover {
-            border-color: var(--gold);
+        .mission-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #ddd;
+        }
+
+        .founder-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 90%;
+            max-width: 550px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 30px 20px;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .founder-name {
             color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .founder-role {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: #aaa;
         }
 
-        @keyframes gold-pulse-window {
-            0%, 100% { 
-                border-color: rgba(212, 175, 55, 0.2); 
-                box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 15px rgba(212, 175, 55, 0.05); 
-            }
-            50% { 
-                border-color: rgba(212, 175, 55, 0.6); 
-                box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.2); 
-            }
+        .founder-bio {
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        @keyframes gold-pulse-text {
-            0%, 100% { text-shadow: 0 0 4px rgba(212, 175, 55, 0.2); }
-            50% { text-shadow: 0 0 12px rgba(212, 175, 55, 0.8); }
+        .action-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 40px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .action-link:hover { background: var(--gold); color: #000; }
+
+        /* --- DESKTOP SCALING --- */
+        @media (min-width: 1024px) {
+            h1 { font-size: 1.8rem; }
+            .window, .founder-grid { max-width: 700px; }
+            .mission-text { font-size: 1.1rem; }
+            .founder-name { font-size: 1.5rem; }
+            .founder-bio { font-size: 1.05rem; }
+        }
+
+        footer {
+            width: 100%;
+            padding: 25px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid var(--border);
         }
     </style>
 </head>
 <body>
 
-    <!-- STARFIELD BACKGROUND -->
-    <div id="vanguard-universe">
-        <div class="star-layer"></div>
-    </div>
+    <div id="vanguard-stars"><div class="star-layer"></div></div>
 
-    <!-- MAIN SCROLLABLE WRAPPER -->
     <main id="app-wrapper">
-        
-        <!-- SINGLE UNIFIED GLASS WINDOW -->
-        <article class="glass-window">
-            
-            <h1>Our Story</h1>
-            <div class="subtitle">Vanguard Citizen Services</div>
+        <header>
+            <h1>Vanguard Founders</h1>
+        </header>
 
-            <h2>The Origin</h2>
-            <p>Vanguard was founded by two friends with deep backgrounds in the military and technology sectors. During our service, we mastered discipline, technical precision, and the duty of care for those around us.</p>
-            <p>We realized that as digital tools became mandatory for daily life, many in our community were being overwhelmed. We brought our expertise home to ensure no neighbor is left behind.</p>
+        <div class="window">
+            <h2 style="color: var(--gold); margin-bottom: 15px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">The Mission</h2>
+            <p class="mission-text">
+                "To bridge the gap between digital accessibility and community resources, creating a hub where every citizen has the tools to succeed."
+            </p>
+        </div>
 
-            <h2>Our Identity</h2>
-            <p><strong>The Guardian:</strong> Standing watch against security breaches targeting our community.</p>
-            <p><strong>The Architect:</strong> Designing digital hubs and systems that fuel local growth.</p>
+        <div class="founder-grid">
+            <!-- KONA PROFILE -->
+            <div class="profile-card">
+                <div class="founder-name">Kona Agpalza</div>
+                <div class="founder-role">Lead Developer & Strategist</div>
+                <p class="founder-bio">
+                    The architect behind the Vanguard infrastructure. Kona focuses on building secure, fast, and community-driven digital tools that empower citizens to navigate the modern internet with ease.
+                </p>
+            </div>
 
-            <h2>The Mission</h2>
-            <p>The Radcliff and Elizabethtown corridor is where traditional life meets the digital frontier. Vanguard exists to bridge that gap. We ensure Hardin County never faces the frontier alone.</p>
+            <!-- QUINCY PROFILE -->
+            <div class="profile-card">
+                <div class="founder-name">Quincy Jones</div>
+                <div class="founder-role">Creative Director & Community Lead</div>
+                <p class="founder-bio">
+                    The vision behind the Vanguard experience. Quincy ensures that every interaction within the network is intuitive, accessible, and aligned with our mission to serve the people.
+                </p>
+            </div>
+        </div>
 
-            <a href="hub.html" class="back-btn">RETURN TO HUB</a>
-            
-        </article>
+        <div style="margin-bottom: 60px;">
+            <a href="hub.html" class="action-link">Return to Hub</a>
+        </div>
 
+        <footer>Vanguard &copy; 2026</footer>
     </main>
 
 </body>
