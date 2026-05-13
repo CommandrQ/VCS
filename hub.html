@@ -81,18 +81,17 @@
             letter-spacing: 3px;
         }
 
-        /* Update: Account settings text is now full white */
         header a {
             color: var(--white); 
             font-size: 0.6rem; 
             text-decoration: none; 
             margin-top: 10px; 
             display: inline-block; 
-            opacity: 1; /* Removed transparency */
+            opacity: 1;
             letter-spacing: 1px;
         }
 
-        /* --- CENTERED SWIPE BAR --- */
+        /* --- CATEGORY BAR --- */
         #category-bar {
             display: flex;
             justify-content: center; 
@@ -108,9 +107,7 @@
         #category-bar::-webkit-scrollbar { display: none; }
 
         @media (max-width: 600px) {
-            #category-bar {
-                justify-content: flex-start;
-            }
+            #category-bar { justify-content: flex-start; }
         }
 
         .cat-btn {
@@ -147,7 +144,7 @@
             background: var(--glass);
             backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            padding: 25px 20px; /* Update: Shortened height by reducing padding */
+            padding: 25px 20px; 
             margin-bottom: 20px;
             border-radius: 4px;
         }
@@ -167,12 +164,26 @@
         }
         .action-link:hover { background: var(--gold); color: #000; }
 
-        /* --- DESKTOP SPECIFIC UPDATES --- */
+        /* --- DESKTOP SPECIFIC IMPROVEMENTS --- */
         @media (min-width: 1024px) {
-            .action-link {
-                padding: 15px 60px; /* Wider buttons */
-                font-size: 1rem;    /* Slightly larger font */
+            h1 { font-size: 1.8rem; } /* Larger Greeting */
+            
+            .cat-btn { 
+                font-size: 0.85rem; 
+                padding: 12px 30px; 
             }
+
+            #directory-list { max-width: 650px; } /* Slightly wider container */
+            
+            .card-title { font-size: 1.5rem; } /* Larger Titles */
+            .card-desc { font-size: 1.05rem; } /* Larger Description */
+
+            .action-link {
+                padding: 15px 65px; 
+                font-size: 1.1rem;    
+            }
+
+            header a { font-size: 0.75rem; } /* Slightly larger Settings text */
         }
 
         footer {
