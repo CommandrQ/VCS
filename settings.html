@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Account Settings</title>
+    <title>Vanguard | My Settings</title>
     
     <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,8 +16,7 @@
             --glass-border: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- BASIC RESET --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body, html {
             height: 100%;
@@ -27,146 +26,37 @@
             overflow: hidden;
         }
 
-        /* --- ANIMATED STARFIELD --- */
-        #vanguard-universe {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background: #000;
-        }
-
+        #vanguard-universe { position: fixed; inset: 0; z-index: 0; background: #000; }
         .star-layer {
-            position: absolute;
-            inset: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                radial-gradient(2px 2px at 50px 80px, var(--gold), transparent),
-                radial-gradient(1.5px 1.5px at 150px 250px, #fff, transparent);
-            background-size: 500px 500px;
-            animation: move-stars 240s linear infinite;
+            position: absolute; inset: -50%; width: 200%; height: 200%;
+            background-image: radial-gradient(2px 2px at 50px 80px, var(--gold), transparent), 
+                              radial-gradient(1px 1px at 150px 250px, #fff, transparent);
+            background-size: 500px 500px; animation: orbit 240s linear infinite;
         }
+        @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        @keyframes move-stars { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
-
-        /* --- CENTERED LAYOUT --- */
         #app-wrapper {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            width: 100%;
-            overflow-y: auto;
-            text-align: center;
-            scrollbar-width: none;
+            position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center;
+            height: 100vh; width: 100%; overflow-y: auto; text-align: center; scrollbar-width: none;
         }
 
-        #app-wrapper::-webkit-scrollbar { display: none; }
-
-        /* --- HEADER PANEL --- */
         header {
-            width: 90%;
-            max-width: 500px;
-            margin-top: 30px;
-            padding: 30px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-bottom: 2px solid var(--gold);
+            width: 90%; max-width: 500px; margin-top: 30px; padding: 30px;
+            background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-bottom: 2px solid var(--gold);
         }
 
-        .status-text {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            border: 1px solid var(--white);
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-
-        .user-name {
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .citizen-id {
-            color: var(--gold);
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        /* --- GLASS WINDOWS --- */
         .window {
-            width: 90%;
-            max-width: 500px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            padding: 40px 30px;
-            margin: 20px 0;
-            border-radius: 4px;
+            width: 90%; max-width: 500px; background: var(--glass); backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); padding: 40px 30px; margin: 20px 0;
         }
 
-        h2 {
-            color: var(--gold);
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-        }
+        .status-light { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; opacity: 0.7; }
+        .name-display { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .id-display { color: var(--gold); font-weight: bold; margin-top: 5px; letter-spacing: 1px; }
 
-        /* --- INPUTS & BUTTONS --- */
-        .input-box {
-            width: 100%;
-            background: rgba(0,0,0,0.7);
-            border: 1px solid var(--glass-border);
-            color: var(--white);
-            padding: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1rem;
-            border-radius: 2px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px;
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            text-transform: uppercase;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            letter-spacing: 1px;
-        }
-
+        .box { width: 100%; background: rgba(0,0,0,0.7); border: 1px solid var(--glass-border); color: var(--white); padding: 16px; margin-bottom: 15px; text-align: center; border-radius: 4px; }
+        .btn { width: 100%; padding: 16px; background: transparent; border: 1px solid var(--gold); color: var(--gold); text-transform: uppercase; font-weight: 900; cursor: pointer; border-radius: 4px; transition: 0.3s; }
         .btn:hover { background: var(--gold); color: #000; }
-
-        footer {
-            width: 100%;
-            padding: 30px;
-            margin-top: auto;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            background: rgba(0,0,0,0.9);
-            border-top: 1px solid var(--glass-border);
-        }
     </style>
 </head>
 <body>
@@ -174,117 +64,98 @@
     <div id="vanguard-universe"><div class="star-layer"></div></div>
 
     <main id="app-wrapper">
-        
-        <!-- IDENTITY HEADER -->
         <header>
-            <div id="system-status" class="status-text">System: Offline</div>
-            <div class="user-name" id="display-name">GUEST</div>
-            <div class="citizen-id" id="display-number">VCS-UNLINKED</div>
+            <div id="check-status" class="status-light">System: Ready</div>
+            <div class="name-display" id="top-name">GUEST</div>
+            <div class="id-display" id="top-id">VCS-OFFLINE</div>
         </header>
 
-        <!-- MAIN WINDOW -->
         <div class="window">
-            
-            <!-- FORM FOR SIGNING IN -->
-            <div id="login-section">
+            <div id="login-form">
                 <h2>Sign In</h2>
-                <input type="email" id="email-field" class="input-box" placeholder="EMAIL ADDRESS">
-                <input type="password" id="pass-field" class="input-box" placeholder="PASSWORD">
-                <button class="btn" onclick="signIn()">Sign In</button>
+                <input type="email" id="email-in" class="box" placeholder="EMAIL ADDRESS">
+                <input type="password" id="pass-in" class="box" placeholder="PASSWORD">
+                <button class="btn" onclick="handleSignIn()">Sign In</button>
             </div>
 
-            <!-- VIEW FOR SIGNED IN USERS -->
-            <div id="profile-section" style="display: none;">
+            <div id="profile-view" style="display: none;">
                 <h2>Account Active</h2>
-                <p style="margin-bottom: 20px;" id="current-email">...</p>
-                <button class="btn" onclick="signOut()">Sign Out</button>
+                <p id="user-email-label" style="margin-bottom: 20px; opacity: 0.8;"></p>
+                <button class="btn" onclick="handleSignOut()">Sign Out</button>
             </div>
-
         </div>
 
-        <div style="margin-bottom: 60px; width: 90%; max-width: 500px;">
-            <a href="hub.html" class="btn" style="border-color: #fff; color: #fff;">Back to Hub</a>
-        </div>
-
-        <footer>Vanguard &copy; <span id="year"></span></footer>
+        <a href="hub.html" class="btn" style="max-width: 500px; border-color: #fff; color: #fff; text-decoration: none; display: inline-block;">Back to Hub</a>
     </main>
 
     <script>
-        // CRITICAL CONNECTION DETAILS
+        // PROJECT CREDENTIALS
         const supabase = supabase.createClient(
             'https://dvyjupytbwbrcoyouxpf.supabase.co', 
             'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk'
         );
 
-        // Visual Status Updater
-        function updateStatus(text, color = "#fff") {
-            const el = document.getElementById('system-status');
-            el.innerText = `System: ${text}`;
-            el.style.borderColor = color;
+        // Helper to update the top status
+        function updateUIStatus(msg, color = "#fff") {
+            const el = document.getElementById('check-status');
+            el.innerText = `System: ${msg}`;
             el.style.color = color;
         }
 
-        // SIGN IN FUNCTION
-        async function signIn() {
-            const email = document.getElementById('email-field').value;
-            const pass = document.getElementById('pass-field').value;
-            updateStatus("Checking Credentials...");
-
-            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        async function handleSignIn() {
+            const email = document.getElementById('email-in').value;
+            const pass = document.getElementById('pass-in').value;
+            updateUIStatus("Verifying...");
             
+            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
             if (error) {
-                updateStatus("Login Error", "#ff4d4d");
-                alert(error.message);
+                alert("Login failed: " + error.message);
+                updateUIStatus("Login Failed", "#ff4d4d");
             } else {
                 window.location.reload();
             }
         }
 
-        // SIGN OUT FUNCTION
-        async function signOut() {
+        async function handleSignOut() {
             await supabase.auth.signOut();
             window.location.reload();
         }
 
-        // IDENTITY LOOKUP LOGIC
-        async function verifyUser() {
-            // Check if user is logged in
+        // THE CORE LOOKUP LOGIC
+        async function loadCitizenProfile() {
             const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                // UI Switch
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('profile-section').style.display = 'block';
-                document.getElementById('current-email').innerText = user.email;
-                
-                updateStatus("Searching Database...");
 
-                // LOOKUP: Finding row where 'email' matches the login email
+            if (user) {
+                // Switch views
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('profile-view').style.display = 'block';
+                document.getElementById('user-email-label').innerText = user.email;
+
+                updateUIStatus("Searching Table...");
+
+                // Look up by email (handling potential case sensitivity)
+                const searchEmail = user.email.toLowerCase();
+
                 const { data, error } = await supabase
                     .from('citizens')
                     .select('full_name, citizen_number')
-                    .eq('email', user.email)
+                    .ilike('email', searchEmail) // 'ilike' ignores upper/lower case
                     .single();
 
                 if (error) {
                     console.error("Database Error:", error);
-                    updateStatus("No Match Found", "#ffaa00");
-                    document.getElementById('display-name').innerText = "Unregistered";
-                    document.getElementById('display-number').innerText = "VCS-PENDING";
+                    updateUIStatus("No Match Found", "#ffaa00");
+                    document.getElementById('top-name').innerText = "Not Found";
+                    document.getElementById('top-id').innerText = "VCS-PENDING";
                 } else if (data) {
-                    updateStatus("Citizen Verified", "#D4AF37");
-                    document.getElementById('display-name').innerText = data.full_name;
-                    document.getElementById('display-number').innerText = data.citizen_number;
+                    updateUIStatus("Citizen Verified", "#D4AF37");
+                    document.getElementById('top-name').innerText = data.full_name;
+                    document.getElementById('top-id').innerText = data.citizen_number;
                 }
-            } else {
-                updateStatus("Offline");
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('year').innerText = new Date().getFullYear();
-            verifyUser();
-        });
+        document.addEventListener('DOMContentLoaded', loadCitizenProfile);
     </script>
 </body>
 </html>
