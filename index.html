@@ -18,19 +18,28 @@
         
         <!-- INTRO SEQUENCE -->
         <div id="intro-overlay">
-            <!-- Window 1 -->
+            
+            <!-- Window 1: The Origin -->
             <div class="intro-window active" id="intro-1">
-                <h2>Welcome to Vanguard Citizen Services</h2>
-                <p>We are a creative studio partnered with the Vanguard Knights. Our mission is to bridge the gap between technology and community empowerment.</p>
-                <button class="btn" onclick="nextIntro(2)">Continue</button>
+                <h2>The Vanguard Origin</h2>
+                <p>What began as a mission to document the Vanguard Knights' journey through their rebuild has evolved into something greater. Today, Vanguard Citizen Services is a creative studio dedicated to empowering the community.</p>
+                <button class="btn" onclick="nextIntro(2)">Our Process</button>
             </div>
             
-            <!-- Window 2 -->
+            <!-- Window 2: The Process -->
             <div class="intro-window" id="intro-2">
-                <h2>A Hub Built for You</h2>
-                <p>No endless scrolling. No clutter. Just direct access to our active projects, resources, and support. Let's get to work.</p>
+                <h2>Community First</h2>
+                <p>We don't just build digital tools; we build alongside the people. Our process starts on the ground level—listening to community needs, designing intuitive solutions, and deploying resources that solve real-world challenges.</p>
+                <button class="btn" onclick="nextIntro(3)">The Alliance</button>
+            </div>
+
+            <!-- Window 3: The Goal & The Knights -->
+            <div class="intro-window" id="intro-3">
+                <h2>Powering the Future</h2>
+                <p>The Vanguard Knights are the engine of this mission. Together, our collaborative goal is to forge a secure, accessible, and zero-friction hub where technology serves the citizens. The rebuild is just the beginning.</p>
                 <button class="btn" onclick="closeIntro()">Enter Terminal</button>
             </div>
+
         </div>
 
         <!-- MAIN DESKTOP DASHBOARD -->
@@ -110,30 +119,36 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        // --- 0. LOCAL STORAGE CHECK (Runs immediately) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if this machine has already seen the intro
+            if (localStorage.getItem('vcs_intro_complete') === 'true') {
+                // Instantly hide the intro and show the dashboard
+                document.getElementById('intro-overlay').style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'flex';
+            }
+        });
+
         // --- 1. COMET GENERATOR ---
         function spawnComet() {
             const container = document.getElementById('sky-container');
             const comet = document.createElement('div');
             comet.classList.add('comet');
             
-            // Randomize starting position (mostly upper right)
-            const startY = Math.random() * 40; // top 40% of screen
-            const startX = 50 + (Math.random() * 50); // right 50% of screen
+            // Randomize starting position
+            const startY = Math.random() * 40; 
+            const startX = 50 + (Math.random() * 50); 
             
             comet.style.top = `${startY}vh`;
             comet.style.left = `${startX}vw`;
             
             container.appendChild(comet);
             
-            // Remove comet from DOM after animation completes
             setTimeout(() => { comet.remove(); }, 2000);
         }
 
-        // Spawn a comet every 3000ms (3 seconds)
         setInterval(spawnComet, 3000);
-        // Spawn one immediately on load
         spawnComet();
-
 
         // --- 2. INTRO SEQUENCE LOGIC ---
         function nextIntro(windowNumber) {
@@ -142,6 +157,9 @@
         }
 
         function closeIntro() {
+            // Save the flag to the user's machine so they don't see this again
+            localStorage.setItem('vcs_intro_complete', 'true');
+            
             const overlay = document.getElementById('intro-overlay');
             overlay.style.opacity = '0';
             
@@ -151,15 +169,11 @@
             }, 800);
         }
 
-
         // --- 3. TAB SWITCHING LOGIC ---
         function switchTab(tabId, btnElement) {
-            // Hide all content
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Remove active state from all buttons
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            // Show selected content and highlight button
             document.getElementById(`tab-${tabId}`).classList.add('active');
             btnElement.classList.add('active');
         }
