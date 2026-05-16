@@ -42,7 +42,7 @@
             
             <!-- HEADER & NAVIGATION -->
             <aside class="hub-header">
-                <div class="hub-logo">Vanguard</div>
+                <div class="hub-logo">Vanguard Citizen Services</div>
                 <div class="hub-bio">A creative studio partnering with the Vanguard Knights to build friendly, community-first digital tools.</div>
                 
                 <nav class="hub-nav">
@@ -122,7 +122,7 @@
         </div>
 
         <!-- GLOBAL GLOWING FOOTER -->
-        <footer class="global-footer">
+        <footer class="global-footer" id="global-footer">
             Powered by Vanguard Citizen Services &copy; <span id="current-year"></span>
         </footer>
 
@@ -149,6 +149,7 @@
                 if (localStorage.getItem('vcs_intro_complete') === 'true') {
                     document.getElementById('intro-overlay').style.display = 'none';
                     document.getElementById('main-dashboard').style.display = 'flex';
+                    document.getElementById('global-footer').style.display = 'block';
                 }
             },
 
@@ -165,6 +166,7 @@
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     document.getElementById('main-dashboard').style.display = 'flex';
+                    document.getElementById('global-footer').style.display = 'block';
                     this.setupResponsiveDefaults();
                 }, 800);
             },
