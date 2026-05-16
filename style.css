@@ -17,7 +17,7 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-highlight: rgba(255, 255, 255, 0.15);
     
-    /* Animation Easing (Apple Standard) */
+    /* Animation Easing */
     --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -131,7 +131,6 @@ body, html {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Typography for Intro */
 .intro-window h2 { color: var(--gold); margin-bottom: 20px; font-size: 1.8rem; }
 .intro-window p { line-height: 1.6; margin-bottom: 30px; font-size: 1.1rem; color: var(--text-muted); }
 
@@ -144,14 +143,14 @@ body, html {
     max-width: 500px;
     height: 100vh;
     flex-direction: column;
-    padding: 10vh 24px 40px 24px;
+    /* Added 90px bottom padding to ensure buttons don't hide behind the footer */
+    padding: 10vh 24px 90px 24px;
     animation: scaleFadeIn 0.8s var(--ease-smooth) forwards;
     overflow-y: auto;
     scrollbar-width: none;
 }
 #main-dashboard::-webkit-scrollbar { display: none; }
 
-/* Header Elements */
 .hub-header {
     text-align: center;
     margin-bottom: 40px;
@@ -175,7 +174,6 @@ body, html {
     line-height: 1.5;
 }
 
-/* Link Tree Navigation */
 .hub-nav {
     display: flex;
     flex-direction: column;
@@ -241,7 +239,6 @@ body, html {
     align-items: center;
 }
 
-/* Content Formatting */
 .panel-title { color: var(--gold); margin-bottom: 20px; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
 .panel-desc { line-height: 1.6; margin-bottom: 24px; font-size: 1.05rem; color: var(--text-muted); }
 
@@ -256,7 +253,6 @@ body, html {
 }
 .feature-list strong { color: var(--white); display: block; margin-bottom: 6px; font-size: 1.15rem; }
 
-/* Global Action Buttons */
 .action-btn {
     background: var(--white);
     color: var(--bg-dark);
@@ -274,17 +270,37 @@ body, html {
 .action-btn:hover { background: var(--gold); box-shadow: 0 0 25px var(--gold-glow); transform: translateY(-2px); }
 
 /* ==========================================================================
+   GLOBAL FOOTER (Mobile & Desktop)
+   ========================================================================== */
+.global-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    z-index: 20;
+    opacity: 0.8;
+}
+
+/* ==========================================================================
    DESKTOP OVERRIDE: ADVANCED GLASS TERMINAL
    ========================================================================== */
 @media (min-width: 1024px) {
     
     #main-dashboard {
-        display: none; /* Controlled by JS, but overriding layout when active */
+        display: none; 
         flex-direction: row;
         width: 90%;
         max-width: 1400px;
-        height: 85vh;
-        max-height: 900px;
+        height: 80vh; 
+        max-height: 850px;
         padding: 0;
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
@@ -295,7 +311,6 @@ body, html {
         overflow: hidden;
     }
 
-    /* Left Sidebar */
     .hub-header {
         width: 320px;
         background: rgba(0, 0, 0, 0.2);
@@ -308,14 +323,13 @@ body, html {
     }
 
     .hub-logo { font-size: 2.4rem; text-align: left; margin-bottom: 20px; }
-    .hub-bio { display: none; } /* Hide mobile bio */
+    .hub-bio { display: none; } 
 
     .hub-nav {
         margin-top: 40px;
         gap: 12px;
     }
 
-    /* Desktop Navigation Buttons */
     .nav-btn {
         background: transparent;
         border: 1px solid transparent;
@@ -337,19 +351,18 @@ body, html {
         box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
     }
 
-    /* Right Main Content Pane */
     .hub-content {
         flex: 1;
         position: relative;
-        overflow-y: auto;
+        overflow: hidden; 
         padding: 60px 80px;
     }
 
-    /* Override Bottom Sheet logic for Desktop */
     .tab-panel {
         position: absolute;
         top: 0; left: 0;
-        width: 100%; height: auto; min-height: 100%;
+        width: 100%; 
+        height: 100%; 
         background: transparent;
         border: none; border-radius: 0;
         padding: 60px 80px;
@@ -359,21 +372,32 @@ body, html {
         visibility: hidden;
         transform: translateY(20px);
         transition: opacity 0.5s var(--ease-smooth), transform 0.5s var(--ease-smooth);
+        overflow-y: hidden; 
     }
 
+    #tab-projects {
+        overflow-y: auto; 
+        scrollbar-width: none;
+    }
+    #tab-projects::-webkit-scrollbar { display: none; }
+
     .tab-panel.active {
-        bottom: auto; /* Negate mobile property */
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
-        position: relative;
     }
 
-    .btn-close { display: none; } /* No close button needed on desktop */
+    .btn-close { display: none; } 
 
-    /* Desktop Typography & Button Scaling */
     .panel-title { font-size: 2.8rem; margin-bottom: 25px; }
     .panel-desc { font-size: 1.2rem; max-width: 800px; margin-bottom: 40px; }
-    
     .action-btn { width: auto; padding: 18px 50px; font-size: 1.1rem; }
+
+    /* Enhance footer glow on desktop */
+    .global-footer {
+        bottom: 3.5vh;
+        font-size: 0.85rem;
+        letter-spacing: 3px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.5);
+    }
 }
