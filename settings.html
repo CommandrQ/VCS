@@ -65,7 +65,7 @@
             width: 90%;
             max-width: 450px;
             z-index: 10;
-            padding: 60px 0 30px; 
+            padding: 40px 0 30px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -82,7 +82,7 @@
         .page-title { 
             font-size: 2.2rem; 
             font-weight: 800; 
-            margin-bottom: 30px;
+            margin-bottom: 15px; /* Tightened so the link sits closely underneath */
             text-transform: uppercase;
             letter-spacing: 2px;
             background: linear-gradient(180deg, #fff 0%, var(--gold) 100%);
@@ -90,6 +90,24 @@
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
         }
+
+        /* Nav Back Button Centered Under Title */
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 30px; /* Keeps the main window properly spaced below */
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s var(--ease-smooth);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        .back-link:hover { color: var(--gold); background: rgba(212, 175, 55, 0.15); border-color: var(--gold-glow); }
 
         .glass-card {
             background: var(--glass-bg);
@@ -133,7 +151,7 @@
         }
         .action-btn:hover { background: var(--gold); box-shadow: 0 0 20px var(--gold-glow); transform: translateY(-2px); }
         
-        /* Secondary buttons (Clear Cache, Sign Out, Back to Hub) */
+        /* Secondary buttons (Clear Cache, Sign Out) */
         .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--white); margin-top: 15px; }
         .btn-outline:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--white); box-shadow: none; transform: none; }
 
@@ -162,7 +180,11 @@
     <div id="environment"><div class="starfield"></div></div>
 
     <div class="settings-container">
+        
         <h1 class="page-title">Your Account</h1>
+        
+        <!-- Back Button Now Centered Under The Title -->
+        <a href="index.html" class="back-link">← Back to Hub</a>
 
         <main class="glass-card">
             
@@ -199,17 +221,14 @@
                 </div>
                 
                 <button class="action-btn btn-outline" onclick="handleLogout()">Sign Out</button>
-            </div>
 
-            <!-- Maintenance Options -->
-            <div id="maintenance-section" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
-                <button class="action-btn btn-outline btn-danger" style="padding: 14px;" onclick="wipeCache()">Clear Browser Data</button>
+                <!-- Maintenance section tucked safely inside user profile -->
+                <div id="maintenance-section" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button class="action-btn btn-outline btn-danger" style="padding: 14px;" onclick="wipeCache()">Clear Browser Data</button>
+                </div>
             </div>
 
         </main>
-
-        <!-- Links back to index.html -->
-        <a href="index.html" class="action-btn btn-outline" style="border: none; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);">Back to Home</a>
     </div>
 
     <footer>Powered by Vanguard Citizen Services</footer>
@@ -237,30 +256,24 @@
 
         /* --- 3. CHECK USER STATUS --- */
         async function checkSession() {
-            const authForm = document.getElementById('auth-form');
-            const userProfile = document.getElementById('user-profile');
-
             try {
-                // getSession() checks local storage instantly without waiting on a slow server response
-                const { data, error } = await supabaseClient.auth.getSession();
+                const { data: { user } } = await supabaseClient.auth.getUser();
                 
-                if (data.session && data.session.user) {
-                    const user = data.session.user;
-                    
-                    userProfile.classList.remove('hidden');
-                    authForm.classList.add('hidden');
+                if (user) {
+                    document.getElementById('user-profile').classList.remove('hidden');
+                    document.getElementById('auth-form').classList.add('hidden');
                     document.getElementById('display-email').innerText = user.email;
                     
-                    const { data: profileData } = await supabaseClient
+                    const { data, error } = await supabaseClient
                         .from('master_roster')
                         .select('first_name, last_name, citizenship_number')
                         .eq('id', user.id) 
                         .single();
 
-                    if (profileData) {
-                        const fullName = `${profileData.first_name} ${profileData.last_name}`;
+                    if (data) {
+                        const fullName = `${data.first_name} ${data.last_name}`;
                         document.getElementById('display-greeting').innerHTML = `Hello, <strong>${fullName}</strong>`;
-                        document.getElementById('display-id').innerText = profileData.citizenship_number || "Pending Setup";
+                        document.getElementById('display-id').innerText = data.citizenship_number || "Pending Setup";
                         
                         localStorage.setItem('vanguard_session_status', 'active');
                         localStorage.setItem('vanguard_citizen_name', fullName);
@@ -269,14 +282,13 @@
                         document.getElementById('display-id').innerText = "Processing";
                     }
                 } else {
-                    // No session found, immediately display the auth form
-                    authForm.classList.remove('hidden');
-                    userProfile.classList.add('hidden');
+                    document.getElementById('auth-form').classList.remove('hidden');
+                    document.getElementById('user-profile').classList.add('hidden');
                 }
             } catch (err) {
-                console.error("Session check failed. Displaying sign-in form.", err);
-                authForm.classList.remove('hidden');
-                userProfile.classList.add('hidden');
+                console.log("Could not find an active login session.");
+                document.getElementById('auth-form').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
             }
         }
 
@@ -382,8 +394,8 @@
             }
         }
 
-        // Start the check exactly when the document elements are ready
-        document.addEventListener('DOMContentLoaded', checkSession);
+        // Start the check when the page loads
+        window.onload = checkSession;
     </script>
 </body>
 </html>
