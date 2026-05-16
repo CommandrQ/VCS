@@ -2,191 +2,167 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vanguard | Fort Toward</title>
-    
-    <style>
-        :root {
-            --gold: #D4AF37;
-            --glass-bg: rgba(10, 10, 10, 0.85);
-            --v-curve: cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: #050505;
-            font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- BACKGROUND --- */
-        #vanguard-universe {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-        }
-
-        .gold-star-layer {
-            position: absolute;
-            inset: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                radial-gradient(1px 1px at 20px 30px, rgba(212, 175, 55, 0.8), rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 100px 150px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0));
-            background-size: 300px 300px;
-            animation: drift 120s linear infinite;
-        }
-
-        @keyframes drift {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* --- HEADER & LOGO --- */
-        .header-content {
-            text-align: center;
-            margin-bottom: 20px;
-            animation: fadeIn 1s var(--v-curve);
-        }
-
-        .presents {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .fort-toward {
-            font-size: 2.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            color: var(--gold);
-            animation: pulse-gold 3s ease-in-out infinite;
-        }
-
-        .logo-container img {
-            width: 180px;
-            height: auto;
-            margin: 20px 0;
-            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.2));
-        }
-
-        /* --- ENTER BUTTON (GOLD FILL) --- */
-        .enter-btn {
-            position: relative;
-            padding: 18px 60px;
-            font-size: 1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #fff;
-            background: transparent;
-            border: 2px solid var(--gold);
-            border-radius: 4px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: color 0.4s var(--v-curve);
-            text-decoration: none;
-            display: inline-block;
-            z-index: 1;
-        }
-
-        .enter-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 100%;
-            background: var(--gold);
-            z-index: -1;
-            transition: width 0.4s var(--v-curve);
-        }
-
-        .enter-btn:hover {
-            color: #000;
-        }
-
-        .enter-btn:hover::before {
-            width: 100%;
-        }
-
-        /* --- FOOTER --- */
-        .footer-tag {
-            position: fixed;
-            bottom: 40px;
-            font-size: 0.7rem;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            animation: pulse-white 2.5s ease-in-out infinite;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px var(--gold)); }
-            50% { opacity: 0.8; transform: scale(1.02); filter: drop-shadow(0 0 20px var(--gold)); }
-        }
-
-        @keyframes pulse-white {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* MOBILE ADJUSTMENTS */
-        @media (max-width: 480px) {
-            .fort-toward { font-size: 1.8rem; letter-spacing: 4px; }
-            .logo-container img { width: 140px; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Citizen Services</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="vanguard-universe">
-        <div class="gold-star-layer"></div>
+    <!-- The Sky & Comets Layer -->
+    <div id="sky-container">
+        <div class="starfield"></div>
+        <!-- Comets are injected here by JavaScript -->
     </div>
 
-    <div class="header-content">
-        <p class="presents">Vanguard Citizen Services Presents</p>
-        <h1 class="fort-toward">Fort Toward</h1>
+    <div id="app-layer">
+        
+        <!-- INTRO SEQUENCE -->
+        <div id="intro-overlay">
+            <!-- Window 1 -->
+            <div class="intro-window active" id="intro-1">
+                <h2>Welcome to Vanguard Citizen Services</h2>
+                <p>We are a creative studio partnered with the Vanguard Knights. Our mission is to bridge the gap between technology and community empowerment.</p>
+                <button class="btn" onclick="nextIntro(2)">Continue</button>
+            </div>
+            
+            <!-- Window 2 -->
+            <div class="intro-window" id="intro-2">
+                <h2>A Hub Built for You</h2>
+                <p>No endless scrolling. No clutter. Just direct access to our active projects, resources, and support. Let's get to work.</p>
+                <button class="btn" onclick="closeIntro()">Enter Terminal</button>
+            </div>
+        </div>
+
+        <!-- MAIN DESKTOP DASHBOARD -->
+        <div id="main-dashboard">
+            <header>
+                <div class="logo">Vanguard</div>
+                <nav>
+                    <button class="nav-btn active" onclick="switchTab('projects', this)">Projects</button>
+                    <button class="nav-btn" onclick="switchTab('about', this)">About</button>
+                    <button class="nav-btn" onclick="switchTab('support', this)">Support</button>
+                    <button class="nav-btn" onclick="switchTab('legal', this)">Legal</button>
+                    <button class="nav-btn" onclick="switchTab('account', this)">Account</button>
+                </nav>
+            </header>
+
+            <main class="content-area">
+                
+                <!-- PROJECTS TAB -->
+                <div id="tab-projects" class="tab-content active">
+                    <h2>Active Operations</h2>
+                    <p>Current resources and initiatives powered by the Vanguard Knights.</p>
+                    <ul>
+                        <li>
+                            <strong style="color: var(--gold); font-size: 1.2rem;">Basic Tech Consulting & Coaching</strong><br>
+                            One-on-one guidance to help citizens navigate the digital world, optimize their tools, and build their ideas.
+                        </li>
+                        <li style="opacity: 0.5;">
+                            <em>Awaiting next project deployment...</em>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ABOUT TAB -->
+                <div id="tab-about" class="tab-content">
+                    <h2>The Creative Studio</h2>
+                    <p>VCS operates on the core value that technology should serve the community, not the other way around.</p>
+                    <ul>
+                        <li><strong>Kona Agpalza:</strong> Lead Developer & Strategist, ensuring our infrastructure is secure and accessible.</li>
+                        <li><strong>Quincy Jones:</strong> Creative Director & Community Lead, aligning our tools with the pulse of the people.</li>
+                    </ul>
+                </div>
+
+                <!-- SUPPORT TAB -->
+                <div id="tab-support" class="tab-content">
+                    <h2>Citizen Support</h2>
+                    <p>Encountered a bug or need guidance on a project? The Knights are on standby.</p>
+                    <ul>
+                        <li>General Inquiries & Project Assistance</li>
+                        <li>Vanguard Strategic Comm-Link Issues</li>
+                        <li>Network & Infrastructure Reporting</li>
+                    </ul>
+                    <button class="btn">Open Support Ticket</button>
+                </div>
+
+                <!-- LEGAL TAB -->
+                <div id="tab-legal" class="tab-content">
+                    <h2>Legal & Compliance</h2>
+                    <p>We believe in transparency. All community interactions and data protocols are governed strictly by our core values.</p>
+                    <ul>
+                        <li>Terms of Service</li>
+                        <li>Privacy & Data Protection Protocol</li>
+                        <li>Community Guidelines</li>
+                    </ul>
+                </div>
+
+                <!-- ACCOUNT TAB -->
+                <div id="tab-account" class="tab-content">
+                    <h2>Identity & Access</h2>
+                    <p>Manage your citizen profile, active project links, and security clearances.</p>
+                    <button class="btn">Secure Login</button>
+                </div>
+
+            </main>
+        </div>
+
     </div>
 
-    <div class="logo-container">
-        <img src="images/vanguardorglogo.png" alt="Vanguard Logo">
-    </div>
-
-    <div style="margin-top: 30px;">
-        <a href="hub.html" class="enter-btn">Enter</a>
-    </div>
-
-    <div class="footer-tag">
-        Vanguard Citizen Services &copy; <span id="year"></span>
-    </div>
-
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        document.getElementById('year').innerText = new Date().getFullYear();
+        // --- 1. COMET GENERATOR ---
+        function spawnComet() {
+            const container = document.getElementById('sky-container');
+            const comet = document.createElement('div');
+            comet.classList.add('comet');
+            
+            // Randomize starting position (mostly upper right)
+            const startY = Math.random() * 40; // top 40% of screen
+            const startX = 50 + (Math.random() * 50); // right 50% of screen
+            
+            comet.style.top = `${startY}vh`;
+            comet.style.left = `${startX}vw`;
+            
+            container.appendChild(comet);
+            
+            // Remove comet from DOM after animation completes
+            setTimeout(() => { comet.remove(); }, 2000);
+        }
+
+        // Spawn a comet every 3000ms (3 seconds)
+        setInterval(spawnComet, 3000);
+        // Spawn one immediately on load
+        spawnComet();
+
+
+        // --- 2. INTRO SEQUENCE LOGIC ---
+        function nextIntro(windowNumber) {
+            document.querySelectorAll('.intro-window').forEach(win => win.classList.remove('active'));
+            document.getElementById(`intro-${windowNumber}`).classList.add('active');
+        }
+
+        function closeIntro() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'flex';
+            }, 800);
+        }
+
+
+        // --- 3. TAB SWITCHING LOGIC ---
+        function switchTab(tabId, btnElement) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Remove active state from all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected content and highlight button
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            btnElement.classList.add('active');
+        }
     </script>
 </body>
 </html>
