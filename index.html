@@ -8,11 +8,12 @@
 </head>
 <body>
 
-    <!-- The Sky & Comets Layer -->
-    <div id="sky-container">
+    <!-- 1. ENVIRONMENTAL LAYER -->
+    <div id="environment">
         <div class="starfield"></div>
     </div>
 
+    <!-- 2. APPLICATION LAYER -->
     <div id="app-layer">
         
         <!-- INTRO SEQUENCE -->
@@ -20,178 +21,196 @@
             <div class="intro-window active" id="intro-1">
                 <h2>The Vanguard Origin</h2>
                 <p>What began as a mission to document the Vanguard Knights' journey through their rebuild has evolved into something greater. Today, Vanguard Citizen Services is a creative studio dedicated to empowering the community.</p>
-                <button class="btn" onclick="nextIntro(2)">Our Process</button>
+                <button class="action-btn" onclick="VCS_Engine.nextIntro(2)">Our Process</button>
             </div>
             
             <div class="intro-window" id="intro-2">
                 <h2>Community First</h2>
                 <p>We don't just build digital tools; we build alongside the people. Our process starts on the ground level—listening to community needs, designing intuitive solutions, and deploying resources that solve real-world challenges.</p>
-                <button class="btn" onclick="nextIntro(3)">The Alliance</button>
+                <button class="action-btn" onclick="VCS_Engine.nextIntro(3)">The Alliance</button>
             </div>
 
             <div class="intro-window" id="intro-3">
                 <h2>Powering the Future</h2>
                 <p>The Vanguard Knights are the engine of this mission. Together, our collaborative goal is to forge a secure, accessible, and zero-friction hub where technology serves the citizens. The rebuild is just the beginning.</p>
-                <button class="btn" onclick="closeIntro()">Enter Terminal</button>
+                <button class="action-btn" onclick="VCS_Engine.closeIntro()">Enter Terminal</button>
             </div>
         </div>
 
         <!-- MAIN DASHBOARD -->
         <div id="main-dashboard">
-            <header>
-                <div class="logo">Vanguard</div>
-                <!-- This bio text only shows on mobile for the link-in-bio aesthetic -->
-                <div class="bio-text">Creative Studio & Alliance Hub for the Vanguard Knights. Forging digital tools for the community.</div>
+            
+            <!-- HEADER & NAVIGATION -->
+            <aside class="hub-header">
+                <div class="hub-logo">Vanguard</div>
+                <div class="hub-bio">Creative Studio & Alliance Hub for the Vanguard Knights. Forging digital tools for the community.</div>
                 
-                <nav>
-                    <!-- Nav buttons span the full width on mobile like a link tree -->
-                    <button class="nav-btn active" id="btn-projects" onclick="switchTab('projects', this)">Projects</button>
-                    <button class="nav-btn" id="btn-about" onclick="switchTab('about', this)">About Us</button>
-                    <button class="nav-btn" id="btn-support" onclick="switchTab('support', this)">Support</button>
-                    <button class="nav-btn" id="btn-legal" onclick="switchTab('legal', this)">Legal</button>
-                    <button class="nav-btn" id="btn-account" onclick="switchTab('account', this)">Account</button>
+                <nav class="hub-nav">
+                    <button class="nav-btn" id="btn-projects" onclick="VCS_Engine.switchTab('projects', this)">Projects</button>
+                    <button class="nav-btn" id="btn-about" onclick="VCS_Engine.switchTab('about', this)">About Us</button>
+                    <button class="nav-btn" id="btn-support" onclick="VCS_Engine.switchTab('support', this)">Support</button>
+                    <button class="nav-btn" id="btn-legal" onclick="VCS_Engine.switchTab('legal', this)">Legal</button>
+                    <button class="nav-btn" id="btn-account" onclick="VCS_Engine.switchTab('account', this)">Account</button>
                 </nav>
-            </header>
+            </aside>
 
-            <main class="content-area">
+            <!-- CONTENT PANELS -->
+            <main class="hub-content">
                 
-                <!-- PROJECTS TAB -->
-                <div id="tab-projects" class="tab-content active">
-                    <button class="mobile-close-btn" onclick="closeTab()">✕</button>
-                    <h2>Active Operations</h2>
-                    <p>Current resources and initiatives powered by the Vanguard Knights.</p>
-                    <ul>
+                <!-- PROJECTS -->
+                <article id="tab-projects" class="tab-panel">
+                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
+                    <h2 class="panel-title">Active Operations</h2>
+                    <p class="panel-desc">Current resources and initiatives powered by the Vanguard Knights.</p>
+                    <ul class="feature-list" id="project-list-container">
                         <li>
-                            <strong style="color: var(--gold); font-size: 1.2rem;">Basic Tech Consulting & Coaching</strong><br>
+                            <strong>Basic Tech Consulting & Coaching</strong>
                             One-on-one guidance to help citizens navigate the digital world, optimize their tools, and build their ideas.
                         </li>
                         <li style="opacity: 0.5;">
                             <em>Awaiting next project deployment...</em>
                         </li>
                     </ul>
-                </div>
+                </article>
 
-                <!-- ABOUT TAB -->
-                <div id="tab-about" class="tab-content">
-                    <button class="mobile-close-btn" onclick="closeTab()">✕</button>
-                    <h2>The Creative Studio</h2>
-                    <p>VCS operates on the core value that technology should serve the community, not the other way around.</p>
-                    <ul>
-                        <li><strong>Kona Agpalza:</strong> Lead Developer & Strategist, ensuring our infrastructure is secure and accessible.</li>
-                        <li><strong>Quincy Jones:</strong> Creative Director & Community Lead, aligning our tools with the pulse of the people.</li>
+                <!-- ABOUT -->
+                <article id="tab-about" class="tab-panel">
+                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
+                    <h2 class="panel-title">The Creative Studio</h2>
+                    <p class="panel-desc">VCS operates on the core value that technology should serve the community, not the other way around.</p>
+                    <ul class="feature-list">
+                        <li><strong>Kona Agpalza: Lead Developer</strong> Ensuring our infrastructure is secure, scalable, and highly accessible.</li>
+                        <li><strong>Quincy Jones: Creative Director</strong> Aligning our tools, branding, and interfaces with the pulse of the people.</li>
                     </ul>
-                </div>
+                </article>
 
-                <!-- SUPPORT TAB -->
-                <div id="tab-support" class="tab-content">
-                    <button class="mobile-close-btn" onclick="closeTab()">✕</button>
-                    <h2>Citizen Support</h2>
-                    <p>Encountered a bug or need guidance on a project? The Knights are on standby.</p>
-                    <ul>
-                        <li>General Inquiries & Project Assistance</li>
-                        <li>Vanguard Strategic Comm-Link Issues</li>
-                        <li>Network & Infrastructure Reporting</li>
+                <!-- SUPPORT -->
+                <article id="tab-support" class="tab-panel">
+                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
+                    <h2 class="panel-title">Citizen Support</h2>
+                    <p class="panel-desc">Encountered a bug or need guidance on a project? The Knights are on standby to assist.</p>
+                    <ul class="feature-list">
+                        <li><strong>General Inquiries</strong> Routing for project assistance and platform questions.</li>
+                        <li><strong>Comm-Link Diagnostics</strong> Reporting issues with the Vanguard Strategic Comm-Link.</li>
                     </ul>
-                    <button class="btn">Open Support Ticket</button>
-                </div>
+                    <button class="action-btn">Open Support Ticket</button>
+                </article>
 
-                <!-- LEGAL TAB -->
-                <div id="tab-legal" class="tab-content">
-                    <button class="mobile-close-btn" onclick="closeTab()">✕</button>
-                    <h2>Legal & Compliance</h2>
-                    <p>We believe in transparency. All community interactions and data protocols are governed strictly by our core values.</p>
-                    <ul>
-                        <li>Terms of Service</li>
-                        <li>Privacy & Data Protection Protocol</li>
-                        <li>Community Guidelines</li>
+                <!-- LEGAL -->
+                <article id="tab-legal" class="tab-panel">
+                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
+                    <h2 class="panel-title">Legal & Compliance</h2>
+                    <p class="panel-desc">We believe in absolute transparency. All community interactions and data protocols are governed strictly by our core values.</p>
+                    <ul class="feature-list">
+                        <li><strong>Terms of Service</strong> The foundational rules of our digital community.</li>
+                        <li><strong>Privacy Protocol</strong> How we protect and manage citizen data.</li>
                     </ul>
-                </div>
+                </article>
 
-                <!-- ACCOUNT TAB -->
-                <div id="tab-account" class="tab-content">
-                    <button class="mobile-close-btn" onclick="closeTab()">✕</button>
-                    <h2>Identity & Access</h2>
-                    <p>Manage your citizen profile, active project links, and security clearances.</p>
-                    <button class="btn">Secure Login</button>
-                </div>
+                <!-- ACCOUNT -->
+                <article id="tab-account" class="tab-panel">
+                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
+                    <h2 class="panel-title">Identity & Access</h2>
+                    <p class="panel-desc">Manage your citizen profile, active project links, and community security clearances.</p>
+                    <button class="action-btn">Secure Login</button>
+                </article>
 
             </main>
         </div>
-
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- 3. JAVASCRIPT LOGIC ENGINE -->
     <script>
-        // --- 0. LOCAL STORAGE CHECK ---
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('vcs_intro_complete') === 'true') {
-                document.getElementById('intro-overlay').style.display = 'none';
-                document.getElementById('main-dashboard').style.display = 'flex';
-            }
+        const VCS_Engine = {
             
-            // On mobile load, ensure no tab is blocking the screen initially
-            if (window.innerWidth < 1024) {
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            }
-        });
-
-        // --- 1. COMET GENERATOR ---
-        function spawnComet() {
-            const container = document.getElementById('sky-container');
-            const comet = document.createElement('div');
-            comet.classList.add('comet');
-            
-            const startY = Math.random() * 40; 
-            const startX = 50 + (Math.random() * 50); 
-            
-            comet.style.top = `${startY}vh`;
-            comet.style.left = `${startX}vw`;
-            
-            container.appendChild(comet);
-            setTimeout(() => { comet.remove(); }, 2000);
-        }
-
-        setInterval(spawnComet, 3000);
-        spawnComet();
-
-        // --- 2. INTRO SEQUENCE LOGIC ---
-        function nextIntro(windowNumber) {
-            document.querySelectorAll('.intro-window').forEach(win => win.classList.remove('active'));
-            document.getElementById(`intro-${windowNumber}`).classList.add('active');
-        }
-
-        function closeIntro() {
-            localStorage.setItem('vcs_intro_complete', 'true');
-            const overlay = document.getElementById('intro-overlay');
-            overlay.style.opacity = '0';
-            
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                document.getElementById('main-dashboard').style.display = 'flex';
+            init: function() {
+                this.checkIntroStatus();
+                this.startComets();
+                this.setupResponsiveDefaults();
                 
-                // Clear active states on mobile entry so users just see the buttons
-                if (window.innerWidth < 1024) {
-                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                // Watch for screen resizing to reset tab states if moving mobile <-> desktop
+                window.addEventListener('resize', this.setupResponsiveDefaults.bind(this));
+            },
+
+            // --- INTRO & LOCAL STORAGE ---
+            checkIntroStatus: function() {
+                if (localStorage.getItem('vcs_intro_complete') === 'true') {
+                    document.getElementById('intro-overlay').style.display = 'none';
+                    document.getElementById('main-dashboard').style.display = 'flex';
                 }
-            }, 800);
-        }
+            },
 
-        // --- 3. TAB & MODAL LOGIC ---
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            btnElement.classList.add('active');
-        }
+            nextIntro: function(step) {
+                document.querySelectorAll('.intro-window').forEach(win => win.classList.remove('active'));
+                document.getElementById(`intro-${step}`).classList.add('active');
+            },
 
-        // Dedicated close function for mobile modals
-        function closeTab() {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        }
+            closeIntro: function() {
+                localStorage.setItem('vcs_intro_complete', 'true');
+                const overlay = document.getElementById('intro-overlay');
+                overlay.style.opacity = '0';
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.getElementById('main-dashboard').style.display = 'flex';
+                    this.setupResponsiveDefaults();
+                }, 800);
+            },
+
+            // --- NAVIGATION LOGIC ---
+            switchTab: function(tabId, btnElement) {
+                // Clear active states
+                document.querySelectorAll('.tab-panel').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                
+                // Activate targets
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                btnElement.classList.add('active');
+            },
+
+            closeMobileTabs: function() {
+                document.querySelectorAll('.tab-panel').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            },
+
+            setupResponsiveDefaults: function() {
+                const isDesktop = window.innerWidth >= 1024;
+                
+                if (isDesktop) {
+                    // Ensure the first tab is open on desktop by default if none are active
+                    const activeTab = document.querySelector('.tab-panel.active');
+                    if (!activeTab) {
+                        this.switchTab('projects', document.getElementById('btn-projects'));
+                    }
+                } else {
+                    // On mobile, ensure panels are hidden initially to show just the buttons
+                    if (!document.querySelector('.tab-panel.active')) {
+                        this.closeMobileTabs();
+                    }
+                }
+            },
+
+            // --- ENVIRONMENTAL EFFECTS ---
+            startComets: function() {
+                const spawn = () => {
+                    const container = document.getElementById('environment');
+                    const comet = document.createElement('div');
+                    comet.classList.add('comet');
+                    
+                    comet.style.top = `${Math.random() * 40}vh`;
+                    comet.style.left = `${50 + (Math.random() * 50)}vw`;
+                    
+                    container.appendChild(comet);
+                    setTimeout(() => comet.remove(), 2000);
+                };
+
+                setInterval(spawn, 3500);
+                spawn();
+            }
+        };
+
+        // Ignite the Engine
+        document.addEventListener('DOMContentLoaded', () => VCS_Engine.init());
     </script>
 </body>
 </html>
