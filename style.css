@@ -7,12 +7,12 @@
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body, html {
     width: 100%;
     height: 100vh;
-    overflow: hidden; /* Prevents scrolling, keeps it a single-screen app */
+    overflow: hidden; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--white);
     background: linear-gradient(180deg, #02010a 0%, #0a081a 40%, #2a1a05 75%, #D4AF37 100%);
@@ -42,10 +42,7 @@ body, html {
     opacity: 0.6;
 }
 
-@keyframes slow-drift {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+@keyframes slow-drift { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .comet {
     position: absolute;
@@ -71,7 +68,6 @@ body, html {
     flex-direction: column;
     align-items: center;
     height: 100vh;
-    padding: 40px;
 }
 
 /* --- INTRO SEQUENCE WINDOWS --- */
@@ -85,14 +81,15 @@ body, html {
     justify-content: center;
     align-items: center;
     transition: opacity 0.8s ease;
+    padding: 20px;
 }
 
 .intro-window {
     display: none;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    padding: 50px;
-    border-radius: 20px;
+    padding: 40px 30px;
+    border-radius: 24px;
     text-align: center;
     max-width: 600px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -106,106 +103,206 @@ body, html {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* --- MAIN DASHBOARD --- */
+/* --- MOBILE FIRST: LINK-IN-BIO DASHBOARD --- */
 #main-dashboard {
     display: none;
     width: 100%;
-    max-width: 1200px;
+    max-width: 500px; /* Slim for mobile */
     height: 100%;
     flex-direction: column;
+    padding: 10vh 20px 20px 20px;
     animation: popIn 0.8s ease forwards;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
+#main-dashboard::-webkit-scrollbar { display: none; }
 
-/* Header & Tabs */
 header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 0 0 15px var(--gold-glow);
+    margin-bottom: 10px;
+}
+
+.bio-text {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    max-width: 90%;
 }
 
 nav {
     display: flex;
-    gap: 15px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 8px;
-    border-radius: 100px;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
+    flex-direction: column; /* Vertical stack for Link-in-Bio */
+    gap: 16px;
+    width: 100%;
 }
 
 .nav-btn {
-    background: transparent;
-    border: none;
-    color: var(--white);
-    padding: 10px 24px;
-    border-radius: 100px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-.nav-btn.active, .nav-btn:hover {
-    background: rgba(255,255,255,0.15);
-    color: var(--gold);
-    box-shadow: 0 0 15px var(--gold-glow);
-}
-
-/* Content Area */
-.content-area {
-    flex-grow: 1;
+    width: 100%;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    backdrop-filter: blur(30px);
-    padding: 50px;
+    color: var(--white);
+    padding: 18px 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    backdrop-filter: blur(20px);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.nav-btn:active { transform: scale(0.97); }
+
+/* --- MOBILE BOTTOM SHEET (CONTENT MODALS) --- */
+.content-area {
+    position: static;
+}
+
+.tab-content {
+    position: fixed;
+    bottom: -100%; /* Hidden off-screen initially */
+    left: 0;
+    width: 100%;
+    height: 85vh;
+    background: rgba(15, 15, 20, 0.85);
+    backdrop-filter: saturate(180%) blur(40px);
+    -webkit-backdrop-filter: saturate(180%) blur(40px);
+    border-top: 1px solid var(--glass-border);
+    border-radius: 35px 35px 0 0;
+    padding: 45px 30px;
+    z-index: 100;
+    transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     overflow-y: auto;
-    position: relative;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    display: block; /* Always block on mobile, we hide it via position */
 }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: popIn 0.4s ease; }
+.tab-content.active { bottom: 0; } /* Slides up */
 
-h2 { color: var(--gold); margin-bottom: 20px; font-size: 2rem; }
-p { line-height: 1.7; margin-bottom: 20px; font-size: 1.1rem; }
-
-ul {
-    list-style-type: none;
-    padding: 0;
+.mobile-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* Content Formatting */
+h2 { color: var(--gold); margin-bottom: 20px; font-size: 1.8rem; }
+p { line-height: 1.6; margin-bottom: 20px; font-size: 1.05rem; color: rgba(255,255,255,0.9); }
+
+ul { list-style-type: none; padding: 0; }
 ul li {
     background: rgba(255,255,255,0.05);
     padding: 20px;
     margin-bottom: 15px;
-    border-radius: 12px;
+    border-radius: 16px;
     border-left: 4px solid var(--gold);
 }
 
-/* Shared Buttons */
 .btn {
     background: var(--white);
     color: #000;
     border: none;
-    padding: 15px 35px;
+    padding: 16px 0;
+    width: 100%;
     font-size: 1rem;
     font-weight: 700;
-    border-radius: 12px;
+    border-radius: 16px;
     cursor: pointer;
     transition: 0.2s;
-    margin-top: 20px;
+    margin-top: 10px;
 }
+.btn:hover { background: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
 
-.btn:hover {
-    background: var(--gold);
-    box-shadow: 0 0 20px var(--gold-glow);
-    transform: scale(0.98);
+/* --- DESKTOP DASHBOARD OVERRIDES --- */
+@media (min-width: 1024px) {
+    #main-dashboard {
+        max-width: 1200px;
+        padding: 40px;
+        justify-content: center;
+    }
+
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .logo { margin-bottom: 0; font-size: 2.2rem; }
+    .bio-text { display: none; } /* Hide the bio text on desktop */
+
+    nav {
+        flex-direction: row; /* Horizontal tabs */
+        width: auto;
+        gap: 15px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 8px;
+        border-radius: 100px;
+        border: 1px solid var(--glass-border);
+    }
+
+    .nav-btn {
+        width: auto;
+        padding: 12px 28px;
+        background: transparent;
+        border: none;
+        font-size: 1rem;
+        box-shadow: none;
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+        background: rgba(255,255,255,0.15);
+        color: var(--gold);
+        box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .content-area {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        backdrop-filter: blur(30px);
+        padding: 50px;
+        height: auto;
+        min-height: 500px;
+    }
+
+    .tab-content {
+        position: static;
+        height: auto;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        backdrop-filter: none;
+        box-shadow: none;
+        display: none; /* Hide via display on desktop */
+    }
+
+    .tab-content.active { display: block; animation: popIn 0.4s ease; }
+    
+    .mobile-close-btn { display: none; } /* Hide close button on desktop */
+
+    .btn { width: auto; padding: 15px 40px; }
 }
