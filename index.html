@@ -47,7 +47,8 @@
                 
                 <nav class="hub-nav">
                     <button class="nav-btn" id="btn-projects" onclick="VCS_Engine.switchTab('projects', this)">Projects</button>
-                    <button class="nav-btn" id="btn-about" onclick="VCS_Engine.switchTab('about', this)">About Us</button>
+                    <!-- Fixed Button Layout -->
+                    <button class="nav-btn" id="btn-about" onclick="window.location.href='about.html'">About Us</button>
                     <button class="nav-btn" id="btn-support" onclick="VCS_Engine.switchTab('support', this)">Support</button>
                     <button class="nav-btn" id="btn-legal" onclick="VCS_Engine.switchTab('legal', this)">Legal</button>
                     <button class="nav-btn" id="btn-account" onclick="VCS_Engine.switchTab('account', this)">Account</button>
@@ -63,7 +64,7 @@
                     <h2 class="panel-title">Current Projects</h2>
                     <p class="panel-desc">Here is what we are working on right now to support our community and the Knights.</p>
                     <ul class="feature-list" id="project-list-container">
-                        <!-- NEW PROJECT V ENTRY -->
+                        <!-- PROJECT V -->
                         <li>
                             <strong>Project V</strong>
                             <p style="margin-bottom: 15px; font-size: 1rem; color: rgba(255,255,255,0.85);">A real-time community project built to help close the gap between everyday citizens and elected officials at all levels. It uses simple digital tools to bring neighbors and leaders together, ensuring your voice is heard directly where it matters most.</p>
@@ -75,17 +76,6 @@
                             <p style="margin-bottom: 15px; font-size: 1rem; color: rgba(255,255,255,0.85);">Friendly, one-on-one support to help you feel confident using your digital tools, navigating the web, or bringing your ideas to life.</p>
                             <a href="#" class="action-btn" style="display: block; text-align: center; text-decoration: none; padding: 14px 0; font-size: 0.95rem;">Get Tech Help</a>
                         </li>
-                    </ul>
-                </article>
-
-                <!-- ABOUT -->
-                <article id="tab-about" class="tab-panel">
-                    <button class="btn-close" onclick="VCS_Engine.closeMobileTabs()">✕</button>
-                    <h2 class="panel-title">Who We Are</h2>
-                    <p class="panel-desc">What started as a mission to document the Vanguard Knights' rebuild has grown into a creative studio with a simple goal: making technology serve our neighbors. We believe in building alongside you, creating resources that solve real problems and bring people together.</p>
-                    <ul class="feature-list">
-                        <li><strong>Kona Agpalza: Lead Developer</strong><br>Kona focuses on making sure all our tools run smoothly, safely, and are easy for everyone to use.</li>
-                        <li><strong>Quincy Jones: Creative Director</strong><br>Quincy makes sure everything we build feels welcoming, looks great, and truly connects with our community.</li>
                     </ul>
                 </article>
 
