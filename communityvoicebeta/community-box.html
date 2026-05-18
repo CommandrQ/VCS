@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Community Submission Box | Vanguard Citizen Services</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* --- BRANDING & VARIABLES --- */
+        :root {
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --bg-dark: #05040a;
+            --white: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(15, 15, 20, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+            color: var(--white);
+            background: linear-gradient(180deg, #020108 0%, #0a0815 40%, #1a1005 75%, #D4AF37 120%);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- THE ENVIRONMENT (Stars & Comets) --- */
+        #environment { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .starfield {
+            position: absolute; width: 200vw; height: 200vh; top: -50%; left: -50%;
+            background-image: 
+                radial-gradient(1.5px 1.5px at 10% 10%, #fff, transparent),
+                radial-gradient(2px 2px at 30% 40%, var(--gold), transparent),
+                radial-gradient(1px 1px at 80% 20%, #fff, transparent),
+                radial-gradient(2.5px 2.5px at 50% 80%, var(--gold), transparent);
+            background-size: 350px 350px;
+            animation: stellar-drift 400s linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes stellar-drift { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .comet {
+            position: absolute; width: 120px; height: 2px;
+            background: linear-gradient(90deg, #fff 0%, var(--gold) 20%, transparent 100%);
+            border-radius: 50%; box-shadow: 0 0 15px var(--gold-glow);
+            animation: comet-strike 2s var(--ease-smooth) forwards; opacity: 0;
+        }
+        @keyframes comet-strike {
+            0% { transform: translate(0, 0) rotate(-35deg); opacity: 1; }
+            100% { transform: translate(-1000px, 600px) rotate(-35deg); opacity: 0; }
+        }
+
+        /* --- LAYOUT CONTAINERS --- */
+        .box-container {
+            width: 90%;
+            max-width: 500px;
+            z-index: 10;
+            padding: 40px 0 30px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: auto 0;
+            animation: fadeUp 0.6s var(--ease-smooth) forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title { 
+            font-size: 2rem; 
+            font-weight: 800; 
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(180deg, #fff 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s var(--ease-smooth);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        .back-link:hover { color: var(--gold); background: rgba(212, 175, 55, 0.15); border-color: var(--gold-glow); }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(150%);
+            -webkit-backdrop-filter: blur(30px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px var(--glass-border);
+            width: 100%;
+            margin-bottom: 25px; 
+            text-align: left;
+        }
+
+        p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; text-align: center; }
+
+        /* --- FORMS & INPUTS --- */
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: var(--white); }
+        
+        select, input, textarea { 
+            width: 100%; padding: 14px; margin-bottom: 20px; border-radius: 14px; 
+            border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.4); color: white; 
+            font-family: inherit; font-size: 1rem; transition: all 0.3s ease;
+        }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); background: rgba(0, 0, 0, 0.6); }
+        input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+        textarea { resize: none; }
+
+        .action-btn {
+            width: 100%; padding: 18px; border-radius: 16px; border: none; 
+            background: var(--white); color: var(--bg-dark); font-weight: 700; font-size: 1.05rem;
+            cursor: pointer; transition: all 0.3s var(--ease-smooth); text-decoration: none; display: inline-block; text-align: center;
+        }
+        .action-btn:hover { background: var(--gold); box-shadow: 0 0 20px var(--gold-glow); transform: translateY(-2px); }
+        .action-btn:disabled { background: rgba(255,255,255,0.3); color: rgba(255,255,255,0.5); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Response Banner */
+        .status-banner {
+            margin-top: 20px; padding: 14px; border-radius: 12px; text-align: center; font-size: 0.95rem; display: none;
+        }
+        .status-success { display: block; background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; }
+        .status-error { display: block; background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; }
+
+        /* --- FOOTER --- */
+        footer { 
+            text-align: center; color: var(--white); font-size: 0.75rem; 
+            letter-spacing: 2px; text-transform: uppercase; width: 100%; 
+            margin-top: auto; padding-bottom: 30px; opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Environmental Background -->
+    <div id="environment"><div class="starfield"></div></div>
+
+    <div class="box-container">
+        
+        <h1 class="page-title">Community Voice</h1>
+        <a href="index.html" class="back-link">← Back to Hub</a>
+
+        <main class="glass-card">
+            <p class="subtitle">Report community or school friction points anonymously. Your thoughts route straight to our review board so we can act on them.</p>
+            
+            <form id="submission-form">
+                <label for="category">Topic Category</label>
+                <select id="category">
+                    <option value="School Transparency">School Transparency</option>
+                    <option value="Resource Access">Resource Access</option>
+                    <option value="Budget/Infrastructure">Budget / Infrastructure</option>
+                </select>
+
+                <label for="municipality">Your General Area</label>
+                <select id="municipality">
+                    <option value="Radcliff">Radcliff</option>
+                    <option value="Elizabethtown">Elizabethtown</option>
+                    <option value="Vine Grove">Vine Grove</option>
+                    <option value="Other Hardin County">Other Hardin County</option>
+                </select>
+
+                <label for="location">Nearest Street or Neighborhood Name</label>
+                <input type="text" id="location" placeholder="e.g., Dixie Highway or Woodland Drive" required>
+
+                <label for="description">What issue needs attention?</label>
+                <textarea id="description" rows="5" placeholder="Please describe the local issue or area of improvement here..." required></textarea>
+
+                <button type="submit" id="submit-button" class="action-btn">Submit Anonymously</button>
+                
+                <div id="response-banner" class="status-banner"></div>
+            </form>
+        </main>
+    </div>
+
+    <footer>Powered by Vanguard Citizen Services</footer>
+
+    <script>
+        /* --- 1. COMET ANIMATION --- */
+        function spawnComet() {
+            const container = document.getElementById('environment');
+            const comet = document.createElement('div');
+            comet.classList.add('comet');
+            comet.style.top = `${Math.random() * 40}vh`;
+            comet.style.left = `${50 + (Math.random() * 50)}vw`;
+            container.appendChild(comet);
+            setTimeout(() => comet.remove(), 2000);
+        }
+        setInterval(spawnComet, 3500);
+
+        /* --- 2. SUPABASE INITIALIZATION --- */
+        const sbUrl = 'https://dvyjupytbwbrcoyouxpf.supabase.co';
+        const sbKey = 'sb_publishable_wjgbPekKmodd5mSDXIeUeg_Wq73GzOk';
+        const supabaseClient = supabase.createClient(sbUrl, sbKey);
+
+        /* --- 3. FORM SUBMISSION LOGIC --- */
+        const form = document.getElementById('submission-form');
+        const submitBtn = document.getElementById('submit-button');
+        const banner = document.getElementById('response-banner');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Lock form controls
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Sending Your Note...";
+            banner.className = "status-banner";
+            banner.innerText = "";
+
+            // Gather inputs
+            const category = document.getElementById('category').value;
+            const municipality = document.getElementById('municipality').value;
+            const user_location = document.getElementById('location').value.trim();
+            const description = document.getElementById('description').value.trim();
+
+            try {
+                // Post directly to Supabase table using public Insert rules
+                const { error } = await supabaseClient
+                    .from('suggestionbox')
+                    .insert([
+                        {
+                            category: category,
+                            municipality: municipality,
+                            user_location: user_location,
+                            description: description,
+                            status: 'Pending Verification',
+                            is_public: false,
+                            trust_score_flag: false
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Success response
+                banner.classList.add('status-success');
+                banner.innerText = "Thank you! Your feedback has been safely submitted to the council log.";
+                form.reset();
+
+            } catch (err) {
+                console.error(err);
+                banner.classList.add('status-error');
+                banner.innerText = "We couldn't lock your entry in. Please check your internet connection and try again.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Anonymously";
+            }
+        });
+    </script>
+</body>
+</html>
